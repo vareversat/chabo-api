@@ -1,0 +1,426 @@
+{
+    "produces": [
+        "application/json"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "description": "You can get every info you need about all the events of the Chaban-Delmas bridge in Bordeaux, France",
+        "title": "Chabo API - The Chaban-Delmas bridge API",
+        "contact": {
+            "email": "dev@vareversat.fr"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "http://github.com/vareversat/chabo-api/LICENSE.md"
+        },
+        "version": "1.0"
+    },
+    "basePath": "/v1",
+    "paths": {
+        "/forecasts": {
+            "get": {
+                "description": "Fetch all existing forecasts",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Forecasts"
+                ],
+                "summary": "Get all foracasts",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "The date to filter from (RFC3339)",
+                        "name": "from",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "format": "int",
+                        "default": 10,
+                        "description": "Set the limit of the queried results",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "format": "int",
+                        "default": 0,
+                        "description": "Set the offset of the queried results",
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            "boat_crossing",
+                            "maintenance"
+                        ],
+                        "type": "string",
+                        "description": "The closing reason",
+                        "name": "reason",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "The boat name of the event",
+                        "name": "boat",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "leaving_bordeaux",
+                            "entering_in_bordeaux"
+                        ],
+                        "type": "string",
+                        "description": "The boat maneuver of the event",
+                        "name": "maneuver",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "default": "UTC",
+                        "description": "Timezone to format the date related fields (TZ identifier)",
+                        "name": "Timezone",
+                        "in": "header"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ForecastsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Some params are missing and/or not properly formatted fror the requests",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "An error occured on the server side",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/forecasts/{id}": {
+            "get": {
+                "description": "Fetch a forecast by his unique ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Forecasts"
+                ],
+                "summary": "Get a foracast",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The forecast ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "UTC",
+                        "description": "Timezone to format the date related fields (TZ identifier)",
+                        "name": "Timezone",
+                        "in": "header"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ForecastResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Some params are missing and/or not properly formatted fror the requests",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "The ID does not match any forecast",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "An error occured on the server side",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/healthcheck": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Misc"
+                ],
+                "summary": "Get the status of the API",
+                "responses": {
+                    "200": {
+                        "description": "The api is healthy",
+                        "schema": {
+                            "$ref": "#/definitions/models.OKResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "The api is unhealthy",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manage/refresh": {
+            "post": {
+                "description": "Get, format et populate database with the data from the OpenData API",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Manage"
+                ],
+                "summary": "Refresh the data with the ones from the OpenData API",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Refresh"
+                        }
+                    },
+                    "500": {
+                        "description": "An error occured on the server side",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manage/refresh/last": {
+            "get": {
+                "description": "Get the last trace of refresh action on POST /manage/refresh",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Manage"
+                ],
+                "summary": "Get the last refresh action",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Refresh"
+                        }
+                    },
+                    "404": {
+                        "description": "No previous refresh action exists",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "An error occured on the server side",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.Boat": {
+            "type": "object",
+            "properties": {
+                "approximative_crossing_date": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2021-05-25T00:53:16.535668Z"
+                },
+                "maneuver": {
+                    "$ref": "#/definitions/models.BoatManeuver"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "EUROPA 2"
+                }
+            }
+        },
+        "models.BoatManeuver": {
+            "type": "string",
+            "enum": [
+                "leaving_bordeaux",
+                "entering_in_bordeaux"
+            ],
+            "x-enum-varnames": [
+                "Leaving",
+                "Entering"
+            ]
+        },
+        "models.ClosingReason": {
+            "type": "string",
+            "enum": [
+                "boat_crossing",
+                "maintenance"
+            ],
+            "x-enum-varnames": [
+                "BoatCrossing",
+                "Maintenance"
+            ]
+        },
+        "models.ClosingType": {
+            "type": "string",
+            "enum": [
+                "two_way",
+                "one_way"
+            ],
+            "x-enum-varnames": [
+                "TwoWay",
+                "OneWay"
+            ]
+        },
+        "models.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string",
+                    "example": "error in params"
+                }
+            }
+        },
+        "models.Forecast": {
+            "type": "object",
+            "properties": {
+                "boats": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Boat"
+                    }
+                },
+                "circulation_closing_date": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2021-05-25T00:53:16.535668Z"
+                },
+                "circulation_reopening_date": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2021-05-25T00:53:16.535668Z"
+                },
+                "closing_duration_ns": {
+                    "type": "integer",
+                    "example": 4980000000000
+                },
+                "closing_reason": {
+                    "$ref": "#/definitions/models.ClosingReason"
+                },
+                "closing_type": {
+                    "$ref": "#/definitions/models.ClosingType"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "63a6430fc07ff1d895c9555ef2ef6e41c1e3b1f5"
+                }
+            }
+        },
+        "models.ForecastResponse": {
+            "type": "object",
+            "properties": {
+                "forecast": {
+                    "$ref": "#/definitions/models.Forecast"
+                },
+                "timezone": {
+                    "type": "string",
+                    "example": "UTC"
+                }
+            }
+        },
+        "models.ForecastsResponse": {
+            "type": "object",
+            "properties": {
+                "_links": {
+                    "type": "array",
+                    "items": {}
+                },
+                "forecasts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Forecast"
+                    }
+                },
+                "hits": {
+                    "type": "integer"
+                },
+                "limit": {
+                    "type": "integer"
+                },
+                "offset": {
+                    "type": "integer"
+                },
+                "timezone": {
+                    "type": "string",
+                    "example": "UTC"
+                }
+            }
+        },
+        "models.OKResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "ok"
+                }
+            }
+        },
+        "models.Refresh": {
+            "type": "object",
+            "properties": {
+                "duration_ns": {
+                    "type": "integer",
+                    "example": 348872934
+                },
+                "item_count": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2021-05-25T00:53:16.535668Z"
+                }
+            }
+        }
+    },
+    "externalDocs": {
+        "description": "All data are from the Bordeaux Open Data API",
+        "url": "https://opendata.bordeaux-metropole.fr/explore/dataset/previsions_pont_chaban/information/"
+    }
+}

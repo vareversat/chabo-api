@@ -1,0 +1,295 @@
+basePath: /v1
+definitions:
+  models.Boat:
+    properties:
+      approximative_crossing_date:
+        example: "2021-05-25T00:53:16.535668Z"
+        format: date-time
+        type: string
+      maneuver:
+        $ref: '#/definitions/models.BoatManeuver'
+      name:
+        example: EUROPA 2
+        type: string
+    type: object
+  models.BoatManeuver:
+    enum:
+    - leaving_bordeaux
+    - entering_in_bordeaux
+    type: string
+    x-enum-varnames:
+    - Leaving
+    - Entering
+  models.ClosingReason:
+    enum:
+    - boat_crossing
+    - maintenance
+    type: string
+    x-enum-varnames:
+    - BoatCrossing
+    - Maintenance
+  models.ClosingType:
+    enum:
+    - two_way
+    - one_way
+    type: string
+    x-enum-varnames:
+    - TwoWay
+    - OneWay
+  models.ErrorResponse:
+    properties:
+      error:
+        example: error in params
+        type: string
+    type: object
+  models.Forecast:
+    properties:
+      boats:
+        items:
+          $ref: '#/definitions/models.Boat'
+        type: array
+      circulation_closing_date:
+        example: "2021-05-25T00:53:16.535668Z"
+        format: date-time
+        type: string
+      circulation_reopening_date:
+        example: "2021-05-25T00:53:16.535668Z"
+        format: date-time
+        type: string
+      closing_duration_ns:
+        example: 4980000000000
+        type: integer
+      closing_reason:
+        $ref: '#/definitions/models.ClosingReason'
+      closing_type:
+        $ref: '#/definitions/models.ClosingType'
+      id:
+        example: 63a6430fc07ff1d895c9555ef2ef6e41c1e3b1f5
+        type: string
+    type: object
+  models.ForecastResponse:
+    properties:
+      forecast:
+        $ref: '#/definitions/models.Forecast'
+      timezone:
+        example: UTC
+        type: string
+    type: object
+  models.ForecastsResponse:
+    properties:
+      _links:
+        items: {}
+        type: array
+      forecasts:
+        items:
+          $ref: '#/definitions/models.Forecast'
+        type: array
+      hits:
+        type: integer
+      limit:
+        type: integer
+      offset:
+        type: integer
+      timezone:
+        example: UTC
+        type: string
+    type: object
+  models.OKResponse:
+    properties:
+      message:
+        example: ok
+        type: string
+    type: object
+  models.Refresh:
+    properties:
+      duration_ns:
+        example: 348872934
+        type: integer
+      item_count:
+        example: 10
+        type: integer
+      timestamp:
+        example: "2021-05-25T00:53:16.535668Z"
+        format: date-time
+        type: string
+    type: object
+externalDocs:
+  description: All data are from the Bordeaux Open Data API
+  url: https://opendata.bordeaux-metropole.fr/explore/dataset/previsions_pont_chaban/information/
+info:
+  contact:
+    email: dev@vareversat.fr
+  description: You can get every info you need about all the events of the Chaban-Delmas
+    bridge in Bordeaux, France
+  license:
+    name: MIT
+    url: http://github.com/vareversat/chabo-api/LICENSE.md
+  title: Chabo API - The Chaban-Delmas bridge API
+  version: "1.0"
+paths:
+  /forecasts:
+    get:
+      consumes:
+      - application/json
+      description: Fetch all existing forecasts
+      parameters:
+      - description: The date to filter from (RFC3339)
+        format: date-time
+        in: query
+        name: from
+        type: string
+      - default: 10
+        description: Set the limit of the queried results
+        format: int
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: Set the offset of the queried results
+        format: int
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - description: The closing reason
+        enum:
+        - boat_crossing
+        - maintenance
+        in: query
+        name: reason
+        type: string
+      - description: The boat name of the event
+        in: query
+        name: boat
+        type: string
+      - description: The boat maneuver of the event
+        enum:
+        - leaving_bordeaux
+        - entering_in_bordeaux
+        in: query
+        name: maneuver
+        type: string
+      - default: UTC
+        description: Timezone to format the date related fields (TZ identifier)
+        in: header
+        name: Timezone
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ForecastsResponse'
+        "400":
+          description: Some params are missing and/or not properly formatted fror
+            the requests
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: An error occured on the server side
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get all foracasts
+      tags:
+      - Forecasts
+  /forecasts/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Fetch a forecast by his unique ID
+      parameters:
+      - description: The forecast ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - default: UTC
+        description: Timezone to format the date related fields (TZ identifier)
+        in: header
+        name: Timezone
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ForecastResponse'
+        "400":
+          description: Some params are missing and/or not properly formatted fror
+            the requests
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: The ID does not match any forecast
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: An error occured on the server side
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get a foracast
+      tags:
+      - Forecasts
+  /healthcheck:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: The api is healthy
+          schema:
+            $ref: '#/definitions/models.OKResponse'
+        "503":
+          description: The api is unhealthy
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get the status of the API
+      tags:
+      - Misc
+  /manage/refresh:
+    post:
+      consumes:
+      - application/json
+      description: Get, format et populate database with the data from the OpenData
+        API
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Refresh'
+        "500":
+          description: An error occured on the server side
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Refresh the data with the ones from the OpenData API
+      tags:
+      - Manage
+  /manage/refresh/last:
+    get:
+      description: Get the last trace of refresh action on POST /manage/refresh
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Refresh'
+        "404":
+          description: No previous refresh action exists
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: An error occured on the server side
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get the last refresh action
+      tags:
+      - Manage
+produces:
+- application/json
+swagger: "2.0"

@@ -20,8 +20,5 @@ vendor/
 # Go workspace file
 go.work
 
-# Documentation
-docs/
-
 # Dotenv
 .env*
