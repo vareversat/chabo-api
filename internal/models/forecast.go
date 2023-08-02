@@ -11,8 +11,8 @@ const (
 )
 
 const (
-	BoatCrossing ClosingReason = "boat_crossing"
-	Maintenance  ClosingReason = "maintenance"
+	BoatReason  ClosingReason = "boat"
+	Maintenance ClosingReason = "maintenance"
 )
 
 type Forecast struct {

@@ -21,7 +21,7 @@ func MapClosingReason(stringClosingReason string) models.ClosingReason {
 	if stringClosingReason == "MAINTENANCE" {
 		return models.Maintenance
 	} else {
-		return models.BoatCrossing
+		return models.BoatReason
 	}
 }
 
@@ -34,7 +34,7 @@ func MapClosingReason(stringClosingReason string) models.ClosingReason {
 // forecastID : Used to compute teh "self" link
 func MapBoats(closingReason models.ClosingReason, boatNames string, closingDuration time.Duration, circulationClosingDate time.Time, alreadySeenBoatNames *[]string, forecastID string) []models.Boat {
 	var boats []models.Boat
-	if closingReason == models.BoatCrossing {
+	if closingReason == models.BoatReason {
 		// The string may contains multiple boat name separated by a "/"
 		boatNamesSlice := strings.Split(boatNames, "/")
 		for _, boat := range boatNamesSlice {
