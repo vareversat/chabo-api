@@ -23,7 +23,7 @@ import (
 //	@ExternalDocs.description	All data are from the Bordeaux Open Data API
 //	@ExternalDocs.url			https://opendata.bordeaux-metropole.fr/explore/dataset/previsions_pont_chaban/information/
 //	@License.name				MIT
-//	@License.url				http://github.com/vareversat/chabo-api/LICENSE.md
+//	@License.url				https://github.com/vareversat/chabo-api/blob/main/LICENSE.md
 
 func GinRouter(mongoClient *mongo.Client) {
 
