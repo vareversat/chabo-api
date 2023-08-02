@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"strconv"
 	"time"
+	_ "time/tzdata"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vareversat/chabo-api/internal/models"
