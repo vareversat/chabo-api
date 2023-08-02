@@ -44,7 +44,7 @@ func GetAllForecats(mongoClient *mongo.Client) gin.HandlerFunc {
 		mongoFilter := bson.D{}
 		var mongoResponse models.MongoResponse
 
-		location, locationErr := utils.GetTimezone(c)
+		location, locationErr := utils.GetTimezoneFromHeader(c)
 		limit, limitErr := utils.GetIntParams(c, "limit")
 		offset, offsetErr := utils.GetIntParams(c, "offset")
 		from := utils.GetStringParams(c, "from")
@@ -55,7 +55,7 @@ func GetAllForecats(mongoClient *mongo.Client) gin.HandlerFunc {
 		if from != "" {
 			time, err := time.Parse(time.RFC3339, from)
 			if err != nil {
-				c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "your 'from' param is not in RFC3339 format"})
+				c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "your 'from' param is not in RFC3339 format. See https://datatracker.ietf.org/doc/html/rfc3339#section-5.8"})
 				return
 			}
 			mongoFilter = append(mongoFilter, bson.E{Key: "circulation_reopening_date", Value: bson.D{{Key: "$gte", Value: time}}})
@@ -114,8 +114,9 @@ func GetAllForecats(mongoClient *mongo.Client) gin.HandlerFunc {
 				mongoResponse.Results[index].Boats[index2].ApproximativeCrossingDate = boat.ApproximativeCrossingDate.In(location)
 			}
 		}
+		links := utils.ComputeMetadaLinks(itemCount, limit, offset, fmt.Sprintf("%s/%s", c.Request.URL.Path, c.Request.URL.RawQuery))
 
-		response := models.ForecastsResponse{Links: utils.GetMetadaLinks(itemCount, limit, offset, fmt.Sprintf("%s/%s", c.Request.URL.Path, c.Request.URL.RawQuery)), Hits: itemCount, Forecasts: mongoResponse.Results, Limit: limit, Offset: offset, Timezone: location.String()}
+		response := models.ForecastsResponse{Links: links, Hits: itemCount, Forecasts: mongoResponse.Results, Limit: limit, Offset: offset, Timezone: location.String()}
 
 		c.JSON(http.StatusOK, response)
 	}
@@ -153,7 +154,7 @@ func GetForecastByID(mongoClient *mongo.Client) gin.HandlerFunc {
 			return
 		}
 
-		location, locationErr := utils.GetTimezone(c)
+		location, locationErr := utils.GetTimezoneFromHeader(c)
 
 		if locationErr != nil {
 			c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: locationErr.Error()})
