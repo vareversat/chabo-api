@@ -41,11 +41,11 @@ func MapBoats(closingReason models.ClosingReason, boatNames string, closingDurat
 			boatName := strings.TrimSpace(boat)
 			var action models.BoatManeuver
 			if contains(*alreadySeenBoatNames, boatName) {
-				/// If the boat is already in the list, that means that it is docked in Bordeaux
+				// If the boat is already in the list, that means that it is docked in Bordeaux
 				*alreadySeenBoatNames = remove(*alreadySeenBoatNames, boatName)
 				action = models.Leaving
 			} else {
-				/// If not, that means that it is entering in Bordeaux
+				// If not, that means that it is entering in Bordeaux
 				action = models.Entering
 				*alreadySeenBoatNames = append(*alreadySeenBoatNames, boatName)
 			}
