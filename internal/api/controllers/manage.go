@@ -21,6 +21,7 @@ import (
 //	@Produce		json
 //	@Success		200	{object}	models.Refresh{}
 //	@Failure		500	{object}	models.ErrorResponse{}	"An error occured on the server side"
+//	@Failure		429	{object}	models.ErrorResponse{}	"Too many attempt to refresh"
 //	@Router			/manage/refresh [post]
 func RefreshForcast(mongoClient *mongo.Client) gin.HandlerFunc {
 	fn := func(c *gin.Context) {
@@ -40,9 +41,16 @@ func RefreshForcast(mongoClient *mongo.Client) gin.HandlerFunc {
 		}
 		utils.ComputeForecasts(&forecasts, openDataForecasts)
 
-		errInsert := db.InsertAllForecasts(mongoClient, forecasts)
-		if errInsert != nil {
+		errInsert, underCooldown := db.InsertAllForecasts(mongoClient, forecasts)
+		// An error occured
+		if errInsert != nil && !underCooldown {
 			c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: errInsert.Error()})
+			return
+		}
+
+		// The refresh is under cooldown
+		if errInsert != nil && underCooldown {
+			c.JSON(http.StatusTooManyRequests, models.ErrorResponse{Error: errInsert.Error()})
 			return
 		}
 		elapsed := time.Since(start)

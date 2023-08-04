@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
+	"time"
 
 	"github.com/vareversat/chabo-api/internal/models"
 	"go.mongodb.org/mongo-driver/bson"
@@ -31,9 +33,9 @@ func ConnectToMongoInstace() *mongo.Client {
 	if err != nil {
 		ErrorLogger.Printf(err.Error())
 		os.Exit(1)
+	} else {
+		InfoLogger.Printf("Connected to %s database !\n", DatabaseName)
 	}
-
-	InfoLogger.Printf("Connected to %s database !\n", DatabaseName)
 
 	return client
 
@@ -85,31 +87,39 @@ func GetForecastbyID(client *mongo.Client, forecast *models.Forecast, ID string)
 
 }
 
-func InsertAllForecasts(client *mongo.Client, forecasts []models.Forecast) error {
+// Insert all forecast to refrehs the data
+// Return an error and wither or not it failed under cooldown (too many request)
+func InsertAllForecasts(client *mongo.Client, forecasts []models.Forecast) (error, bool) {
 	interfaceRecords := make([]interface{}, len(forecasts))
 
-	// Transform to generic interface to be usable by ´coll.InsertMany´
-	for i := range forecasts {
-		interfaceRecords[i] = forecasts[i]
-	}
+	if refreshIsNeeded(client) {
+		InfoLogger.Printf("Refresh is needed !")
+		// Transform to generic interface to be usable by ´coll.InsertMany´
+		for i := range forecasts {
+			interfaceRecords[i] = forecasts[i]
+		}
 
-	coll := client.Database(DatabaseName).Collection(ForecastsCollectionName)
-	filter := bson.D{}
+		coll := client.Database(DatabaseName).Collection(ForecastsCollectionName)
+		filter := bson.D{}
 
-	deleteResult, err := coll.DeleteMany(context.TODO(), filter)
-	if err != nil {
-		ErrorLogger.Printf(err.Error())
-		return err
-	}
-	WarningLogger.Printf("(Delete) %d records deleted in %s !\n", deleteResult.DeletedCount, ForecastsCollectionName)
+		deleteResult, err := coll.DeleteMany(context.TODO(), filter)
+		if err != nil {
+			ErrorLogger.Printf(err.Error())
+			return err, false
+		}
+		WarningLogger.Printf("(Delete) %d records deleted in %s !\n", deleteResult.DeletedCount, ForecastsCollectionName)
 
-	insertResult, err := coll.InsertMany(context.TODO(), interfaceRecords)
-	if err != nil {
-		ErrorLogger.Printf(err.Error())
-		return err
+		insertResult, err := coll.InsertMany(context.TODO(), interfaceRecords)
+		if err != nil {
+			ErrorLogger.Printf(err.Error())
+			return err, false
+		}
+		WarningLogger.Printf("(Insert) %d records inserted in %s !\n", len(insertResult.InsertedIDs), ForecastsCollectionName)
+		return nil, false
+	} else {
+		WarningLogger.Printf("Refresh is NOT needed !")
+		return fmt.Errorf("you cannot refresh too many time"), true
 	}
-	WarningLogger.Printf("(Insert) %d records inserted in %s !\n", len(insertResult.InsertedIDs), ForecastsCollectionName)
-	return nil
 
 }
 
@@ -154,6 +164,28 @@ func Ping(client *mongo.Client) error {
 
 	}
 	return nil
+
+}
+
+// Check if it's possible to perform a data refresh
+func refreshIsNeeded(client *mongo.Client) bool {
+
+	var lastRefresh models.Refresh
+
+	// Get the last refresh to be sure this is not too early
+	err := GetLastRefresh(client, &lastRefresh)
+
+	if err != nil {
+		// An error here means that the collection is empty
+		return true
+	} else {
+		currentTime := time.Now()
+		diff := currentTime.Sub(lastRefresh.Timestamp)
+
+		cooldown, _ := strconv.Atoi(os.Getenv("REFRESH_COOLDOWN_MINS"))
+
+		return int(diff.Minutes()) >= cooldown
+	}
 
 }
 
