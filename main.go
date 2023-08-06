@@ -18,6 +18,7 @@ var (
 	mongoClient       *mongo.Client
 	SentryDSN         = os.Getenv("SENTRY_DSN")
 	Env               = os.Getenv("ENV")
+	GinMode           = os.Getenv("GIN_MODE")
 )
 
 func main() {
@@ -32,7 +33,8 @@ func main() {
 		log.Fatalf("sentry.Init: %s", err)
 	}
 
-	log.Default().Println("[CHABO-API] Welcome to Chabo API ! Starting the project in " + Env + " mode")
+	log.Default().
+		Println("[CHABO-API] Welcome to Chabo API ! Starting the project in " + Env + " mode (Gin " + GinMode + ")")
 
 	mongoClient = db.ConnectToMongoInstace()
 	utils.GetOpenAPIData(&openDataForecasts)
