@@ -59,7 +59,10 @@ func RefreshForcast(mongoClient *mongo.Client) gin.HandlerFunc {
 
 		errInsertRefreshProof := db.InsertRefresh(mongoClient, response)
 		if errInsertRefreshProof != nil {
-			c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: errInsertRefreshProof.Error()})
+			c.JSON(
+				http.StatusInternalServerError,
+				models.ErrorResponse{Error: errInsertRefreshProof.Error()},
+			)
 			return
 		}
 

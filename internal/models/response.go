@@ -4,7 +4,7 @@ type ForecastsResponse struct {
 	Hits      int           `json:"hits"`
 	Limit     int           `json:"limit"`
 	Offset    int           `json:"offset"`
-	Timezone  string        `json:"timezone" example:"UTC"`
+	Timezone  string        `json:"timezone"         example:"UTC"`
 	Links     []interface{} `json:"_links,omitempty"`
 	Forecasts []Forecast    `json:"forecasts"`
 }
@@ -16,7 +16,7 @@ type ForecastResponse struct {
 
 type MongoResponse struct {
 	Results []Forecast           `json:"results" bson:"results"`
-	Count   []MongoCountResponse `json:"count" bson:"count"`
+	Count   []MongoCountResponse `json:"count"   bson:"count"`
 }
 
 type MongoCountResponse struct {

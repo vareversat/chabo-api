@@ -55,10 +55,21 @@ func GetAllForecats(mongoClient *mongo.Client) gin.HandlerFunc {
 		if from != "" {
 			time, err := time.Parse(time.RFC3339, from)
 			if err != nil {
-				c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "your 'from' param is not in RFC3339 format. See https://datatracker.ietf.org/doc/html/rfc3339#section-5.8"})
+				c.JSON(
+					http.StatusBadRequest,
+					models.ErrorResponse{
+						Error: "your 'from' param is not in RFC3339 format. See https://datatracker.ietf.org/doc/html/rfc3339#section-5.8",
+					},
+				)
 				return
 			}
-			mongoFilter = append(mongoFilter, bson.E{Key: "circulation_reopening_date", Value: bson.D{{Key: "$gte", Value: time}}})
+			mongoFilter = append(
+				mongoFilter,
+				bson.E{
+					Key:   "circulation_reopening_date",
+					Value: bson.D{{Key: "$gte", Value: time}},
+				},
+			)
 		}
 
 		if reason != "" {
@@ -98,7 +109,13 @@ func GetAllForecats(mongoClient *mongo.Client) gin.HandlerFunc {
 			return
 		}
 
-		itemCount, err := db.GetAllForecasts(mongoClient, &mongoResponse, limit, offset, mongoFilter)
+		itemCount, err := db.GetAllForecasts(
+			mongoClient,
+			&mongoResponse,
+			limit,
+			offset,
+			mongoFilter,
+		)
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: err.Error()})
@@ -108,15 +125,33 @@ func GetAllForecats(mongoClient *mongo.Client) gin.HandlerFunc {
 
 		// Setting the requested timezone
 		for index, forecast := range mongoResponse.Results {
-			mongoResponse.Results[index].CirculationClosingDate = forecast.CirculationClosingDate.In(location)
-			mongoResponse.Results[index].CirculationReopeningDate = forecast.CirculationReopeningDate.In(location)
+			mongoResponse.Results[index].CirculationClosingDate = forecast.CirculationClosingDate.In(
+				location,
+			)
+			mongoResponse.Results[index].CirculationReopeningDate = forecast.CirculationReopeningDate.In(
+				location,
+			)
 			for index2, boat := range forecast.Boats {
-				mongoResponse.Results[index].Boats[index2].ApproximativeCrossingDate = boat.ApproximativeCrossingDate.In(location)
+				mongoResponse.Results[index].Boats[index2].ApproximativeCrossingDate = boat.ApproximativeCrossingDate.In(
+					location,
+				)
 			}
 		}
-		links := utils.ComputeMetadaLinks(itemCount, limit, offset, fmt.Sprintf("%s/%s", c.Request.URL.Path, c.Request.URL.RawQuery))
+		links := utils.ComputeMetadaLinks(
+			itemCount,
+			limit,
+			offset,
+			fmt.Sprintf("%s/%s", c.Request.URL.Path, c.Request.URL.RawQuery),
+		)
 
-		response := models.ForecastsResponse{Links: links, Hits: itemCount, Forecasts: mongoResponse.Results, Limit: limit, Offset: offset, Timezone: location.String()}
+		response := models.ForecastsResponse{
+			Links:     links,
+			Hits:      itemCount,
+			Forecasts: mongoResponse.Results,
+			Limit:     limit,
+			Offset:    offset,
+			Timezone:  location.String(),
+		}
 
 		c.JSON(http.StatusOK, response)
 	}
@@ -165,10 +200,15 @@ func GetForecastByID(mongoClient *mongo.Client) gin.HandlerFunc {
 		forecast.CirculationClosingDate = forecast.CirculationClosingDate.In(location)
 		forecast.CirculationReopeningDate = forecast.CirculationReopeningDate.In(location)
 		for index, boat := range forecast.Boats {
-			forecast.Boats[index].ApproximativeCrossingDate = boat.ApproximativeCrossingDate.In(location)
+			forecast.Boats[index].ApproximativeCrossingDate = boat.ApproximativeCrossingDate.In(
+				location,
+			)
 		}
 
-		c.JSON(http.StatusOK, models.ForecastResponse{Forecast: forecast, Timezone: location.String()})
+		c.JSON(
+			http.StatusOK,
+			models.ForecastResponse{Forecast: forecast, Timezone: location.String()},
+		)
 	}
 
 	return gin.HandlerFunc(fn)

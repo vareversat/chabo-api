@@ -32,7 +32,14 @@ func MapClosingReason(stringClosingReason string) models.ClosingReason {
 // circulationClosingDate : Used to compute the approximated crossing time
 // alreadySeenBoatNames : Array pointer to keep track of the boats. Used to compute the boat Maneuver
 // forecastID : Used to compute teh "self" link
-func MapBoats(closingReason models.ClosingReason, boatNames string, closingDuration time.Duration, circulationClosingDate time.Time, alreadySeenBoatNames *[]string, forecastID string) []models.Boat {
+func MapBoats(
+	closingReason models.ClosingReason,
+	boatNames string,
+	closingDuration time.Duration,
+	circulationClosingDate time.Time,
+	alreadySeenBoatNames *[]string,
+	forecastID string,
+) []models.Boat {
 	var boats []models.Boat
 	if closingReason == models.BoatReason {
 		// The string may contains multiple boat name separated by a "/"

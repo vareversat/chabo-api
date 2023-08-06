@@ -44,7 +44,9 @@ func GetTimezoneFromHeader(c *gin.Context) (*time.Location, error) {
 	location, err := time.LoadLocation(c.GetHeader("Timezone"))
 
 	if err != nil {
-		return nil, errors.New("you don't have specified a valid identifier for the Timezone. Please refer to https://en.wikipedia.org/wiki/List_of_tz_database_time_zones to use a valid one")
+		return nil, errors.New(
+			"you don't have specified a valid identifier for the Timezone. Please refer to https://en.wikipedia.org/wiki/List_of_tz_database_time_zones to use a valid one",
+		)
 	} else {
 		return location, nil
 	}

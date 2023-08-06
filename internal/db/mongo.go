@@ -107,14 +107,22 @@ func InsertAllForecasts(client *mongo.Client, forecasts []models.Forecast) (erro
 			ErrorLogger.Printf(err.Error())
 			return err, false
 		}
-		WarningLogger.Printf("(Delete) %d records deleted in %s !\n", deleteResult.DeletedCount, ForecastsCollectionName)
+		WarningLogger.Printf(
+			"(Delete) %d records deleted in %s !\n",
+			deleteResult.DeletedCount,
+			ForecastsCollectionName,
+		)
 
 		insertResult, err := coll.InsertMany(context.TODO(), interfaceRecords)
 		if err != nil {
 			ErrorLogger.Printf(err.Error())
 			return err, false
 		}
-		WarningLogger.Printf("(Insert) %d records inserted in %s !\n", len(insertResult.InsertedIDs), ForecastsCollectionName)
+		WarningLogger.Printf(
+			"(Insert) %d records inserted in %s !\n",
+			len(insertResult.InsertedIDs),
+			ForecastsCollectionName,
+		)
 		return nil, false
 	} else {
 		WarningLogger.Printf("Refresh is NOT needed !")
