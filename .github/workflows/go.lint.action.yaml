@@ -1,0 +1,26 @@
+name: Go - Lint
+
+on:
+  workflow_call:
+    inputs:
+      go_version:
+        description: 'The Go version used (ex: 1.20.7)'
+        required: true
+        type: string
+
+
+jobs:
+  test:
+    name: 'Lint'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout source code'
+        uses: actions/checkout@v3
+      - name: 'Setup Go action'
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ inputs.go_version }}
+      - name: Run linters
+        uses: wearerequired/lint-action@v2
+        with:
+          gofmt: true
