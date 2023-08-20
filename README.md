@@ -2,7 +2,7 @@
   <a href="https://go.dev"><img src="https://img.shields.io/badge/go-white?logo=go&style=for-the-badge"></a> 
   <a href="https://github.com/vareversat/chabo-api/actions"><img src="https://img.shields.io/github/actions/workflow/status/vareversat/chabo-api/dev.yaml?logo=github&style=for-the-badge"></a>
   <a href="https://github.com/vareversat/chabo-api/releases"><img src="https://img.shields.io/github/v/tag/vareversat/chabo-api?label=version&logo=git&logoColor=white&style=for-the-badge"></a>
-  <a href="https://codecov.io/gh/vareversat/chabo-api/"><img src="https://img.shields.io/codecov/c/github/vareversat/chabo-api?logo=codecov&style=for-the-badge&token=VJCS172J1T"></a>
+  <a href="https://codecov.io/gh/vareversat/chabo-api/"><img src="https://img.shields.io/codecov/c/github/vareversat/chabo-api?logo=codecov&style=for-the-badge&token=97YDVRS0X4"></a>
 </p>
 
 # Chabo API
