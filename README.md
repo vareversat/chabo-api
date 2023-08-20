@@ -19,7 +19,7 @@ This API allows you to get the schedules you want by filtering over the type of 
 On you computer, you'll need to download these softwares :
 
 - Docker
-- Go v1.10 (only if you want to run the code without Docker)
+- Go v1.20 (only if you want to run the code without Docker)
 
 And n run these commands
 
