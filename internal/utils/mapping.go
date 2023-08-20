@@ -31,7 +31,7 @@ func MapClosingReason(stringClosingReason string) models.ClosingReason {
 // closingDuration : Used to compute the approximated crossing time
 // circulationClosingDate : Used to compute the approximated crossing time
 // alreadySeenBoatNames : Array pointer to keep track of the boats. Used to compute the boat Maneuver
-// forecastID : Used to compute teh "self" link
+// forecastID : Used to compute the "self" link
 func MapBoats(
 	closingReason models.ClosingReason,
 	boatNames string,
