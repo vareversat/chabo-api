@@ -27,13 +27,16 @@ func ConnectToMongoInstace() *mongo.Client {
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
 
 	opts := options.Client().
-		ApplyURI(fmt.Sprintf("mongodb+srv://%s:%s@%s/?retryWrites=true&w=majority", DatabaseName, os.Getenv("MONGO_CLUSTER_PASSWORD"), os.Getenv("MONGO_CLUSTER_URI"))).
+		ApplyURI(os.Getenv("MONGO_DSN")).
 		SetServerAPIOptions(serverAPI)
 	client, err := mongo.Connect(context.TODO(), opts)
 	if err != nil {
-		ErrorLogger.Printf(err.Error())
-		os.Exit(1)
+		panic(err)
 	} else {
+		// Send a ping command to test the connection
+		if err := client.Ping(context.TODO(), nil); err != nil {
+			panic(err)
+		}
 		InfoLogger.Printf("Connected to %s database !\n", DatabaseName)
 	}
 
