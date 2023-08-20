@@ -9,8 +9,8 @@ jobs:
   go-lint:
     uses: ./.github/workflows/go.lint.action.yaml
     with:
-      flutter_version: '1.20.7'
+      go_version: '1.20.7'
   go-test:
     uses: ./.github/workflows/go.test.action.yaml
     with:
-      flutter_version: '1.20.7'
+      go_version: '1.20.7'
