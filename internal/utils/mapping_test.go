@@ -33,10 +33,10 @@ func TestMapClosingReason_MAINTENANCE(t *testing.T) {
 }
 
 func TestMapClosingReason_BOAT(t *testing.T) {
-	want := models.Maintenance
-	value := MapClosingReason("MAINTENANCE")
+	want := models.BoatReason
+	value := MapClosingReason("BOAT")
 	if want != value {
-		t.Fatalf(`MapClosingReason("MAINTENANCE") = %q, want match for %#q`, value, want)
+		t.Fatalf(`MapClosingReason("BOAT") = %q, want match for %#q`, value, want)
 	}
 }
 
