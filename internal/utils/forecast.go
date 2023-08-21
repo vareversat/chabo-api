@@ -1,9 +1,15 @@
 package utils
 
 import (
+	"log"
+	"os"
 	"time"
 
 	"github.com/vareversat/chabo-api/internal/models"
+)
+
+var (
+	ErrorLogger = log.New(os.Stdout, "ERROR: ", log.LUTC|log.Ltime|log.Lshortfile)
 )
 
 // Populate a []models.Forecast pointer with the OpenAPI data
@@ -14,18 +20,23 @@ func ComputeForecasts(forecasts *[]models.Forecast, openDataForecasts models.Ope
 	for _, openAPIForecast := range openDataForecasts.Records {
 		_, offset := openAPIForecast.RecordTimestamp.Zone()
 		closingReason := MapClosingReason(openAPIForecast.Fields.Boat)
-		circulationClosingDate := FormatDataTime(
+		circulationClosingDate, errClosingDate := FormatDataTime(
 			openAPIForecast.Fields.ClosingTime,
 			openAPIForecast.Fields.ClosingDate,
 			offset,
 			*time.UTC,
 		)
-		circulationReopeningDate := FormatDataTime(
+		circulationReopeningDate, errReopeningDate := FormatDataTime(
 			openAPIForecast.Fields.OpeningTime,
 			openAPIForecast.Fields.ClosingDate,
 			offset,
 			*time.UTC,
 		)
+
+		if errClosingDate != nil || errReopeningDate != nil {
+			ErrorLogger.Printf(errClosingDate.Error(), '\n', errReopeningDate.Error())
+		}
+
 		// Check if the forecast is during 2 days
 		if circulationReopeningDate.Compare(circulationClosingDate) == -1 {
 			// On day is added because the closing date is after the reopening date
