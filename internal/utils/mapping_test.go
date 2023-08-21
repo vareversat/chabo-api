@@ -81,3 +81,25 @@ func TestMapBoatsMultiBoats(t *testing.T) {
 		t.Fatalf(`MapBoats("...") = %q, want match for %#q`, value, want)
 	}
 }
+
+func TestMapBoatsExistingBoats(t *testing.T) {
+	var alreadySeenBoatNames []string
+	alreadySeenBoatNames = append(alreadySeenBoatNames, "MY_BOAT")
+	var duration time.Duration
+	localTime := time.Now()
+	duration = 10000000000
+	crossingTime := localTime.Add(duration / 2)
+
+	want := []models.Boat{{Name: "MY_BOAT", Maneuver: models.Leaving, ApproximativeCrossingDate: crossingTime}}
+	value := MapBoats(
+		models.BoatReason,
+		"MY_BOAT",
+		duration,
+		localTime,
+		&alreadySeenBoatNames,
+		"BOAT_ID")
+
+	if !reflect.DeepEqual(want, value) {
+		t.Fatalf(`MapBoats("...") = %q, want match for %#q`, value, want)
+	}
+}
