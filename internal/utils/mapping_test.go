@@ -47,7 +47,9 @@ func TestMapBoats(t *testing.T) {
 	duration = 10000000000
 	crossingTime := localTime.Add(duration / 2)
 
-	want := []models.Boat{{Name: "MY_BOAT", Maneuver: models.Entering, ApproximativeCrossingDate: crossingTime}}
+	want := []models.Boat{
+		{Name: "MY_BOAT", Maneuver: models.Entering, ApproximativeCrossingDate: crossingTime},
+	}
 	value := MapBoats(
 		models.BoatReason,
 		"MY_BOAT",
@@ -68,7 +70,14 @@ func TestMapBoatsMultiBoats(t *testing.T) {
 	duration = 10000000000
 	crossingTime := localTime.Add(duration / 2)
 
-	want := []models.Boat{{Name: "MY_BOAT", Maneuver: models.Entering, ApproximativeCrossingDate: crossingTime}, {Name: "MY_SECOND_BOAT", Maneuver: models.Entering, ApproximativeCrossingDate: crossingTime}}
+	want := []models.Boat{
+		{Name: "MY_BOAT", Maneuver: models.Entering, ApproximativeCrossingDate: crossingTime},
+		{
+			Name:                      "MY_SECOND_BOAT",
+			Maneuver:                  models.Entering,
+			ApproximativeCrossingDate: crossingTime,
+		},
+	}
 	value := MapBoats(
 		models.BoatReason,
 		"MY_BOAT /MY_SECOND_BOAT",
@@ -90,7 +99,9 @@ func TestMapBoatsExistingBoats(t *testing.T) {
 	duration = 10000000000
 	crossingTime := localTime.Add(duration / 2)
 
-	want := []models.Boat{{Name: "MY_BOAT", Maneuver: models.Leaving, ApproximativeCrossingDate: crossingTime}}
+	want := []models.Boat{
+		{Name: "MY_BOAT", Maneuver: models.Leaving, ApproximativeCrossingDate: crossingTime},
+	}
 	value := MapBoats(
 		models.BoatReason,
 		"MY_BOAT",
