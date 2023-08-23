@@ -16,7 +16,7 @@ func TestContainsOK(t *testing.T) {
 
 func TestContainsNOK(t *testing.T) {
 	s := []string{"toto"}
-	want := true
+	want := false
 	value := contains(s, "tutu")
 	if want != value {
 		t.Fatalf(`contains("toto") = %t, want match for %t`, value, want)
