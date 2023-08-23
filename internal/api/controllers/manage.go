@@ -31,7 +31,7 @@ func RefreshForcast(mongoClient *mongo.Client) gin.HandlerFunc {
 		}
 
 		var openDataForecasts models.OpenDataAPIResponse
-		var forecasts []models.Forecast
+		var forecasts models.Forecasts
 
 		start := time.Now()
 		errGet := utils.GetOpenAPIData(&openDataForecasts)

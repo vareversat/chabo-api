@@ -1,6 +1,9 @@
 package models
 
-import "time"
+import (
+	"reflect"
+	"time"
+)
 
 type ClosingType string
 type ClosingReason string
@@ -22,6 +25,31 @@ type Forecast struct {
 	CirculationClosingDate   time.Time       `json:"circulation_closing_date"   bson:"circulation_closing_date"   example:"2021-05-25T00:53:16.535668Z"                                              format:"date-time"`
 	CirculationReopeningDate time.Time       `json:"circulation_reopening_date" bson:"circulation_reopening_date" example:"2021-05-25T00:53:16.535668Z"                                              format:"date-time"`
 	ClosingReason            ClosingReason   `json:"closing_reason"             bson:"closing_reason"`
-	Boats                    []Boat          `json:"boats,omitempty"            bson:"boats,omitempty"`
+	Boats                    Boats           `json:"boats,omitempty"            bson:"boats,omitempty"`
 	Link                     OpenAPISelfLink `json:"_links"                     bson:"_links"                                                                                                                           swaggerignore:"true"`
+}
+
+type Forecasts []Forecast
+
+func (f Forecast) IsEqual(other Forecast) bool {
+	return f.ID == other.ID &&
+		f.ClosingType == other.ClosingType &&
+		f.ClosingDuration == other.ClosingDuration &&
+		f.CirculationClosingDate.Equal(other.CirculationClosingDate) &&
+		f.CirculationReopeningDate.Equal(other.CirculationReopeningDate) &&
+		f.ClosingReason == other.ClosingReason &&
+		f.Boats.AreEqual(other.Boats) &&
+		reflect.DeepEqual(f.Link, other.Link)
+}
+
+func (forecats Forecasts) AreEqual(other Forecasts) bool {
+	if len(forecats) != len(other) {
+		return false
+	}
+	for i, b := range forecats {
+		if !b.IsEqual(other[i]) {
+			return false
+		}
+	}
+	return true
 }

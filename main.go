@@ -14,7 +14,7 @@ import (
 
 var (
 	openDataForecasts models.OpenDataAPIResponse
-	forecasts         []models.Forecast
+	forecasts         models.Forecasts
 	mongoClient       *mongo.Client
 	SentryDSN         = os.Getenv("SENTRY_DSN")
 	Env               = os.Getenv("ENV")

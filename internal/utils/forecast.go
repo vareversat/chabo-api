@@ -13,7 +13,7 @@ var (
 )
 
 // Populate a []models.Forecast pointer with the OpenAPI data
-func ComputeForecasts(forecasts *[]models.Forecast, openDataForecasts models.OpenDataAPIResponse) {
+func ComputeForecasts(forecasts *models.Forecasts, openDataForecasts models.OpenDataAPIResponse) {
 	// alreadySeenBoatNames is used to compute the maneuver of each boats
 	var alreadySeenBoatNames []string
 
