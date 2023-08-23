@@ -21,7 +21,7 @@ On you computer, you'll need to download these softwares :
 - Docker
 - Go v1.20 (only if you want to run the code without Docker)
 
-And n run these commands
+And run these commands
 
 ```bash
 git clone https://github.com/vareversat/chabo-api.git
