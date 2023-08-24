@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://go.dev"><img src="https://img.shields.io/badge/go-white?logo=go&style=for-the-badge"></a> 
-  <a href="https://github.com/vareversat/chabo-api/actions"><img src="https://img.shields.io/github/actions/workflow/status/vareversat/chabo-api/dev.yaml?logo=github&style=for-the-badge"></a>
+  <a href="https://github.com/vareversat/chabo-api/actions"><img src="https://img.shields.io/github/actions/workflow/status/vareversat/chabo-api/main.yaml?logo=github&style=for-the-badge"></a>
   <a href="https://github.com/vareversat/chabo-api/releases"><img src="https://img.shields.io/github/v/tag/vareversat/chabo-api?label=version&logo=git&logoColor=white&style=for-the-badge"></a>
   <a href="https://codecov.io/gh/vareversat/chabo-api/"><img src="https://img.shields.io/codecov/c/github/vareversat/chabo-api?logo=codecov&style=for-the-badge&token=97YDVRS0X4"></a>
 </p>
@@ -19,6 +19,7 @@ This API allows you to get the schedules you want by filtering over the type of 
 On you computer, you'll need to download these softwares :
 
 - Docker
+- Make (not mandatory)
 - Go v1.20 (only if you want to run the code without Docker)
 
 And run these commands
@@ -26,7 +27,17 @@ And run these commands
 ```bash
 git clone https://github.com/vareversat/chabo-api.git
 cd chabo-api
-docker compose build && docker compose run
+make run || docker compose build && docker compose up
 ```
+
+You can also these usefull commands :
+
+```bash
+make test       # Run all tests
+make coverage   # Run all tests with coverage
+make clean      # Clean all generated binaries
+```
+
+... and many more. Take a to at the [Makefile](Makefile)
 
 Ta-dam ! The Swagger is running on <http://localhost:8080/v1/swagger/index.html>
