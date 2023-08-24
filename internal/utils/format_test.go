@@ -5,11 +5,11 @@ import (
 	"time"
 )
 
-func TestFormatDataTime(t *testing.T) {
+func TestFormatDateTime(t *testing.T) {
 	want, _ := time.Parse(time.RFC3339, "2023-02-26T21:00:00+01:00")
 	loc, _ := time.LoadLocation("Europe/Paris")
 	if value, err := FormatDataTime("21:00", "2023-02-26", 3600, *loc); err == nil {
-		if want.String() != value.String() {
+		if !want.Equal(value) {
 			t.Fatalf(`TestFormatDataTime("...") = %q, want match for %#q`, value, want)
 		}
 	} else {
