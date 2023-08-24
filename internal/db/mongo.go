@@ -41,7 +41,6 @@ func ConnectToMongoInstace() *mongo.Client {
 	}
 
 	return client
-
 }
 
 func GetAllForecasts(
@@ -57,12 +56,14 @@ func GetAllForecasts(
 	for cursor.Next(context.TODO()) {
 		if err := cursor.Decode(&mongoResponse); err != nil {
 			ErrorLogger.Printf(err.Error())
+
 			return 0, err
 		}
 	}
 
 	if err != nil {
 		ErrorLogger.Printf(err.Error())
+
 		return 0, err
 	}
 
@@ -87,7 +88,6 @@ func GetForecastbyID(client *mongo.Client, forecast *models.Forecast, ID string)
 	}
 
 	return nil
-
 }
 
 // Insert all forecast to refrehs the data
@@ -108,6 +108,7 @@ func InsertAllForecasts(client *mongo.Client, forecasts []models.Forecast) (erro
 		deleteResult, err := coll.DeleteMany(context.TODO(), filter)
 		if err != nil {
 			ErrorLogger.Printf(err.Error())
+
 			return err, false
 		}
 		WarningLogger.Printf(
@@ -119,6 +120,7 @@ func InsertAllForecasts(client *mongo.Client, forecasts []models.Forecast) (erro
 		insertResult, err := coll.InsertMany(context.TODO(), interfaceRecords)
 		if err != nil {
 			ErrorLogger.Printf(err.Error())
+
 			return err, false
 		}
 		WarningLogger.Printf(
@@ -126,6 +128,7 @@ func InsertAllForecasts(client *mongo.Client, forecasts []models.Forecast) (erro
 			len(insertResult.InsertedIDs),
 			ForecastsCollectionName,
 		)
+
 		return nil, false
 	} else {
 		WarningLogger.Printf("Refresh is NOT needed !")
@@ -141,6 +144,7 @@ func InsertRefresh(client *mongo.Client, refresh models.Refresh) error {
 	_, err := coll.InsertOne(context.TODO(), refresh)
 	if err != nil {
 		ErrorLogger.Printf(err.Error())
+
 		return err
 	}
 	WarningLogger.Printf("(Insert) 1 record inserted in %s !\n", RefreshesCollectionName)
@@ -160,6 +164,7 @@ func GetLastRefresh(client *mongo.Client, refresh *models.Refresh) error {
 	if err != nil {
 		return fmt.Errorf("not found")
 	}
+
 	return nil
 
 }
@@ -171,9 +176,10 @@ func Ping(client *mongo.Client) error {
 
 	if err != nil {
 		ErrorLogger.Printf(err.Error())
-		return err
 
+		return err
 	}
+
 	return nil
 
 }

@@ -41,6 +41,8 @@ func GinRouter(mongoClient *mongo.Client) {
 
 	}
 
-	router.Run(fmt.Sprintf("%s:%s", os.Getenv("APP_URI"), os.Getenv("APP_PORT")))
+	if err := router.Run(fmt.Sprintf("%s:%s", os.Getenv("APP_URI"), os.Getenv("APP_PORT"))); err != nil {
+		panic(err)
+	}
 
 }

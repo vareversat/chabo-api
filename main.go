@@ -37,9 +37,13 @@ func main() {
 		Println("[CHABO-API] Welcome to Chabo API ! Starting the project in " + Env + " mode (Gin " + GinMode + ")")
 
 	mongoClient = db.ConnectToMongoInstace()
-	utils.GetOpenAPIData(&openDataForecasts)
+	if err := utils.GetOpenAPIData(&openDataForecasts); err != nil {
+		panic(err)
+	}
 	utils.ComputeForecasts(&forecasts, openDataForecasts)
-	db.InsertAllForecasts(mongoClient, forecasts)
+	if err, _ := db.InsertAllForecasts(mongoClient, forecasts); err != nil {
+		panic(err)
+	}
 
 	api.GinRouter(mongoClient)
 }

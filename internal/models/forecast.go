@@ -51,5 +51,6 @@ func (forecats Forecasts) AreEqual(other Forecasts) bool {
 			return false
 		}
 	}
+
 	return true
 }

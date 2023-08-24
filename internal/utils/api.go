@@ -18,20 +18,23 @@ func GetOpenAPIData(openDataAPIResponse *models.OpenDataAPIResponse) error {
 
 	if err != nil {
 		log.Fatal(err)
+
 		return err
 	}
 
 	responseData, err := io.ReadAll(data.Body)
 	if err != nil {
 		log.Fatal(err)
+
 		return err
 	}
 
 	err = json.Unmarshal(responseData, openDataAPIResponse)
 	if err != nil {
 		log.Fatal(err)
+
 		return err
 	}
-	return nil
 
+	return nil
 }

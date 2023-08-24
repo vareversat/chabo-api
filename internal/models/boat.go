@@ -34,5 +34,6 @@ func (boats Boats) AreEqual(other Boats) bool {
 			return false
 		}
 	}
+
 	return true
 }
