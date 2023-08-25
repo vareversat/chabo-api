@@ -1,3 +1,5 @@
+![](banner.png)
+
 <p align="center">
   <a href="https://go.dev"><img src="https://img.shields.io/badge/go-white?logo=go&style=for-the-badge"></a> 
   <a href="https://github.com/vareversat/chabo-api/actions"><img src="https://img.shields.io/github/actions/workflow/status/vareversat/chabo-api/main.yaml?logo=github&style=for-the-badge"></a>
@@ -30,6 +32,8 @@ cd chabo-api
 make run || docker compose build && docker compose up
 ```
 
+Ta-dam ! The Swagger is running on <http://localhost:8080/v1/swagger/index.html>
+
 You can also these usefull commands :
 
 ```bash
@@ -38,6 +42,4 @@ make coverage   # Run all tests with coverage
 make clean      # Clean all generated binaries
 ```
 
-... and many more. Take a to at the [Makefile](Makefile)
-
-Ta-dam ! The Swagger is running on <http://localhost:8080/v1/swagger/index.html>
+... and many more. Take a look at the [Makefile](Makefile) if you want !
