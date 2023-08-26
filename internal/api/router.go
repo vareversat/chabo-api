@@ -2,6 +2,7 @@ package api
 
 import (
 	"fmt"
+	"net/http"
 	"os"
 
 	sentrygin "github.com/getsentry/sentry-go/gin"
@@ -30,15 +31,23 @@ func GinRouter(mongoClient *mongo.Client) {
 	router := gin.Default()
 	router.Use(sentrygin.New(sentrygin.Options{}))
 	docs.SwaggerInfo.BasePath = "/v1"
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+	router.NoRoute(func(c *gin.Context) {
+		c.Redirect(http.StatusFound, "/swagger/index.html")
+	})
 	v1 := router.Group("/v1")
 	{
-		v1.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
-		v1.GET("/forecasts", controllers.GetAllForecats(mongoClient))
-		v1.GET("/forecasts/:id", controllers.GetForecastByID(mongoClient))
-		v1.POST("/manage/refresh", controllers.RefreshForcast(mongoClient))
-		v1.GET("/manage/refresh/last", controllers.GetLastRefreshAction(mongoClient))
 		v1.GET("/healthcheck", controllers.Healthcheck(mongoClient))
-
+		forecasts := v1.Group("/forecasts")
+		{
+			forecasts.GET("", controllers.GetAllForecats(mongoClient))
+			forecasts.GET(":id", controllers.GetForecastByID(mongoClient))
+		}
+		management := v1.Group("/management")
+		{
+			management.POST("refresh", controllers.RefreshForcast(mongoClient))
+			management.GET("refresh/last", controllers.GetLastRefreshAction(mongoClient))
+		}
 	}
 
 	if err := router.Run(fmt.Sprintf("%s:%s", os.Getenv("APP_URI"), os.Getenv("APP_PORT"))); err != nil {

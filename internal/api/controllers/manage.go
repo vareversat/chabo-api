@@ -16,13 +16,13 @@ import (
 //
 //	@Summary		Refresh the data with the ones from the OpenData API
 //	@Description	Get, format et populate database with the data from the OpenData API
-//	@Tags			Manage
+//	@Tags			Management
 //	@Accept			json
 //	@Produce		json
 //	@Success		200	{object}	models.Refresh{}
 //	@Failure		500	{object}	models.ErrorResponse{}	"An error occured on the server side"
 //	@Failure		429	{object}	models.ErrorResponse{}	"Too many attempt to refresh"
-//	@Router			/manage/refresh [post]
+//	@Router			/management/refresh [post]
 func RefreshForcast(mongoClient *mongo.Client) gin.HandlerFunc {
 	fn := func(c *gin.Context) {
 
@@ -75,13 +75,13 @@ func RefreshForcast(mongoClient *mongo.Client) gin.HandlerFunc {
 // GetLastRefreshAction godoc
 //
 //	@Summary		Get the last refresh action
-//	@Description	Get the last trace of refresh action on POST /manage/refresh
-//	@Tags			Manage
+//	@Description	Get the last trace of refresh action on POST /management/refresh
+//	@Tags			Management
 //	@Produce		json
 //	@Success		200	{object}	models.Refresh{}
 //	@Failure		404	{object}	models.ErrorResponse{}	"No previous refresh action exists"
 //	@Failure		500	{object}	models.ErrorResponse{}	"An error occured on the server side"
-//	@Router			/manage/refresh/last [get]
+//	@Router			/management/refresh/last [get]
 func GetLastRefreshAction(mongoClient *mongo.Client) gin.HandlerFunc {
 	fn := func(c *gin.Context) {
 
