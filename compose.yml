@@ -10,6 +10,7 @@ services:
       - "8080:8080"
     env_file:
       - .env.dev
+
   mongo:
     container_name: mongo-server
     image: mongo:6.0.8
@@ -17,6 +18,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: my_password
       MONGO_INITDB_DATABASE: chabo-api
+
   mongo-express:
     container_name: mongo-express
     image: mongo-express
