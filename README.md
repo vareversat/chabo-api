@@ -32,7 +32,7 @@ cd chabo-api
 make run || docker compose build && docker compose up
 ```
 
-Ta-dam ! The Swagger is running on <http://localhost:8080/v1/swagger/index.html>
+Ta-dam ! The Swagger is running on <http://localhost:8080/swagger/index.html>
 
 You can also these usefull commands :
 
