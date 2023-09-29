@@ -11,6 +11,7 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/vareversat/chabo-api/docs"
 	"github.com/vareversat/chabo-api/internal/api/controllers"
+	"github.com/vareversat/chabo-api/internal/utils"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -28,7 +29,9 @@ import (
 
 func GinRouter(mongoClient *mongo.Client) {
 
-	router := gin.Default()
+	router := gin.New()
+	router.Use(gin.Recovery())
+	router.Use(utils.JsonLoggerMiddleware())
 	router.Use(sentrygin.New(sentrygin.Options{}))
 	docs.SwaggerInfo.BasePath = "/v1"
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
