@@ -1,0 +1,28 @@
+syntax = "proto3";
+option go_package = "/internal/generate";
+
+package grpc.v1;
+
+enum BoatManeuver {
+  leaving = 0;
+  entering = 1;
+}
+
+message Timestamp {
+  int64 seconds = 1;
+  int32 nanos = 2;
+}
+
+message Boat {
+  string name = 1;
+  BoatManeuver maneuver = 2;
+  Timestamp approximativeCrossingDate = 3;
+}
+
+message BoatNameRequest { string name = 1; }
+
+message Boats { repeated Boat forecasts = 1; }
+
+service BoatService {
+  rpc GetBoat(BoatNameRequest) returns (Boat) {}
+}

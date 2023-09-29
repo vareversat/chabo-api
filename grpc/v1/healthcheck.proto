@@ -1,0 +1,21 @@
+syntax = "proto3";
+option go_package = "/internal/generate";
+
+package grpc.v1;
+
+message Empty {}
+
+message HealthCheckResponse {
+  enum ServingStatus {
+    UNKNOWN = 0;
+    SERVING = 1;
+    NOT_SERVING = 2;
+  }
+  ServingStatus status = 1;
+  string info = 2;
+}
+
+service HealthCheckService {
+  rpc CheckHealth(Empty) returns (HealthCheckResponse);
+  rpc WatchHealth(Empty) returns (stream HealthCheckResponse);
+}

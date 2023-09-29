@@ -1,0 +1,49 @@
+syntax = "proto3";
+option go_package = "/internal/generate";
+
+package grpc.v1;
+
+import "grpc/v1/boat.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/empty.proto";
+
+enum ClosingType {
+  twoWay = 0;
+  oneWay = 1;
+}
+
+enum ClosingReason {
+  boatCrossing = 0;
+  maintenance = 1;
+}
+
+message ForecastIDQuery { string ID = 1; }
+
+message ForecastQuery {
+  string timezone = 1;
+  int32 offset = 2;
+  int32 limit = 3;
+  string from = 4;
+  string boat = 5;
+  string maneuver = 6;
+  string reason = 7;
+}
+
+message Forecast {
+  string ID = 1;
+  ClosingType closingType = 2;
+  ClosingReason closingReason = 3;
+  google.protobuf.Duration closingDuration = 4;
+  google.protobuf.Timestamp circulationClosingDate = 5;
+  google.protobuf.Timestamp circulationReopeningDate = 6;
+  repeated grpc.v1.Boats boats = 7;
+}
+
+message Forecasts { repeated Forecast forecasts = 1; }
+
+service ForecastService {
+  rpc GetForcast(ForecastIDQuery) returns (Forecast);
+  rpc GetForcasts(ForecastQuery) returns (Forecasts);
+  rpc GetAllForcasts(google.protobuf.Empty) returns (Forecasts);
+}

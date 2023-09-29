@@ -1,0 +1,21 @@
+syntax = "proto3";
+option go_package = "/internal/generate";
+
+package grpc.v1;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/timestamp.proto";
+
+
+message RefreshResponse {
+    string ID = 1;
+    int32 itemCount = 2;
+    google.protobuf.Duration duration = 3;
+    google.protobuf.Timestamp timestamp = 4;
+
+}
+
+service RefreshResponseService {
+  rpc GetLastRefresh(google.protobuf.Empty) returns (RefreshResponse);
+}
