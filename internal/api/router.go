@@ -21,7 +21,7 @@ import (
 //	@Contact.email				dev@vareversat.fr
 //	@Produce					json
 //	@Scheme						http
-//	@ExternalDocs.description	All data are from the Bordeaux Open Data API
+//	@ExternalDocs.description	All data comes from from the Bordeaux Open Data API
 //	@ExternalDocs.url			https://opendata.bordeaux-metropole.fr/explore/dataset/previsions_pont_chaban/information/
 //	@License.name				MIT
 //	@License.url				https://github.com/vareversat/chabo-api/blob/main/LICENSE.md
@@ -32,6 +32,7 @@ func GinRouter(mongoClient *mongo.Client) {
 	router.Use(sentrygin.New(sentrygin.Options{}))
 	docs.SwaggerInfo.BasePath = "/v1"
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+	// Set default fallback to the Swagger UI
 	router.NoRoute(func(c *gin.Context) {
 		c.Redirect(http.StatusFound, "/swagger/index.html")
 	})
