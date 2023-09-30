@@ -62,6 +62,10 @@ coverage:
 doc:
 	godoc -http=:6060
 
+# Generate Swagger config
+swag:
+	swag init -d ./internal/api,./ -g router.go
+
 # Perform a full code quality check (lint, tests, coverage)
 check: lint test coverage
 
