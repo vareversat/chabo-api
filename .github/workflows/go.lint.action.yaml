@@ -8,6 +8,10 @@ on:
         required: true
         type: string
 
+permissions:
+  checks: write
+  contents: write
+
 jobs:
   test:
     name: 'Lint'
@@ -23,3 +27,4 @@ jobs:
         uses: wearerequired/lint-action@v2
         with:
           gofmt: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
