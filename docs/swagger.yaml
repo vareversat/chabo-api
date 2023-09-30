@@ -22,11 +22,11 @@ definitions:
     - Entering
   models.ClosingReason:
     enum:
-    - boat_crossing
+    - boat
     - maintenance
     type: string
     x-enum-varnames:
-    - BoatCrossing
+    - BoatReason
     - Maintenance
   models.ClosingType:
     enum:
@@ -114,7 +114,7 @@ definitions:
         type: string
     type: object
 externalDocs:
-  description: All data are from the Bordeaux Open Data API
+  description: All data comes from from the Bordeaux Open Data API
   url: https://opendata.bordeaux-metropole.fr/explore/dataset/previsions_pont_chaban/information/
 info:
   contact:
@@ -123,7 +123,7 @@ info:
     bridge in Bordeaux, France
   license:
     name: MIT
-    url: http://github.com/vareversat/chabo-api/LICENSE.md
+    url: https://github.com/vareversat/chabo-api/blob/main/LICENSE.md
   title: Chabo API - The Chaban-Delmas bridge API
   version: "1.0"
 paths:
@@ -249,7 +249,7 @@ paths:
       summary: Get the status of the API
       tags:
       - Misc
-  /manage/refresh:
+  /management/refresh:
     post:
       consumes:
       - application/json
@@ -262,16 +262,20 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.Refresh'
+        "429":
+          description: Too many attempt to refresh
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
         "500":
           description: An error occured on the server side
           schema:
             $ref: '#/definitions/models.ErrorResponse'
       summary: Refresh the data with the ones from the OpenData API
       tags:
-      - Manage
-  /manage/refresh/last:
+      - Management
+  /management/refresh/last:
     get:
-      description: Get the last trace of refresh action on POST /manage/refresh
+      description: Get the last trace of refresh action on POST /management/refresh
       produces:
       - application/json
       responses:
@@ -289,7 +293,7 @@ paths:
             $ref: '#/definitions/models.ErrorResponse'
       summary: Get the last refresh action
       tags:
-      - Manage
+      - Management
 produces:
 - application/json
 swagger: "2.0"
