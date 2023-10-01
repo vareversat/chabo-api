@@ -2,9 +2,6 @@
 
 # Go parameters
 GOCMD = go
-GOBUILD = $(GOCMD) build
-GOCLEAN = $(GOCMD) clean
-GOTEST = $(GOCMD) test
 BINARY_NAME_WIN = chabo-api.exe
 BINARY_NAME_UNIX = chabo-api.o
 
@@ -13,21 +10,21 @@ all: deps test build
 
 # Build the application
 build:
-	$(GOBUILD) -o $(BINARY_NAME_WIN) -v
+	$(GOCMD) build -o $(BINARY_NAME_WIN) -v
 
 # Build for Linux
 build-linux:
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GOBUILD) -o $(BINARY_NAME_UNIX) -v
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GOCMD) build -o $(BINARY_NAME_UNIX) -v
 
 # Clean the build artifacts
 clean:
-	$(GOCLEAN)
+	$(GOCMD) clean
 	rm -f $(BINARY_NAME_WIN)
 	rm -f $(BINARY_NAME_UNIX)
 
 # Run tests
 test:
-	$(GOTEST) -v ./...
+	$(GOCMD) test -v ./...
 
 # Install project dependencies
 deps:
@@ -45,6 +42,7 @@ run: swag
 # Format the code
 fmt:
 	$(GOCMD) fmt ./...
+	golines . -w --ignored-dirs=vendor
 
 # Lint the code using a linter tool
 lint:
@@ -52,7 +50,7 @@ lint:
 
 # Generate code coverage report
 coverage:
-	$(GOTEST) -coverprofile='coverage.out' ./...
+	$(GOCMD) test -coverprofile='coverage.out' ./...
 	$(GOCMD) tool cover -html=coverage.out
 
 # Generate documentation using tools like godoc
