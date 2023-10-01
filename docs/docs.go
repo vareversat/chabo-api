@@ -65,7 +65,7 @@ const docTemplate = `{
                     },
                     {
                         "enum": [
-                            "boat_crossing",
+                            "boat",
                             "maintenance"
                         ],
                         "type": "string",
@@ -433,7 +433,7 @@ const docTemplate = `{
         }
     },
     "externalDocs": {
-        "description": "All data comes from from the Bordeaux Open Data API",
+        "description": "All data comes from the Bordeaux Open Data API",
         "url": "https://opendata.bordeaux-metropole.fr/explore/dataset/previsions_pont_chaban/information/"
     }
 }`
