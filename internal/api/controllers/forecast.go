@@ -28,7 +28,7 @@ import (
 //	@Param			from		query		string					false	"The date to filter from (RFC3339)"		Format(date-time)
 //	@Param			limit		query		int						true	"Set the limit of the queried results"	Format(int)	default(10)
 //	@Param			offset		query		int						true	"Set the offset of the queried results"	Format(int)	default(0)
-//	@Param			reason		query		string					false	"The closing reason"					Enums(boat_crossing, maintenance)
+//	@Param			reason		query		string					false	"The closing reason"					Enums(boat, maintenance)
 //	@Param			boat		query		string					false	"The boat name of the event"
 //	@Param			maneuver	query		string					false	"The boat maneuver of the event"								Enums(leaving_bordeaux, entering_in_bordeaux)
 //	@Param			Timezone	header		string					false	"Timezone to format the date related fields (TZ identifier)"	default(UTC)
