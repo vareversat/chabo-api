@@ -5,15 +5,8 @@ GOCMD = go
 GOBUILD = $(GOCMD) build
 GOCLEAN = $(GOCMD) clean
 GOTEST = $(GOCMD) test
-GOGET = $(GOCMD) get
 BINARY_NAME_WIN = chabo-api.exe
 BINARY_NAME_UNIX = chabo-api.o
-
-# Docker parameters
-DOCKERCMD = docker
-DOCKERUP = $(DOCKERCMD) compose up
-DOCKERBUILD = $(DOCKERCMD) compose build
-DOCKERDOWN = $(DOCKERCMD) compose down
 
 # Main build target
 all: deps test build
@@ -41,9 +34,13 @@ deps:
 	$(GOCMD) mod download
 	$(GOCMD) mod tidy
 
+# Generate Swagger config
+swag:
+	swag init -d ./internal/api,./ -g router.go
+
 # Run the application
-run:
-	$(DOCKERBUILD) && $(DOCKERUP)
+run: swag
+	$(GOCMD) run .
 
 # Format the code
 fmt:
@@ -61,10 +58,6 @@ coverage:
 # Generate documentation using tools like godoc
 doc:
 	godoc -http=:6060
-
-# Generate Swagger config
-swag:
-	swag init -d ./internal/api,./ -g router.go
 
 # Perform a full code quality check (lint, tests, coverage)
 check: lint test coverage
