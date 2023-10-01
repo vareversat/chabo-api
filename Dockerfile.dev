@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM golang:1.20 as build
+FROM golang:1.21 as build
 WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download 
@@ -11,6 +11,8 @@ RUN go install golang.org/x/tools/gopls@latest
 RUN go install github.com/go-delve/delve/cmd/dlv@latest
 RUN go install honnef.co/go/tools/cmd/staticcheck@latest
 RUN go install golang.org/x/tools/cmd/godoc@latest
+# https://golangci-lint.run/usage/install/#binaries
+RUN curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.54.2
 
 COPY . .
 # Refresh Swagger config
