@@ -44,7 +44,7 @@ func MapBoats(
 	if closingReason == models.BoatReason {
 		// The string may contains multiple boat name separated by a "/"
 		boatNamesSlice := strings.Split(boatNames, "/")
-		for _, boat := range boatNamesSlice {
+		for index, boat := range boatNamesSlice {
 			boatName := strings.TrimSpace(boat)
 			var action models.BoatManeuver
 			if contains(*alreadySeenBoatNames, boatName) {
@@ -57,12 +57,34 @@ func MapBoats(
 				*alreadySeenBoatNames = append(*alreadySeenBoatNames, boatName)
 			}
 			boats = append(boats, models.Boat{
-				Name:                      boatName,
-				Maneuver:                  action,
-				ApproximativeCrossingDate: circulationClosingDate.Add(closingDuration / 2),
+				Name:     boatName,
+				Maneuver: action,
+				ApproximativeCrossingDate: computeApproximativeCrossingDate(
+					circulationClosingDate,
+					closingDuration,
+					len(boatNamesSlice),
+					index,
+				),
 			})
 		}
 	}
 	return boats
 
+}
+
+// Return a time.Time representing the boat may cross the Chaban bridge.
+// circulationClosingDate : The moment the bridge will close
+// closingDuration : The duration of the closing
+// boatCount : How many boats will cross the bridge
+// boatIndex : The place of the boat
+func computeApproximativeCrossingDate(
+	circulationClosingDate time.Time,
+	closingDuration time.Duration,
+	boatCount int,
+	boatIndex int,
+) time.Time {
+	// Get the fraction by how much the duration will be split.
+	// Example : 1 boat => 1/2 | 2 boats => 1st = 1/3 & 2nd = 2/3
+	durationFraction := (float64(boatIndex+1) / float64(boatCount+1))
+	return circulationClosingDate.Add(time.Duration(float64(closingDuration) * durationFraction))
 }
