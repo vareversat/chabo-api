@@ -21,18 +21,18 @@ This API allows you to get the schedules you want by filtering over the type of 
 On you computer, you'll need to download these softwares :
 
 - Docker
-- Make (not mandatory)
-- Go v1.20 (only if you want to run the code without Docker)
+- VS Code (with devcontainer extension)
 
-And run these commands
+And exec this steps
 
 ```bash
 git clone https://github.com/vareversat/chabo-api.git
-cd chabo-api
-make run || docker compose build && docker compose up
 ```
 
-Ta-dam ! The Swagger is running on <http://localhost:8080/swagger/index.html>
+Open the project into VSCode via devcontainer
+
+Once the container is UP and you opened a new terminal, run `make run` and ta-dam ! The Swagger is running on <http://localhost:8080/swagger/index.html>
+
 
 You can also these usefull commands :
 
