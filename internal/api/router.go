@@ -34,6 +34,7 @@ func GinRouter(mongoClient *mongo.Client) {
 	router.Use(utils.JsonLoggerMiddleware())
 	router.Use(sentrygin.New(sentrygin.Options{}))
 	docs.SwaggerInfo.BasePath = "/v1"
+	docs.SwaggerInfo.Version = os.Getenv("API_VERSION")
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	// Set default fallback to the Swagger UI
 	router.NoRoute(func(c *gin.Context) {
