@@ -15,5 +15,5 @@ jobs:
     with:
       go_version: '1.21.2'
   go-build:
-    needs: [ got-lint, go-test ]
+    needs: [ go-lint, go-test ]
     uses: ./.github/workflows/go.build.action.yaml
