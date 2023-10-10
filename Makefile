@@ -5,6 +5,9 @@ GOCMD = go
 BINARY_NAME_WIN = chabo-api.exe
 BINARY_NAME_UNIX = chabo-api.o
 
+.PHONY: deps-upgrade deps
+
+
 # Main build target
 all: deps test build
 
@@ -30,6 +33,14 @@ test:
 deps:
 	$(GOCMD) mod download
 	$(GOCMD) mod tidy
+	$(GOCMD) mod vendor
+
+# Upgrade project dependencies
+deps-upgrade:
+	$(GOCMD) get -u -t ./...
+	$(GOCMD) mod download
+	$(GOCMD) mod tidy
+	$(GOCMD) mod vendor
 
 # Generate Swagger config
 swag:
