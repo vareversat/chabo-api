@@ -22,7 +22,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          tags: chabo-api:${{ github.sha }}+${{ env.BUILD_NUMBER }}
+          tags: chabo-api:${{ github.sha }}
           outputs: type=docker,dest=/tmp/chabo-api-image.tar
       - name: Upload artifact
         uses: actions/upload-artifact@v3
