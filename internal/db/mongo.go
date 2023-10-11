@@ -147,7 +147,11 @@ func InsertAllForecasts(client *mongo.Client, forecasts []models.Forecast) (erro
 
 		elapsed := time.Since(start)
 
-		refreshProof := models.Refresh{ItemCount: len(forecasts), Duration: elapsed, Timestamp: start}
+		refreshProof := models.Refresh{
+			ItemCount: len(forecasts),
+			Duration:  elapsed,
+			Timestamp: start,
+		}
 
 		errInsertRefreshProof := InsertRefresh(client, refreshProof)
 
