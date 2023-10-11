@@ -1,10 +1,10 @@
 package main
 
 import (
-	"log"
 	"os"
 
 	"github.com/getsentry/sentry-go"
+	log "github.com/sirupsen/logrus"
 	"github.com/vareversat/chabo-api/internal/api"
 	"github.com/vareversat/chabo-api/internal/db"
 	"github.com/vareversat/chabo-api/internal/models"
@@ -21,7 +21,31 @@ var (
 	GinMode           = os.Getenv("GIN_MODE")
 )
 
+func init() {
+	// Init Logrus
+	log.SetFormatter(&log.JSONFormatter{})
+	log.SetOutput(os.Stdout)
+	mongoLogger := log.WithFields(log.Fields{
+		"channel": "mongo",
+	})
+	openApiLogger := log.WithFields(log.Fields{
+		"channel": "open_api",
+	})
+	forecastLogger := log.WithFields(log.Fields{
+		"channel": "forecast",
+	})
+	mongoClient = db.InitMongoClient(mongoLogger)
+	utils.InitOpenApi(openApiLogger)
+	utils.InitForecast(forecastLogger)
+	if err := utils.GetOpenAPIData(&openDataForecasts); err != nil {
+		panic(err)
+	}
+}
+
 func main() {
+	appLogger := log.WithFields(log.Fields{
+		"channel": "app",
+	})
 
 	err := sentry.Init(sentry.ClientOptions{
 		Dsn:              SentryDSN,
@@ -30,19 +54,15 @@ func main() {
 		Environment:      Env,
 	})
 	if err != nil {
-		log.Fatalf("sentry.Init: %s", err)
+		appLogger.Fatalf("sentry.Init: %s", err)
 	}
 
-	log.Default().
-		Println("[CHABO-API] Welcome to Chabo API ! Starting the project in " + Env + " mode (Gin " + GinMode + ")")
-
-	mongoClient = db.ConnectToMongoInstace()
-	if err := utils.GetOpenAPIData(&openDataForecasts); err != nil {
-		panic(err)
-	}
+	appLogger.Infof(
+		"Welcome to Chabo API ! Starting the project in " + Env + " mode (Gin " + GinMode + ")",
+	)
 	utils.ComputeForecasts(&forecasts, openDataForecasts)
 	if err, _ := db.InsertAllForecasts(mongoClient, forecasts); err != nil {
-		panic(err)
+		appLogger.Warning(err)
 	}
 
 	api.GinRouter(mongoClient)

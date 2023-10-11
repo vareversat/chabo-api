@@ -3,11 +3,11 @@ package db
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 	"strconv"
 	"time"
 
+	log "github.com/sirupsen/logrus"
 	"github.com/vareversat/chabo-api/internal/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -18,12 +18,11 @@ var (
 	ForecastsCollectionName = os.Getenv("MONGO_FORECASTS_COLLECTION_NAME")
 	RefreshesCollectionName = os.Getenv("MONGO_REFRESHES_COLLECTION_NAME")
 	DatabaseName            = os.Getenv("MONGO_DATABASE_NAME")
-	WarningLogger           = log.New(os.Stdout, "WARNING: ", log.LUTC|log.Ltime|log.Lshortfile)
-	InfoLogger              = log.New(os.Stdout, "INFO: ", log.LUTC|log.Ltime|log.Lshortfile)
-	ErrorLogger             = log.New(os.Stdout, "ERROR: ", log.LUTC|log.Ltime|log.Lshortfile)
+	logrus                  *log.Entry
 )
 
-func ConnectToMongoInstace() *mongo.Client {
+func InitMongoClient(logger *log.Entry) *mongo.Client {
+	logrus = logger
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
 
 	opts := options.Client().
@@ -37,7 +36,7 @@ func ConnectToMongoInstace() *mongo.Client {
 		if err := client.Ping(context.TODO(), nil); err != nil {
 			panic(err)
 		}
-		InfoLogger.Printf("Connected to %s database !\n", DatabaseName)
+		logrus.Infof("Connected to %s database", DatabaseName)
 	}
 
 	return client
@@ -55,19 +54,23 @@ func GetAllForecasts(
 
 	for cursor.Next(context.TODO()) {
 		if err := cursor.Decode(&mongoResponse); err != nil {
-			ErrorLogger.Printf(err.Error())
+			logrus.Fatal(err.Error())
 
 			return 0, err
 		}
 	}
 
 	if err != nil {
-		ErrorLogger.Printf(err.Error())
+		logrus.Fatal(err.Error())
 
 		return 0, err
 	}
 
-	InfoLogger.Printf("(GetAllForecasts) %d records retrieved !\n", len(mongoResponse.Results))
+	logrus.WithFields(log.Fields{
+		"action":     "get",
+		"item_count": len(mongoResponse.Results),
+		"collection": ForecastsCollectionName,
+	}).Infof("GetAllForecasts")
 
 	return mongoResponse.Count[0].ItemCount, nil
 
@@ -83,6 +86,18 @@ func GetForecastbyID(client *mongo.Client, forecast *models.Forecast, ID string)
 
 	err := cursor.Decode(&forecast)
 
+	logrus.WithFields(log.Fields{
+		"action": "get",
+		"item_count": func() int {
+			if err != nil {
+				return 0
+			} else {
+				return 1
+			}
+		}(),
+		"collection": ForecastsCollectionName,
+	}).Infof("GetForecastbyID")
+
 	if err != nil {
 		return fmt.Errorf("not found")
 	}
@@ -96,7 +111,7 @@ func InsertAllForecasts(client *mongo.Client, forecasts []models.Forecast) (erro
 	interfaceRecords := make([]interface{}, len(forecasts))
 
 	if refreshIsNeeded(client) {
-		InfoLogger.Printf("Refresh is needed !")
+		logrus.Info("Refresh is needed")
 		// Transform to generic interface to be usable by ´coll.InsertMany´
 		for i := range forecasts {
 			interfaceRecords[i] = forecasts[i]
@@ -107,31 +122,31 @@ func InsertAllForecasts(client *mongo.Client, forecasts []models.Forecast) (erro
 
 		deleteResult, err := coll.DeleteMany(context.TODO(), filter)
 		if err != nil {
-			ErrorLogger.Printf(err.Error())
+			logrus.Fatal(err.Error())
 
 			return err, false
 		}
-		WarningLogger.Printf(
-			"(Delete) %d records deleted in %s !\n",
-			deleteResult.DeletedCount,
-			ForecastsCollectionName,
-		)
+		logrus.WithFields(log.Fields{
+			"action":     "delete",
+			"item_count": deleteResult.DeletedCount,
+			"collection": ForecastsCollectionName,
+		}).Warningf("InsertAllForecasts")
 
 		insertResult, err := coll.InsertMany(context.TODO(), interfaceRecords)
 		if err != nil {
-			ErrorLogger.Printf(err.Error())
+			logrus.Fatalf(err.Error())
 
 			return err, false
 		}
-		WarningLogger.Printf(
-			"(Insert) %d records inserted in %s !\n",
-			len(insertResult.InsertedIDs),
-			ForecastsCollectionName,
-		)
+		logrus.WithFields(log.Fields{
+			"action":     "insert",
+			"item_count": len(insertResult.InsertedIDs),
+			"collection": ForecastsCollectionName,
+		}).Warningf("InsertAllForecasts")
 
 		return nil, false
 	} else {
-		WarningLogger.Printf("Refresh is NOT needed !")
+		logrus.Warningf("Refresh is NOT needed")
 		return fmt.Errorf("you cannot refresh too many time"), true
 	}
 
@@ -143,11 +158,15 @@ func InsertRefresh(client *mongo.Client, refresh models.Refresh) error {
 
 	_, err := coll.InsertOne(context.TODO(), refresh)
 	if err != nil {
-		ErrorLogger.Printf(err.Error())
+		logrus.Fatal(err.Error())
 
 		return err
 	}
-	WarningLogger.Printf("(Insert) 1 record inserted in %s !\n", RefreshesCollectionName)
+	logrus.WithFields(log.Fields{
+		"action":     "insert",
+		"item_count": 1,
+		"collection": ForecastsCollectionName,
+	}).Warning("InsertAllForecasts")
 	return nil
 
 }
@@ -175,7 +194,7 @@ func Ping(client *mongo.Client) error {
 	err := client.Ping(context.TODO(), nil)
 
 	if err != nil {
-		ErrorLogger.Printf(err.Error())
+		logrus.Fatal(err.Error())
 
 		return err
 	}

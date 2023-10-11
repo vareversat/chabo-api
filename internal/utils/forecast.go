@@ -1,16 +1,17 @@
 package utils
 
 import (
-	"log"
-	"os"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/vareversat/chabo-api/internal/models"
 )
 
-var (
-	ErrorLogger = log.New(os.Stdout, "ERROR: ", log.LUTC|log.Ltime|log.Lshortfile)
-)
+// Init the logger
+func InitForecast(logger *log.Entry) {
+	logrus = logger
+}
 
 // Populate a []models.Forecast pointer with the OpenAPI data
 func ComputeForecasts(forecasts *models.Forecasts, openDataForecasts models.OpenDataAPIResponse) {
@@ -34,7 +35,7 @@ func ComputeForecasts(forecasts *models.Forecasts, openDataForecasts models.Open
 		)
 
 		if errClosingDate != nil || errReopeningDate != nil {
-			ErrorLogger.Printf(errClosingDate.Error(), '\n', errReopeningDate.Error())
+			logrus.Fatalf(errClosingDate.Error(), '\n', errReopeningDate.Error())
 		}
 
 		// Check if the forecast is during 2 days
@@ -63,5 +64,6 @@ func ComputeForecasts(forecasts *models.Forecasts, openDataForecasts models.Open
 			},
 		})
 	}
+	logrus.Infof("All %d forecasts computed with success", len(*forecasts))
 
 }
