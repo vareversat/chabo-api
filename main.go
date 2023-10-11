@@ -1,7 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"os"
+	"strconv"
+	"time"
 
 	"github.com/getsentry/sentry-go"
 	log "github.com/sirupsen/logrus"
@@ -46,6 +49,21 @@ func main() {
 	appLogger := log.WithFields(log.Fields{
 		"channel": "app",
 	})
+
+	go func() {
+		tick, _ := strconv.Atoi(os.Getenv("REFRESH_TICK_SECONDS"))
+		fmt.Print(tick)
+		for range time.Tick(time.Second * time.Duration(tick)) {
+			appLogger.WithFields(log.Fields{
+				"kind": "job",
+			}).Infof(
+				"trying to refresh data",
+			)
+			if err, _ := db.InsertAllForecasts(mongoClient, forecasts); err != nil {
+				appLogger.Warning(err)
+			}
+		}
+	}()
 
 	err := sentry.Init(sentry.ClientOptions{
 		Dsn:              SentryDSN,

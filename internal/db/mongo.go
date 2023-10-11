@@ -111,6 +111,7 @@ func InsertAllForecasts(client *mongo.Client, forecasts []models.Forecast) (erro
 	interfaceRecords := make([]interface{}, len(forecasts))
 
 	if refreshIsNeeded(client) {
+		start := time.Now()
 		logrus.Info("Refresh is needed")
 		// Transform to generic interface to be usable by ´coll.InsertMany´
 		for i := range forecasts {
@@ -144,9 +145,20 @@ func InsertAllForecasts(client *mongo.Client, forecasts []models.Forecast) (erro
 			"collection": ForecastsCollectionName,
 		}).Warningf("InsertAllForecasts")
 
+		elapsed := time.Since(start)
+
+		refreshProof := models.Refresh{ItemCount: len(forecasts), Duration: elapsed, Timestamp: start}
+
+		errInsertRefreshProof := InsertRefresh(client, refreshProof)
+
+		if errInsertRefreshProof != nil {
+			logrus.Fatalf(err.Error())
+			return err, false
+		}
+
 		return nil, false
 	} else {
-		logrus.Warningf("Refresh is NOT needed")
+		logrus.Warningf("the last refresh is too recent. Please retry in few minutes")
 		return fmt.Errorf("you cannot refresh too many time"), true
 	}
 
@@ -218,9 +230,9 @@ func refreshIsNeeded(client *mongo.Client) bool {
 		currentTime := time.Now()
 		diff := currentTime.Sub(lastRefresh.Timestamp)
 
-		cooldown, _ := strconv.Atoi(os.Getenv("REFRESH_COOLDOWN_MINS"))
+		cooldown, _ := strconv.Atoi(os.Getenv("REFRESH_COOLDOWN_SECONDS"))
 
-		return int(diff.Minutes()) >= cooldown
+		return int(diff.Seconds()) >= cooldown
 	}
 
 }
