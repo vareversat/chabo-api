@@ -4,6 +4,7 @@ import (
 	"testing"
 	"time"
 
+	log "github.com/sirupsen/logrus"
 	"github.com/vareversat/chabo-api/internal/models"
 )
 
@@ -57,6 +58,10 @@ func TestComputeForecasts(t *testing.T) {
 		},
 	}
 
+	// Prevent NPE
+	InitForecast(log.WithFields(log.Fields{
+		"channel": "test",
+	}))
 	ComputeForecasts(&forecasts, openDataForecasts)
 	if !(want.AreEqual(forecasts)) {
 		t.Fatalf(`ComputeForecasts("...") = %q, want match for %#q`, forecasts, want)
