@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"strconv"
 	"time"
@@ -52,7 +51,6 @@ func main() {
 
 	go func() {
 		tick, _ := strconv.Atoi(os.Getenv("REFRESH_TICK_SECONDS"))
-		fmt.Print(tick)
 		for range time.Tick(time.Second * time.Duration(tick)) {
 			appLogger.WithFields(log.Fields{
 				"kind": "job",
