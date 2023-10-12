@@ -1,4 +1,4 @@
-package api
+package routers
 
 import (
 	"fmt"
@@ -10,7 +10,6 @@ import (
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/vareversat/chabo-api/docs"
-	"github.com/vareversat/chabo-api/internal/api/controllers"
 	"github.com/vareversat/chabo-api/internal/utils"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -27,8 +26,9 @@ import (
 //	@License.name				MIT
 //	@License.url				https://github.com/vareversat/chabo-api/blob/main/LICENSE.md
 
-func GinRouter(mongoClient *mongo.Client) {
+func MainRouter(mongoClient *mongo.Client) {
 
+	// Configure Gin web server
 	router := gin.New()
 	router.Use(gin.Recovery())
 	router.Use(utils.JsonLoggerMiddleware())
@@ -36,24 +36,18 @@ func GinRouter(mongoClient *mongo.Client) {
 	docs.SwaggerInfo.BasePath = "/v1"
 	docs.SwaggerInfo.Version = os.Getenv("API_VERSION")
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+
 	// Set default fallback to the Swagger UI
 	router.NoRoute(func(c *gin.Context) {
 		c.Redirect(http.StatusFound, "/swagger/index.html")
 	})
-	v1 := router.Group("/v1")
-	{
-		v1.GET("/healthcheck", controllers.Healthcheck(mongoClient))
-		forecasts := v1.Group("/forecasts")
-		{
-			forecasts.GET("", controllers.GetAllForecats(mongoClient))
-			forecasts.GET(":id", controllers.GetForecastByID(mongoClient))
-		}
-		management := v1.Group("/management")
-		{
-			management.POST("refresh", controllers.RefreshForcast(mongoClient))
-			management.GET("refresh/last", controllers.GetLastRefreshAction(mongoClient))
-		}
-	}
+
+	// Initialize routers
+	rootRouterGroup := router.Group(docs.SwaggerInfo.BasePath)
+
+	ForecastsRouter(mongoClient, rootRouterGroup)
+	ManagementRouter(mongoClient, rootRouterGroup)
+	MiscRouter(mongoClient, rootRouterGroup)
 
 	if err := router.Run(fmt.Sprintf("%s:%s", os.Getenv("APP_URI"), os.Getenv("APP_PORT"))); err != nil {
 		panic(err)

@@ -44,7 +44,7 @@ deps-upgrade:
 
 # Generate Swagger config
 swag:
-	swag init -d ./internal/api,./ -g router.go
+	swag init -d ./internal/api/routers,./ -g main_router.go
 
 # Run the application
 run: swag

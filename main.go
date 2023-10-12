@@ -7,7 +7,7 @@ import (
 
 	"github.com/getsentry/sentry-go"
 	log "github.com/sirupsen/logrus"
-	"github.com/vareversat/chabo-api/internal/api"
+	"github.com/vareversat/chabo-api/internal/api/routers"
 	"github.com/vareversat/chabo-api/internal/db"
 	"github.com/vareversat/chabo-api/internal/models"
 	"github.com/vareversat/chabo-api/internal/utils"
@@ -81,5 +81,5 @@ func main() {
 		appLogger.Warning(err)
 	}
 
-	api.GinRouter(mongoClient)
+	routers.MainRouter(mongoClient)
 }
