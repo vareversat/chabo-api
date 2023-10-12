@@ -16,8 +16,6 @@ import (
 
 //	@Title						Chabo API - The Chaban-Delmas bridge API
 //	@Description				You can get every info you need about all the events of the Chaban-Delmas bridge in Bordeaux, France
-//	@Version					1.0
-//	@BasePath					/v1
 //	@Contact.email				dev@vareversat.fr
 //	@Produce					json
 //	@Scheme						http

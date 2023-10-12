@@ -12,10 +12,8 @@
         "license": {
             "name": "MIT",
             "url": "https://github.com/vareversat/chabo-api/blob/main/LICENSE.md"
-        },
-        "version": "1.0"
+        }
     },
-    "basePath": "/v1",
     "paths": {
         "/forecasts": {
             "get": {

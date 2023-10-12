@@ -440,9 +440,9 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "1.0",
+	Version:          "",
 	Host:             "",
-	BasePath:         "/v1",
+	BasePath:         "",
 	Schemes:          []string{},
 	Title:            "Chabo API - The Chaban-Delmas bridge API",
 	Description:      "You can get every info you need about all the events of the Chaban-Delmas bridge in Bordeaux, France",

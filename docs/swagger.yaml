@@ -1,4 +1,3 @@
-basePath: /v1
 definitions:
   models.Boat:
     properties:
@@ -125,7 +124,6 @@ info:
     name: MIT
     url: https://github.com/vareversat/chabo-api/blob/main/LICENSE.md
   title: Chabo API - The Chaban-Delmas bridge API
-  version: "1.0"
 paths:
   /forecasts:
     get:
