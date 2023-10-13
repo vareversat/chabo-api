@@ -5,11 +5,12 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
+	"github.com/vareversat/chabo-api/internal/domains"
 	"github.com/vareversat/chabo-api/internal/models"
 )
 
 func TestComputeForecasts(t *testing.T) {
-	var forecasts models.Forecasts
+	var forecasts domains.Forecasts
 	recordTimestamp, _ := time.Parse(time.RFC3339, "2023-02-26T21:00:00Z")
 	openDataForecasts := models.OpenDataAPIResponse{
 		Hits: 1,
@@ -39,14 +40,14 @@ func TestComputeForecasts(t *testing.T) {
 	circulationClosingDate, _ := time.Parse(time.RFC3339, "2023-02-26T21:00:00Z")
 	circulationReopeningDate, _ := time.Parse(time.RFC3339, "2023-02-26T23:00:00Z")
 	approximativeCrossingDate, _ := time.Parse(time.RFC3339, "2023-02-26T22:00:00Z")
-	want := models.Forecasts{
+	want := domains.Forecasts{
 		{
 			ID:                       "recordid",
-			ClosingType:              models.TwoWay,
+			ClosingType:              domains.TwoWay,
 			ClosingDuration:          7200000000000,
 			CirculationClosingDate:   circulationClosingDate,
 			CirculationReopeningDate: circulationReopeningDate,
-			ClosingReason:            models.BoatReason,
+			ClosingReason:            domains.BoatReason,
 			Boats: []models.Boat{
 				{
 					Name:                      "MY_BOAT",

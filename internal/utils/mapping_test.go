@@ -5,11 +5,12 @@ import (
 	"testing"
 	"time"
 
+	"github.com/vareversat/chabo-api/internal/domains"
 	"github.com/vareversat/chabo-api/internal/models"
 )
 
 func TestMapClosingType_OUI(t *testing.T) {
-	want := models.TwoWay
+	want := domains.TwoWay
 	value := MapClosingType("oui")
 	if want != value {
 		t.Fatalf(`MapClosingType("oui") = %q, want match for %#q`, value, want)
@@ -17,7 +18,7 @@ func TestMapClosingType_OUI(t *testing.T) {
 }
 
 func TestMapClosingType_NON(t *testing.T) {
-	want := models.OneWay
+	want := domains.OneWay
 	value := MapClosingType("non")
 	if want != value {
 		t.Fatalf(`MapClosingType("non") = %q, want match for %#q`, value, want)
@@ -25,7 +26,7 @@ func TestMapClosingType_NON(t *testing.T) {
 }
 
 func TestMapClosingReason_MAINTENANCE(t *testing.T) {
-	want := models.Maintenance
+	want := domains.Maintenance
 	value := MapClosingReason("MAINTENANCE")
 	if want != value {
 		t.Fatalf(`MapClosingReason("MAINTENANCE") = %q, want match for %#q`, value, want)
@@ -33,7 +34,7 @@ func TestMapClosingReason_MAINTENANCE(t *testing.T) {
 }
 
 func TestMapClosingReason_BOAT(t *testing.T) {
-	want := models.BoatReason
+	want := domains.BoatReason
 	value := MapClosingReason("BOAT")
 	if want != value {
 		t.Fatalf(`MapClosingReason("BOAT") = %q, want match for %#q`, value, want)
@@ -51,7 +52,7 @@ func TestMapBoats(t *testing.T) {
 		{Name: "MY_BOAT", Maneuver: models.Entering, ApproximativeCrossingDate: crossingTime},
 	}
 	value := MapBoats(
-		models.BoatReason,
+		domains.BoatReason,
 		"MY_BOAT",
 		duration,
 		localTime,
@@ -80,7 +81,7 @@ func TestMapBoatsMultiBoats(t *testing.T) {
 		},
 	}
 	value := MapBoats(
-		models.BoatReason,
+		domains.BoatReason,
 		"MY_BOAT /MY_SECOND_BOAT",
 		duration,
 		localTime,
@@ -104,7 +105,7 @@ func TestMapBoatsExistingBoats(t *testing.T) {
 		{Name: "MY_BOAT", Maneuver: models.Leaving, ApproximativeCrossingDate: crossingTime},
 	}
 	value := MapBoats(
-		models.BoatReason,
+		domains.BoatReason,
 		"MY_BOAT",
 		duration,
 		localTime,

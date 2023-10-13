@@ -4,24 +4,25 @@ import (
 	"strings"
 	"time"
 
+	"github.com/vareversat/chabo-api/internal/domains"
 	"github.com/vareversat/chabo-api/internal/models"
 )
 
 // Return the corresponding models.ClosingType according of the string value
-func MapClosingType(stringClosingType string) models.ClosingType {
+func MapClosingType(stringClosingType string) domains.ClosingType {
 	if stringClosingType == "oui" {
-		return models.TwoWay
+		return domains.TwoWay
 	} else {
-		return models.OneWay
+		return domains.OneWay
 	}
 }
 
 // Return the corresponding models.ClosingReason according of the string value
-func MapClosingReason(stringClosingReason string) models.ClosingReason {
+func MapClosingReason(stringClosingReason string) domains.ClosingReason {
 	if stringClosingReason == "MAINTENANCE" {
-		return models.Maintenance
+		return domains.Maintenance
 	} else {
-		return models.BoatReason
+		return domains.BoatReason
 	}
 }
 
@@ -33,7 +34,7 @@ func MapClosingReason(stringClosingReason string) models.ClosingReason {
 // alreadySeenBoatNames : Array pointer to keep track of the boats. Used to compute the boat Maneuver
 // forecastID : Used to compute the "self" link
 func MapBoats(
-	closingReason models.ClosingReason,
+	closingReason domains.ClosingReason,
 	boatNames string,
 	closingDuration time.Duration,
 	circulationClosingDate time.Time,
@@ -41,7 +42,7 @@ func MapBoats(
 	forecastID string,
 ) []models.Boat {
 	var boats []models.Boat
-	if closingReason == models.BoatReason {
+	if closingReason == domains.BoatReason {
 		// The string may contains multiple boat name separated by a "/"
 		boatNamesSlice := strings.Split(boatNames, "/")
 		for index, boat := range boatNamesSlice {

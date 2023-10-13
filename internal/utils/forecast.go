@@ -5,6 +5,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/vareversat/chabo-api/internal/domains"
 	"github.com/vareversat/chabo-api/internal/models"
 )
 
@@ -14,7 +15,7 @@ func InitForecast(logger *log.Entry) {
 }
 
 // Populate a []models.Forecast pointer with the OpenAPI data
-func ComputeForecasts(forecasts *models.Forecasts, openDataForecasts models.OpenDataAPIResponse) {
+func ComputeForecasts(forecasts *domains.Forecasts, openDataForecasts models.OpenDataAPIResponse) {
 	// alreadySeenBoatNames is used to compute the maneuver of each boats
 	var alreadySeenBoatNames []string
 
@@ -44,7 +45,7 @@ func ComputeForecasts(forecasts *models.Forecasts, openDataForecasts models.Open
 			circulationReopeningDate = circulationReopeningDate.AddDate(0, 0, 1)
 		}
 		closingDuration := circulationReopeningDate.Sub(circulationClosingDate)
-		*forecasts = append(*forecasts, models.Forecast{
+		*forecasts = append(*forecasts, domains.Forecast{
 			ID:                       openAPIForecast.RecordID,
 			ClosingDuration:          closingDuration,
 			CirculationClosingDate:   circulationClosingDate,

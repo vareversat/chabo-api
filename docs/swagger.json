@@ -110,6 +110,41 @@
                 }
             }
         },
+        "/forecasts/refresh": {
+            "post": {
+                "description": "Get, format et populate database with the data from the OpenData API",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Forecasts"
+                ],
+                "summary": "Refresh the data with the ones from the OpenData API",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domains.Refresh"
+                        }
+                    },
+                    "429": {
+                        "description": "Too many attempt to refresh",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "An error occured on the server side",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/forecasts/{id}": {
             "get": {
                 "description": "Fetch a forecast by his unique ID",
@@ -167,81 +202,21 @@
                 }
             }
         },
-        "/healthcheck": {
+        "/refresh/last": {
             "get": {
+                "description": "Get the last trace of refresh action on POST /forecasts/refresh",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Misc"
-                ],
-                "summary": "Get the status of the API",
-                "responses": {
-                    "200": {
-                        "description": "The api is healthy",
-                        "schema": {
-                            "$ref": "#/definitions/models.OKResponse"
-                        }
-                    },
-                    "503": {
-                        "description": "The api is unhealthy",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/management/refresh": {
-            "post": {
-                "description": "Get, format et populate database with the data from the OpenData API",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Management"
-                ],
-                "summary": "Refresh the data with the ones from the OpenData API",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Refresh"
-                        }
-                    },
-                    "429": {
-                        "description": "Too many attempt to refresh",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "An error occured on the server side",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/management/refresh/last": {
-            "get": {
-                "description": "Get the last trace of refresh action on POST /management/refresh",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Management"
+                    "Refreshes"
                 ],
                 "summary": "Get the last refresh action",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Refresh"
+                            "$ref": "#/definitions/domains.Refresh"
                         }
                     },
                     "404": {
@@ -258,9 +233,70 @@
                     }
                 }
             }
+        },
+        "/system/healthcheck": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "System"
+                ],
+                "summary": "Get the status of the API",
+                "responses": {
+                    "200": {
+                        "description": "The api is healthy",
+                        "schema": {
+                            "$ref": "#/definitions/domains.SystemHealthNOK"
+                        }
+                    },
+                    "503": {
+                        "description": "The api is unhealthy",
+                        "schema": {
+                            "$ref": "#/definitions/domains.SystemHealthOK"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "domains.Refresh": {
+            "type": "object",
+            "properties": {
+                "duration_ns": {
+                    "type": "integer",
+                    "example": 348872934
+                },
+                "item_count": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2021-05-25T00:53:16.535668Z"
+                }
+            }
+        },
+        "domains.SystemHealthNOK": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string",
+                    "example": "system is not running properly"
+                }
+            }
+        },
+        "domains.SystemHealthOK": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "system is running properly"
+                }
+            }
+        },
         "models.Boat": {
             "type": "object",
             "properties": {
@@ -392,33 +428,6 @@
                 "timezone": {
                     "type": "string",
                     "example": "UTC"
-                }
-            }
-        },
-        "models.OKResponse": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string",
-                    "example": "ok"
-                }
-            }
-        },
-        "models.Refresh": {
-            "type": "object",
-            "properties": {
-                "duration_ns": {
-                    "type": "integer",
-                    "example": 348872934
-                },
-                "item_count": {
-                    "type": "integer",
-                    "example": 10
-                },
-                "timestamp": {
-                    "type": "string",
-                    "format": "date-time",
-                    "example": "2021-05-25T00:53:16.535668Z"
                 }
             }
         }

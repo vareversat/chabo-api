@@ -8,12 +8,14 @@ import (
 	"github.com/getsentry/sentry-go"
 	sentrygin "github.com/getsentry/sentry-go/gin"
 	"github.com/gin-gonic/gin"
-	"github.com/vareversat/chabo-api/internal/db"
+	"github.com/vareversat/chabo-api/internal/domains"
 	"github.com/vareversat/chabo-api/internal/models"
 	"github.com/vareversat/chabo-api/internal/utils"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
 )
+
+type ForecastController struct {
+	ForecastUsecase domains.ForecastUsecase
+}
 
 // GetAllForecats godoc
 //
@@ -33,55 +35,33 @@ import (
 //	@Param			maneuver	query		string					false	"The boat maneuver of the event"								Enums(leaving_bordeaux, entering_in_bordeaux)
 //	@Param			Timezone	header		string					false	"Timezone to format the date related fields (TZ identifier)"	default(UTC)
 //	@Router			/forecasts [get]
-func GetAllForecats(mongoClient *mongo.Client) gin.HandlerFunc {
+func (fC *ForecastController) GetAllForecats() gin.HandlerFunc {
 	fn := func(c *gin.Context) {
 
 		if hub := sentrygin.GetHubFromContext(c); hub != nil {
-			hub.Scope().SetTag("controller", "getAllForecats")
+			hub.Scope().SetTag("controller", "GetAllForecats")
 		}
 
-		// Default filter = get everything
-		mongoFilter := bson.D{}
-		var mongoResponse models.MongoResponse
+		var forecasts domains.Forecasts
+		var totalItemCount int
 
 		location, locationErr := utils.GetTimezoneFromHeader(c)
 		limit, limitErr := utils.GetIntParams(c, "limit")
 		offset, offsetErr := utils.GetIntParams(c, "offset")
-		from := utils.GetStringParams(c, "from")
 		reason := utils.GetStringParams(c, "reason")
 		boat := utils.GetStringParams(c, "boat")
 		maneuver := utils.GetStringParams(c, "maneuver")
+		time, timeErr := time.Parse(time.RFC3339, utils.GetStringParams(c, "from"))
 
-		if from != "" {
-			time, err := time.Parse(time.RFC3339, from)
-			if err != nil {
-				c.JSON(
-					http.StatusBadRequest,
-					models.ErrorResponse{
-						Error: "your 'from' param is not in RFC3339 format. See https://datatracker.ietf.org/doc/html/rfc3339#section-5.8",
-					},
-				)
-				return
-			}
-			mongoFilter = append(
-				mongoFilter,
-				bson.E{
-					Key:   "circulation_reopening_date",
-					Value: bson.D{{Key: "$gte", Value: time}},
+		if timeErr != nil && utils.GetStringParams(c, "from") != "" {
+			c.JSON(
+				http.StatusBadRequest,
+				models.ErrorResponse{
+					Error: "your 'from' param is not in RFC3339 format. See https://datatracker.ietf.org/doc/html/rfc3339#section-5.8",
 				},
 			)
-		}
-
-		if reason != "" {
-			mongoFilter = append(mongoFilter, bson.E{Key: "closing_reason", Value: reason})
-		}
-
-		if boat != "" {
-			mongoFilter = append(mongoFilter, bson.E{Key: "boats.name", Value: boat})
-		}
-
-		if maneuver != "" {
-			mongoFilter = append(mongoFilter, bson.E{Key: "boats.maneuver", Value: maneuver})
+			sentry.CaptureException(timeErr)
+			return
 		}
 
 		if limitErr != nil {
@@ -109,12 +89,17 @@ func GetAllForecats(mongoClient *mongo.Client) gin.HandlerFunc {
 			return
 		}
 
-		itemCount, err := db.GetAllForecasts(
-			mongoClient,
-			&mongoResponse,
-			limit,
+		err := fC.ForecastUsecase.GetAllFiltered(
+			c,
+			location,
 			offset,
-			mongoFilter,
+			limit,
+			time,
+			reason,
+			maneuver,
+			boat,
+			&forecasts,
+			&totalItemCount,
 		)
 
 		if err != nil {
@@ -123,37 +108,54 @@ func GetAllForecats(mongoClient *mongo.Client) gin.HandlerFunc {
 			return
 		}
 
-		// Setting the requested timezone
-		for index, forecast := range mongoResponse.Results {
-			mongoResponse.Results[index].CirculationClosingDate = forecast.CirculationClosingDate.In(
-				location,
-			)
-			mongoResponse.Results[index].CirculationReopeningDate = forecast.CirculationReopeningDate.In(
-				location,
-			)
-			for index2, boat := range forecast.Boats {
-				mongoResponse.Results[index].Boats[index2].ApproximativeCrossingDate = boat.ApproximativeCrossingDate.In(
-					location,
-				)
-			}
-		}
 		links := utils.ComputeMetadaLinks(
-			itemCount,
+			totalItemCount,
 			limit,
 			offset,
 			fmt.Sprintf("%s/%s", c.Request.URL.Path, c.Request.URL.RawQuery),
 		)
 
-		response := models.ForecastsResponse{
+		response := domains.ForecastsResponse{
 			Links:     links,
-			Hits:      itemCount,
-			Forecasts: mongoResponse.Results,
+			Hits:      totalItemCount,
+			Forecasts: forecasts,
 			Limit:     limit,
 			Offset:    offset,
 			Timezone:  location.String(),
 		}
 
 		c.JSON(http.StatusOK, response)
+	}
+
+	return gin.HandlerFunc(fn)
+}
+
+// RefreshForcast godoc
+//
+//	@Summary		Refresh the forecasts with the ones from the OpenData API
+//	@Description	Get, format et populate database with the data from the OpenData API
+//	@Tags			Forecasts
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	domains.Refresh{}
+//	@Failure		500	{object}	models.ErrorResponse{}	"An error occured on the server side"
+//	@Failure		429	{object}	models.ErrorResponse{}	"Too many attempt to refresh"
+//	@Router			/forecasts/refresh [post]
+func (fC *ForecastController) RefreshForcast() gin.HandlerFunc {
+	fn := func(c *gin.Context) {
+
+		if hub := sentrygin.GetHubFromContext(c); hub != nil {
+			hub.Scope().SetTag("controller", "refreshForcasts")
+		}
+
+		refresh, err := fC.ForecastUsecase.RefreshAll(c)
+
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, refresh)
 	}
 
 	return gin.HandlerFunc(fn)
@@ -173,21 +175,11 @@ func GetAllForecats(mongoClient *mongo.Client) gin.HandlerFunc {
 //	@Param			id			path		string					true	"The forecast ID"
 //	@Param			Timezone	header		string					false	"Timezone to format the date related fields (TZ identifier)"	default(UTC)
 //	@Router			/forecasts/{id} [get]
-func GetForecastByID(mongoClient *mongo.Client) gin.HandlerFunc {
+func (fC *ForecastController) GetForecastByID() gin.HandlerFunc {
 	fn := func(c *gin.Context) {
 
-		if hub := sentrygin.GetHubFromContext(c); hub != nil {
-			hub.Scope().SetTag("controller", "getForecastByID")
-		}
-
-		var forecast models.Forecast
-
-		err := db.GetForecastbyID(mongoClient, &forecast, c.Param("id"))
-
-		if err != nil {
-			c.JSON(http.StatusNotFound, models.ErrorResponse{Error: err.Error()})
-			return
-		}
+		var forecast domains.Forecast
+		id := c.Param("id")
 
 		location, locationErr := utils.GetTimezoneFromHeader(c)
 
@@ -196,18 +188,26 @@ func GetForecastByID(mongoClient *mongo.Client) gin.HandlerFunc {
 			return
 		}
 
-		// Setting the requested timezone
-		forecast.CirculationClosingDate = forecast.CirculationClosingDate.In(location)
-		forecast.CirculationReopeningDate = forecast.CirculationReopeningDate.In(location)
-		for index, boat := range forecast.Boats {
-			forecast.Boats[index].ApproximativeCrossingDate = boat.ApproximativeCrossingDate.In(
-				location,
-			)
+		if hub := sentrygin.GetHubFromContext(c); hub != nil {
+			hub.Scope().SetTag("controller", "GetForecastByID")
+		}
+
+		err := c.ShouldBind(&forecast)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
+			return
+		}
+
+		err = fC.ForecastUsecase.GetByID(c, id, &forecast, location)
+
+		if err != nil {
+			c.JSON(http.StatusNotFound, models.ErrorResponse{Error: err.Error()})
+			return
 		}
 
 		c.JSON(
 			http.StatusOK,
-			models.ForecastResponse{Forecast: forecast, Timezone: location.String()},
+			domains.ForecastResponse{Forecast: forecast, Timezone: location.String()},
 		)
 	}
 

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 
 	sentrygin "github.com/getsentry/sentry-go/gin"
 	"github.com/gin-gonic/gin"
@@ -24,7 +25,7 @@ import (
 //	@License.name				MIT
 //	@License.url				https://github.com/vareversat/chabo-api/blob/main/LICENSE.md
 
-func MainRouter(mongoClient *mongo.Client) {
+func MainRouter(mongoClient *mongo.Client, mongoDatabase mongo.Database) {
 
 	// Configure Gin web server
 	router := gin.New()
@@ -43,9 +44,10 @@ func MainRouter(mongoClient *mongo.Client) {
 	// Initialize routers
 	rootRouterGroup := router.Group(docs.SwaggerInfo.BasePath)
 
-	ForecastsRouter(mongoClient, rootRouterGroup)
-	ManagementRouter(mongoClient, rootRouterGroup)
-	MiscRouter(mongoClient, rootRouterGroup)
+	timeout := time.Duration(30) * time.Second
+	ForecastsRouter(timeout, mongoDatabase, rootRouterGroup)
+	RefreshRouter(timeout, mongoDatabase, rootRouterGroup)
+	SystemRouter(timeout, mongoClient, rootRouterGroup)
 
 	if err := router.Run(fmt.Sprintf("%s:%s", os.Getenv("APP_URI"), os.Getenv("APP_PORT"))); err != nil {
 		panic(err)

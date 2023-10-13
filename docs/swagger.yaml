@@ -1,4 +1,29 @@
 definitions:
+  domains.Refresh:
+    properties:
+      duration_ns:
+        example: 348872934
+        type: integer
+      item_count:
+        example: 10
+        type: integer
+      timestamp:
+        example: "2021-05-25T00:53:16.535668Z"
+        format: date-time
+        type: string
+    type: object
+  domains.SystemHealthNOK:
+    properties:
+      error:
+        example: system is not running properly
+        type: string
+    type: object
+  domains.SystemHealthOK:
+    properties:
+      message:
+        example: system is running properly
+        type: string
+    type: object
   models.Boat:
     properties:
       approximative_crossing_date:
@@ -91,25 +116,6 @@ definitions:
         type: integer
       timezone:
         example: UTC
-        type: string
-    type: object
-  models.OKResponse:
-    properties:
-      message:
-        example: ok
-        type: string
-    type: object
-  models.Refresh:
-    properties:
-      duration_ns:
-        example: 348872934
-        type: integer
-      item_count:
-        example: 10
-        type: integer
-      timestamp:
-        example: "2021-05-25T00:53:16.535668Z"
-        format: date-time
         type: string
     type: object
 externalDocs:
@@ -231,23 +237,7 @@ paths:
       summary: Get a foracast
       tags:
       - Forecasts
-  /healthcheck:
-    get:
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: The api is healthy
-          schema:
-            $ref: '#/definitions/models.OKResponse'
-        "503":
-          description: The api is unhealthy
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-      summary: Get the status of the API
-      tags:
-      - Misc
-  /management/refresh:
+  /forecasts/refresh:
     post:
       consumes:
       - application/json
@@ -259,7 +249,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Refresh'
+            $ref: '#/definitions/domains.Refresh'
         "429":
           description: Too many attempt to refresh
           schema:
@@ -270,17 +260,17 @@ paths:
             $ref: '#/definitions/models.ErrorResponse'
       summary: Refresh the data with the ones from the OpenData API
       tags:
-      - Management
-  /management/refresh/last:
+      - Forecasts
+  /refresh/last:
     get:
-      description: Get the last trace of refresh action on POST /management/refresh
+      description: Get the last trace of refresh action on POST /forecasts/refresh
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Refresh'
+            $ref: '#/definitions/domains.Refresh'
         "404":
           description: No previous refresh action exists
           schema:
@@ -291,7 +281,23 @@ paths:
             $ref: '#/definitions/models.ErrorResponse'
       summary: Get the last refresh action
       tags:
-      - Management
+      - Refreshes
+  /system/healthcheck:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: The api is healthy
+          schema:
+            $ref: '#/definitions/domains.SystemHealthNOK'
+        "503":
+          description: The api is unhealthy
+          schema:
+            $ref: '#/definitions/domains.SystemHealthOK'
+      summary: Get the status of the API
+      tags:
+      - System
 produces:
 - application/json
 swagger: "2.0"
