@@ -6,7 +6,7 @@ COPY go.mod go.sum ./
 RUN go mod download 
 RUN go install github.com/swaggo/swag/cmd/swag@latest
 COPY . .
-RUN swag init -d ./internal/api,./ -g router.go
+RUN swag init -d ./internal/api/routers,./ -g main_router.go
 RUN CGO_ENABLED=0 GOOS=linux go build -o /app/chabo-api
 
 FROM alpine:3.14

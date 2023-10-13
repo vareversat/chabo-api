@@ -18,6 +18,6 @@ RUN go mod vendor
 
 COPY . .
 # Refresh Swagger config
-RUN swag init -d ./internal/api,./ -g router.go
+RUN swag init -d ./internal/api/routers,./ -g main_router.go
 
 EXPOSE 8080
