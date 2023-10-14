@@ -17,7 +17,7 @@ type SystemController struct {
 //	@Summary	Get the status of the API
 //	@Tags		System
 //	@Produce	json
-//	@Success	200	{object}	domains.SystemHealthNOK{}		"The api is healthy"
+//	@Success	200	{object}	domains.SystemHealthNOK{}	"The api is healthy"
 //	@Failure	503	{object}	domains.SystemHealthOK{}	"The api is unhealthy"
 //	@Router		/system/healthcheck [get]
 func (sC *SystemController) Healthcheck() gin.HandlerFunc {
