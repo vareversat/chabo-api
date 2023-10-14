@@ -38,7 +38,11 @@ func (fU *forecastUsecase) GetByID(
 	ctx, cancel := context.WithTimeout(ctx, fU.contextTimeout)
 	defer cancel()
 
-	err := fU.forecastRepository.GetByID(ctx, id, forecast)
+	// Do a refresh attempt in case of the data are too old
+	_, err := fU.RefreshAll(ctx)
+	fmt.Println(err)
+
+	err = fU.forecastRepository.GetByID(ctx, id, forecast)
 	if err != nil {
 		return err
 	}
@@ -62,7 +66,11 @@ func (fU *forecastUsecase) GetAllFiltered(
 	ctx, cancel := context.WithTimeout(ctx, fU.contextTimeout)
 	defer cancel()
 
-	err := fU.forecastRepository.GetAllFiltered(
+	// Do a refresh attempt in case of the data are too old
+	_, err := fU.RefreshAll(ctx)
+	fmt.Println(err)
+
+	err = fU.forecastRepository.GetAllFiltered(
 		ctx,
 		location,
 		offset,
@@ -125,7 +133,7 @@ func (fU *forecastUsecase) RefreshAll(ctx context.Context) (domains.Refresh, err
 
 	}
 
-	return domains.Refresh{}, fmt.Errorf("you cannot refresh too many time")
+	return domains.Refresh{}, fmt.Errorf("data does not need to be refresh (aborting the refresh)")
 }
 
 // Check if it's possible to perform a data refresh
