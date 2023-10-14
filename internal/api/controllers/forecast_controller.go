@@ -9,7 +9,6 @@ import (
 	sentrygin "github.com/getsentry/sentry-go/gin"
 	"github.com/gin-gonic/gin"
 	"github.com/vareversat/chabo-api/internal/domains"
-	"github.com/vareversat/chabo-api/internal/models"
 	"github.com/vareversat/chabo-api/internal/utils"
 )
 
@@ -24,9 +23,9 @@ type ForecastController struct {
 //	@Tags			Forecasts
 //	@Accept			json
 //	@Produce		json
-//	@Success		200			{object}	models.ForecastsResponse{}
-//	@Failure		400			{object}	models.ErrorResponse{}	"Some params are missing and/or not properly formatted fror the requests"
-//	@Failure		500			{object}	models.ErrorResponse{}	"An error occured on the server side"
+//	@Success		200			{object}	domains.ForecastsResponse{}
+//	@Failure		400			{object}	domains.ErrorResponse{}	"Some params are missing and/or not properly formatted fror the requests"
+//	@Failure		500			{object}	domains.ErrorResponse{}	"An error occured on the server side"
 //	@Param			from		query		string					false	"The date to filter from (RFC3339)"		Format(date-time)
 //	@Param			limit		query		int						true	"Set the limit of the queried results"	Format(int)	default(10)
 //	@Param			offset		query		int						true	"Set the offset of the queried results"	Format(int)	default(0)
@@ -56,7 +55,7 @@ func (fC *ForecastController) GetAllForecats() gin.HandlerFunc {
 		if timeErr != nil && utils.GetStringParams(c, "from") != "" {
 			c.JSON(
 				http.StatusBadRequest,
-				models.ErrorResponse{
+				domains.ErrorResponse{
 					Error: "your 'from' param is not in RFC3339 format. See https://datatracker.ietf.org/doc/html/rfc3339#section-5.8",
 				},
 			)
@@ -65,26 +64,26 @@ func (fC *ForecastController) GetAllForecats() gin.HandlerFunc {
 		}
 
 		if limitErr != nil {
-			c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: limitErr.Error()})
+			c.JSON(http.StatusBadRequest, domains.ErrorResponse{Error: limitErr.Error()})
 			sentry.CaptureException(limitErr)
 			return
 		}
 
 		if offsetErr != nil {
-			c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: offsetErr.Error()})
+			c.JSON(http.StatusBadRequest, domains.ErrorResponse{Error: offsetErr.Error()})
 			sentry.CaptureException(offsetErr)
 			return
 		}
 
 		if locationErr != nil {
-			c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: locationErr.Error()})
+			c.JSON(http.StatusBadRequest, domains.ErrorResponse{Error: locationErr.Error()})
 			sentry.CaptureException(locationErr)
 			return
 		}
 
 		if limit == 0 {
 			errMessage := "the limit param need to be greater or equal to 1"
-			c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: errMessage})
+			c.JSON(http.StatusBadRequest, domains.ErrorResponse{Error: errMessage})
 			sentry.CaptureException(fmt.Errorf(errMessage))
 			return
 		}
@@ -103,7 +102,7 @@ func (fC *ForecastController) GetAllForecats() gin.HandlerFunc {
 		)
 
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: err.Error()})
+			c.JSON(http.StatusInternalServerError, domains.ErrorResponse{Error: err.Error()})
 			sentry.CaptureException(locationErr)
 			return
 		}
@@ -130,7 +129,7 @@ func (fC *ForecastController) GetAllForecats() gin.HandlerFunc {
 	return gin.HandlerFunc(fn)
 }
 
-// RefreshForcast godoc
+// RefreshForecasts godoc
 //
 //	@Summary		Refresh the forecasts with the ones from the OpenData API
 //	@Description	Get, format et populate database with the data from the OpenData API
@@ -138,20 +137,20 @@ func (fC *ForecastController) GetAllForecats() gin.HandlerFunc {
 //	@Accept			json
 //	@Produce		json
 //	@Success		200	{object}	domains.Refresh{}
-//	@Failure		500	{object}	models.ErrorResponse{}	"An error occured on the server side"
-//	@Failure		429	{object}	models.ErrorResponse{}	"Too many attempt to refresh"
+//	@Failure		500	{object}	domains.ErrorResponse{}	"An error occured on the server side"
+//	@Failure		429	{object}	domains.ErrorResponse{}	"Too many attempt to refresh"
 //	@Router			/forecasts/refresh [post]
-func (fC *ForecastController) RefreshForcast() gin.HandlerFunc {
+func (fC *ForecastController) RefreshForecasts() gin.HandlerFunc {
 	fn := func(c *gin.Context) {
 
 		if hub := sentrygin.GetHubFromContext(c); hub != nil {
-			hub.Scope().SetTag("controller", "refreshForcasts")
+			hub.Scope().SetTag("controller", "RefreshForecasts")
 		}
 
 		refresh, err := fC.ForecastUsecase.RefreshAll(c)
 
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: err.Error()})
+			c.JSON(http.StatusInternalServerError, domains.ErrorResponse{Error: err.Error()})
 			return
 		}
 
@@ -168,10 +167,10 @@ func (fC *ForecastController) RefreshForcast() gin.HandlerFunc {
 //	@Tags			Forecasts
 //	@Accept			json
 //	@Produce		json
-//	@Success		200			{object}	models.ForecastResponse{}
-//	@Failure		404			{object}	models.ErrorResponse{}	"The ID does not match any forecast"
-//	@Failure		400			{object}	models.ErrorResponse{}	"Some params are missing and/or not properly formatted fror the requests"
-//	@Failure		500			{object}	models.ErrorResponse{}	"An error occured on the server side"
+//	@Success		200			{object}	domains.ForecastResponse{}
+//	@Failure		404			{object}	domains.ErrorResponse{}	"The ID does not match any forecast"
+//	@Failure		400			{object}	domains.ErrorResponse{}	"Some params are missing and/or not properly formatted fror the requests"
+//	@Failure		500			{object}	domains.ErrorResponse{}	"An error occured on the server side"
 //	@Param			id			path		string					true	"The forecast ID"
 //	@Param			Timezone	header		string					false	"Timezone to format the date related fields (TZ identifier)"	default(UTC)
 //	@Router			/forecasts/{id} [get]
@@ -184,7 +183,7 @@ func (fC *ForecastController) GetForecastByID() gin.HandlerFunc {
 		location, locationErr := utils.GetTimezoneFromHeader(c)
 
 		if locationErr != nil {
-			c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: locationErr.Error()})
+			c.JSON(http.StatusBadRequest, domains.ErrorResponse{Error: locationErr.Error()})
 			return
 		}
 
@@ -194,14 +193,14 @@ func (fC *ForecastController) GetForecastByID() gin.HandlerFunc {
 
 		err := c.ShouldBind(&forecast)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
+			c.JSON(http.StatusBadRequest, domains.ErrorResponse{Error: err.Error()})
 			return
 		}
 
 		err = fC.ForecastUsecase.GetByID(c, id, &forecast, location)
 
 		if err != nil {
-			c.JSON(http.StatusNotFound, models.ErrorResponse{Error: err.Error()})
+			c.JSON(http.StatusNotFound, domains.ErrorResponse{Error: err.Error()})
 			return
 		}
 

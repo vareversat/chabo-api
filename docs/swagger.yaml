@@ -1,4 +1,98 @@
 definitions:
+  domains.Boat:
+    properties:
+      approximative_crossing_date:
+        example: "2021-05-25T00:53:16.535668Z"
+        format: date-time
+        type: string
+      maneuver:
+        $ref: '#/definitions/domains.BoatManeuver'
+      name:
+        example: EUROPA 2
+        type: string
+    type: object
+  domains.BoatManeuver:
+    enum:
+    - leaving_bordeaux
+    - entering_in_bordeaux
+    type: string
+    x-enum-varnames:
+    - Leaving
+    - Entering
+  domains.ClosingReason:
+    enum:
+    - boat
+    - maintenance
+    type: string
+    x-enum-varnames:
+    - BoatReason
+    - Maintenance
+  domains.ClosingType:
+    enum:
+    - two_way
+    - one_way
+    type: string
+    x-enum-varnames:
+    - TwoWay
+    - OneWay
+  domains.ErrorResponse:
+    properties:
+      error:
+        example: error in params
+        type: string
+    type: object
+  domains.Forecast:
+    properties:
+      boats:
+        items:
+          $ref: '#/definitions/domains.Boat'
+        type: array
+      circulation_closing_date:
+        example: "2021-05-25T00:53:16.535668Z"
+        format: date-time
+        type: string
+      circulation_reopening_date:
+        example: "2021-05-25T00:53:16.535668Z"
+        format: date-time
+        type: string
+      closing_duration_ns:
+        example: 4980000000000
+        type: integer
+      closing_reason:
+        $ref: '#/definitions/domains.ClosingReason'
+      closing_type:
+        $ref: '#/definitions/domains.ClosingType'
+      id:
+        example: 63a6430fc07ff1d895c9555ef2ef6e41c1e3b1f5
+        type: string
+    type: object
+  domains.ForecastResponse:
+    properties:
+      forecast:
+        $ref: '#/definitions/domains.Forecast'
+      timezone:
+        example: UTC
+        type: string
+    type: object
+  domains.ForecastsResponse:
+    properties:
+      _links:
+        items: {}
+        type: array
+      forecasts:
+        items:
+          $ref: '#/definitions/domains.Forecast'
+        type: array
+      hits:
+        type: integer
+      limit:
+        type: integer
+      offset:
+        type: integer
+      timezone:
+        example: UTC
+        type: string
+    type: object
   domains.Refresh:
     properties:
       duration_ns:
@@ -22,100 +116,6 @@ definitions:
     properties:
       message:
         example: system is running properly
-        type: string
-    type: object
-  models.Boat:
-    properties:
-      approximative_crossing_date:
-        example: "2021-05-25T00:53:16.535668Z"
-        format: date-time
-        type: string
-      maneuver:
-        $ref: '#/definitions/models.BoatManeuver'
-      name:
-        example: EUROPA 2
-        type: string
-    type: object
-  models.BoatManeuver:
-    enum:
-    - leaving_bordeaux
-    - entering_in_bordeaux
-    type: string
-    x-enum-varnames:
-    - Leaving
-    - Entering
-  models.ClosingReason:
-    enum:
-    - boat
-    - maintenance
-    type: string
-    x-enum-varnames:
-    - BoatReason
-    - Maintenance
-  models.ClosingType:
-    enum:
-    - two_way
-    - one_way
-    type: string
-    x-enum-varnames:
-    - TwoWay
-    - OneWay
-  models.ErrorResponse:
-    properties:
-      error:
-        example: error in params
-        type: string
-    type: object
-  models.Forecast:
-    properties:
-      boats:
-        items:
-          $ref: '#/definitions/models.Boat'
-        type: array
-      circulation_closing_date:
-        example: "2021-05-25T00:53:16.535668Z"
-        format: date-time
-        type: string
-      circulation_reopening_date:
-        example: "2021-05-25T00:53:16.535668Z"
-        format: date-time
-        type: string
-      closing_duration_ns:
-        example: 4980000000000
-        type: integer
-      closing_reason:
-        $ref: '#/definitions/models.ClosingReason'
-      closing_type:
-        $ref: '#/definitions/models.ClosingType'
-      id:
-        example: 63a6430fc07ff1d895c9555ef2ef6e41c1e3b1f5
-        type: string
-    type: object
-  models.ForecastResponse:
-    properties:
-      forecast:
-        $ref: '#/definitions/models.Forecast'
-      timezone:
-        example: UTC
-        type: string
-    type: object
-  models.ForecastsResponse:
-    properties:
-      _links:
-        items: {}
-        type: array
-      forecasts:
-        items:
-          $ref: '#/definitions/models.Forecast'
-        type: array
-      hits:
-        type: integer
-      limit:
-        type: integer
-      offset:
-        type: integer
-      timezone:
-        example: UTC
         type: string
     type: object
 externalDocs:
@@ -185,16 +185,16 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.ForecastsResponse'
+            $ref: '#/definitions/domains.ForecastsResponse'
         "400":
           description: Some params are missing and/or not properly formatted fror
             the requests
           schema:
-            $ref: '#/definitions/models.ErrorResponse'
+            $ref: '#/definitions/domains.ErrorResponse'
         "500":
           description: An error occured on the server side
           schema:
-            $ref: '#/definitions/models.ErrorResponse'
+            $ref: '#/definitions/domains.ErrorResponse'
       summary: Get all foracasts
       tags:
       - Forecasts
@@ -220,20 +220,20 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.ForecastResponse'
+            $ref: '#/definitions/domains.ForecastResponse'
         "400":
           description: Some params are missing and/or not properly formatted fror
             the requests
           schema:
-            $ref: '#/definitions/models.ErrorResponse'
+            $ref: '#/definitions/domains.ErrorResponse'
         "404":
           description: The ID does not match any forecast
           schema:
-            $ref: '#/definitions/models.ErrorResponse'
+            $ref: '#/definitions/domains.ErrorResponse'
         "500":
           description: An error occured on the server side
           schema:
-            $ref: '#/definitions/models.ErrorResponse'
+            $ref: '#/definitions/domains.ErrorResponse'
       summary: Get a foracast
       tags:
       - Forecasts
@@ -253,12 +253,12 @@ paths:
         "429":
           description: Too many attempt to refresh
           schema:
-            $ref: '#/definitions/models.ErrorResponse'
+            $ref: '#/definitions/domains.ErrorResponse'
         "500":
           description: An error occured on the server side
           schema:
-            $ref: '#/definitions/models.ErrorResponse'
-      summary: Refresh the data with the ones from the OpenData API
+            $ref: '#/definitions/domains.ErrorResponse'
+      summary: Refresh the forecasts with the ones from the OpenData API
       tags:
       - Forecasts
   /refresh/last:
@@ -274,11 +274,11 @@ paths:
         "404":
           description: No previous refresh action exists
           schema:
-            $ref: '#/definitions/models.ErrorResponse'
+            $ref: '#/definitions/domains.ErrorResponse'
         "500":
           description: An error occured on the server side
           schema:
-            $ref: '#/definitions/models.ErrorResponse'
+            $ref: '#/definitions/domains.ErrorResponse'
       summary: Get the last refresh action
       tags:
       - Refreshes

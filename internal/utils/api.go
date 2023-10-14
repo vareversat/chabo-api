@@ -7,8 +7,7 @@ import (
 	"os"
 
 	log "github.com/sirupsen/logrus"
-
-	"github.com/vareversat/chabo-api/internal/models"
+	"github.com/vareversat/chabo-api/internal/domains"
 )
 
 var logrus *log.Entry
@@ -19,8 +18,8 @@ func InitOpenApi(logger *log.Entry) {
 }
 
 // Get forecasts data from the Opendata API
-// Populate the *models.OpenDataAPIResponse pointer if the data are correct
-func GetOpenAPIData(openDataAPIResponse *models.OpenDataAPIResponse) error {
+// Populate the *domains.OpenDataAPIResponse pointer if the data are correct
+func GetOpenAPIData(openDataAPIResponse *domains.OpenDataAPIResponse) error {
 
 	data, err := http.Get(os.Getenv("OPENDATA_API_URL"))
 

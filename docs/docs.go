@@ -101,19 +101,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.ForecastsResponse"
+                            "$ref": "#/definitions/domains.ForecastsResponse"
                         }
                     },
                     "400": {
                         "description": "Some params are missing and/or not properly formatted fror the requests",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/domains.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "An error occured on the server side",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/domains.ErrorResponse"
                         }
                     }
                 }
@@ -131,7 +131,7 @@ const docTemplate = `{
                 "tags": [
                     "Forecasts"
                 ],
-                "summary": "Refresh the data with the ones from the OpenData API",
+                "summary": "Refresh the forecasts with the ones from the OpenData API",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -142,13 +142,13 @@ const docTemplate = `{
                     "429": {
                         "description": "Too many attempt to refresh",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/domains.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "An error occured on the server side",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/domains.ErrorResponse"
                         }
                     }
                 }
@@ -187,25 +187,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.ForecastResponse"
+                            "$ref": "#/definitions/domains.ForecastResponse"
                         }
                     },
                     "400": {
                         "description": "Some params are missing and/or not properly formatted fror the requests",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/domains.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "The ID does not match any forecast",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/domains.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "An error occured on the server side",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/domains.ErrorResponse"
                         }
                     }
                 }
@@ -231,13 +231,13 @@ const docTemplate = `{
                     "404": {
                         "description": "No previous refresh action exists",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/domains.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "An error occured on the server side",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/domains.ErrorResponse"
                         }
                     }
                 }
@@ -270,6 +270,140 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "domains.Boat": {
+            "type": "object",
+            "properties": {
+                "approximative_crossing_date": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2021-05-25T00:53:16.535668Z"
+                },
+                "maneuver": {
+                    "$ref": "#/definitions/domains.BoatManeuver"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "EUROPA 2"
+                }
+            }
+        },
+        "domains.BoatManeuver": {
+            "type": "string",
+            "enum": [
+                "leaving_bordeaux",
+                "entering_in_bordeaux"
+            ],
+            "x-enum-varnames": [
+                "Leaving",
+                "Entering"
+            ]
+        },
+        "domains.ClosingReason": {
+            "type": "string",
+            "enum": [
+                "boat",
+                "maintenance"
+            ],
+            "x-enum-varnames": [
+                "BoatReason",
+                "Maintenance"
+            ]
+        },
+        "domains.ClosingType": {
+            "type": "string",
+            "enum": [
+                "two_way",
+                "one_way"
+            ],
+            "x-enum-varnames": [
+                "TwoWay",
+                "OneWay"
+            ]
+        },
+        "domains.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string",
+                    "example": "error in params"
+                }
+            }
+        },
+        "domains.Forecast": {
+            "type": "object",
+            "properties": {
+                "boats": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domains.Boat"
+                    }
+                },
+                "circulation_closing_date": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2021-05-25T00:53:16.535668Z"
+                },
+                "circulation_reopening_date": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2021-05-25T00:53:16.535668Z"
+                },
+                "closing_duration_ns": {
+                    "type": "integer",
+                    "example": 4980000000000
+                },
+                "closing_reason": {
+                    "$ref": "#/definitions/domains.ClosingReason"
+                },
+                "closing_type": {
+                    "$ref": "#/definitions/domains.ClosingType"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "63a6430fc07ff1d895c9555ef2ef6e41c1e3b1f5"
+                }
+            }
+        },
+        "domains.ForecastResponse": {
+            "type": "object",
+            "properties": {
+                "forecast": {
+                    "$ref": "#/definitions/domains.Forecast"
+                },
+                "timezone": {
+                    "type": "string",
+                    "example": "UTC"
+                }
+            }
+        },
+        "domains.ForecastsResponse": {
+            "type": "object",
+            "properties": {
+                "_links": {
+                    "type": "array",
+                    "items": {}
+                },
+                "forecasts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domains.Forecast"
+                    }
+                },
+                "hits": {
+                    "type": "integer"
+                },
+                "limit": {
+                    "type": "integer"
+                },
+                "offset": {
+                    "type": "integer"
+                },
+                "timezone": {
+                    "type": "string",
+                    "example": "UTC"
+                }
+            }
+        },
         "domains.Refresh": {
             "type": "object",
             "properties": {
@@ -303,140 +437,6 @@ const docTemplate = `{
                 "message": {
                     "type": "string",
                     "example": "system is running properly"
-                }
-            }
-        },
-        "models.Boat": {
-            "type": "object",
-            "properties": {
-                "approximative_crossing_date": {
-                    "type": "string",
-                    "format": "date-time",
-                    "example": "2021-05-25T00:53:16.535668Z"
-                },
-                "maneuver": {
-                    "$ref": "#/definitions/models.BoatManeuver"
-                },
-                "name": {
-                    "type": "string",
-                    "example": "EUROPA 2"
-                }
-            }
-        },
-        "models.BoatManeuver": {
-            "type": "string",
-            "enum": [
-                "leaving_bordeaux",
-                "entering_in_bordeaux"
-            ],
-            "x-enum-varnames": [
-                "Leaving",
-                "Entering"
-            ]
-        },
-        "models.ClosingReason": {
-            "type": "string",
-            "enum": [
-                "boat",
-                "maintenance"
-            ],
-            "x-enum-varnames": [
-                "BoatReason",
-                "Maintenance"
-            ]
-        },
-        "models.ClosingType": {
-            "type": "string",
-            "enum": [
-                "two_way",
-                "one_way"
-            ],
-            "x-enum-varnames": [
-                "TwoWay",
-                "OneWay"
-            ]
-        },
-        "models.ErrorResponse": {
-            "type": "object",
-            "properties": {
-                "error": {
-                    "type": "string",
-                    "example": "error in params"
-                }
-            }
-        },
-        "models.Forecast": {
-            "type": "object",
-            "properties": {
-                "boats": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Boat"
-                    }
-                },
-                "circulation_closing_date": {
-                    "type": "string",
-                    "format": "date-time",
-                    "example": "2021-05-25T00:53:16.535668Z"
-                },
-                "circulation_reopening_date": {
-                    "type": "string",
-                    "format": "date-time",
-                    "example": "2021-05-25T00:53:16.535668Z"
-                },
-                "closing_duration_ns": {
-                    "type": "integer",
-                    "example": 4980000000000
-                },
-                "closing_reason": {
-                    "$ref": "#/definitions/models.ClosingReason"
-                },
-                "closing_type": {
-                    "$ref": "#/definitions/models.ClosingType"
-                },
-                "id": {
-                    "type": "string",
-                    "example": "63a6430fc07ff1d895c9555ef2ef6e41c1e3b1f5"
-                }
-            }
-        },
-        "models.ForecastResponse": {
-            "type": "object",
-            "properties": {
-                "forecast": {
-                    "$ref": "#/definitions/models.Forecast"
-                },
-                "timezone": {
-                    "type": "string",
-                    "example": "UTC"
-                }
-            }
-        },
-        "models.ForecastsResponse": {
-            "type": "object",
-            "properties": {
-                "_links": {
-                    "type": "array",
-                    "items": {}
-                },
-                "forecasts": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Forecast"
-                    }
-                },
-                "hits": {
-                    "type": "integer"
-                },
-                "limit": {
-                    "type": "integer"
-                },
-                "offset": {
-                    "type": "integer"
-                },
-                "timezone": {
-                    "type": "string",
-                    "example": "UTC"
                 }
             }
         }

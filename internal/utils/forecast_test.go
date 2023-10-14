@@ -6,27 +6,26 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/vareversat/chabo-api/internal/domains"
-	"github.com/vareversat/chabo-api/internal/models"
 )
 
 func TestComputeForecasts(t *testing.T) {
 	var forecasts domains.Forecasts
 	recordTimestamp, _ := time.Parse(time.RFC3339, "2023-02-26T21:00:00Z")
-	openDataForecasts := models.OpenDataAPIResponse{
+	openDataForecasts := domains.OpenDataAPIResponse{
 		Hits: 1,
-		Parameters: models.OpenDataAPIResponseParameters{
+		Parameters: domains.OpenDataAPIResponseParameters{
 			Dataset:  "dataset",
 			Row:      1,
 			Start:    0,
 			Format:   "format",
 			Timezone: "UTC",
 		},
-		Records: []models.OpenDataAPIResponseForecast{
+		Records: []domains.OpenDataAPIResponseForecast{
 			{
 				DatasetID:       "datasetid",
 				RecordID:        "recordid",
 				RecordTimestamp: recordTimestamp,
-				Fields: models.OpenDataAPIResponseForecastField{
+				Fields: domains.OpenDataAPIResponseForecastField{
 					ClosingDate:  "2023-02-26",
 					ClosingTime:  "21:00",
 					OpeningTime:  "23:00",
@@ -48,14 +47,16 @@ func TestComputeForecasts(t *testing.T) {
 			CirculationClosingDate:   circulationClosingDate,
 			CirculationReopeningDate: circulationReopeningDate,
 			ClosingReason:            domains.BoatReason,
-			Boats: []models.Boat{
+			Boats: []domains.Boat{
 				{
 					Name:                      "MY_BOAT",
-					Maneuver:                  models.Entering,
+					Maneuver:                  domains.Entering,
 					ApproximativeCrossingDate: approximativeCrossingDate,
 				},
 			},
-			Link: models.OpenAPISelfLink{Self: models.OpenAPILink{Link: "/v1/forecasts/recordid"}},
+			Link: domains.OpenAPISelfLink{
+				Self: domains.OpenAPILink{Link: "/v1/forecasts/recordid"},
+			},
 		},
 	}
 

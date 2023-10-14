@@ -6,7 +6,6 @@ import (
 	sentrygin "github.com/getsentry/sentry-go/gin"
 	"github.com/gin-gonic/gin"
 	"github.com/vareversat/chabo-api/internal/domains"
-	"github.com/vareversat/chabo-api/internal/models"
 )
 
 type RefreshController struct {
@@ -20,8 +19,8 @@ type RefreshController struct {
 //	@Tags			Refreshes
 //	@Produce		json
 //	@Success		200	{object}	domains.Refresh{}
-//	@Failure		404	{object}	models.ErrorResponse{}	"No previous refresh action exists"
-//	@Failure		500	{object}	models.ErrorResponse{}	"An error occured on the server side"
+//	@Failure		404	{object}	domains.ErrorResponse{}	"No previous refresh action exists"
+//	@Failure		500	{object}	domains.ErrorResponse{}	"An error occured on the server side"
 //	@Router			/refresh/last [get]
 func (mC *RefreshController) GetLastRefresh() gin.HandlerFunc {
 	fn := func(c *gin.Context) {
@@ -35,7 +34,7 @@ func (mC *RefreshController) GetLastRefresh() gin.HandlerFunc {
 		err := mC.RefreshUsecase.GetLast(c, &refresh)
 
 		if err != nil {
-			c.JSON(http.StatusNotFound, models.ErrorResponse{Error: err.Error()})
+			c.JSON(http.StatusNotFound, domains.ErrorResponse{Error: err.Error()})
 			return
 		}
 

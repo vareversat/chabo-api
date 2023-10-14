@@ -5,10 +5,9 @@ import (
 	"time"
 
 	"github.com/vareversat/chabo-api/internal/domains"
-	"github.com/vareversat/chabo-api/internal/models"
 )
 
-// Return the corresponding models.ClosingType according of the string value
+// Return the corresponding domains.ClosingType according of the string value
 func MapClosingType(stringClosingType string) domains.ClosingType {
 	if stringClosingType == "oui" {
 		return domains.TwoWay
@@ -17,7 +16,7 @@ func MapClosingType(stringClosingType string) domains.ClosingType {
 	}
 }
 
-// Return the corresponding models.ClosingReason according of the string value
+// Return the corresponding domains.ClosingReason according of the string value
 func MapClosingReason(stringClosingReason string) domains.ClosingReason {
 	if stringClosingReason == "MAINTENANCE" {
 		return domains.Maintenance
@@ -26,7 +25,7 @@ func MapClosingReason(stringClosingReason string) domains.ClosingReason {
 	}
 }
 
-// Return a []models.Boat of a boat crossing forecast.
+// Return a []domains.Boat of a boat crossing forecast.
 // closingReason : If it is a maintenance forecast, no computation
 // boatNames : The raw string containing the boat name(s)
 // closingDuration : Used to compute the approximated crossing time
@@ -40,24 +39,24 @@ func MapBoats(
 	circulationClosingDate time.Time,
 	alreadySeenBoatNames *[]string,
 	forecastID string,
-) []models.Boat {
-	var boats []models.Boat
+) []domains.Boat {
+	var boats []domains.Boat
 	if closingReason == domains.BoatReason {
 		// The string may contains multiple boat name separated by a "/"
 		boatNamesSlice := strings.Split(boatNames, "/")
 		for index, boat := range boatNamesSlice {
 			boatName := strings.TrimSpace(boat)
-			var action models.BoatManeuver
+			var action domains.BoatManeuver
 			if contains(*alreadySeenBoatNames, boatName) {
 				// If the boat is already in the list, that means that it is docked in Bordeaux
 				*alreadySeenBoatNames = remove(*alreadySeenBoatNames, boatName)
-				action = models.Leaving
+				action = domains.Leaving
 			} else {
 				// If not, that means that it is entering in Bordeaux
-				action = models.Entering
+				action = domains.Entering
 				*alreadySeenBoatNames = append(*alreadySeenBoatNames, boatName)
 			}
-			boats = append(boats, models.Boat{
+			boats = append(boats, domains.Boat{
 				Name:     boatName,
 				Maneuver: action,
 				ApproximativeCrossingDate: computeApproximativeCrossingDate(

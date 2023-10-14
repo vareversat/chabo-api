@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/vareversat/chabo-api/internal/domains"
-	"github.com/vareversat/chabo-api/internal/models"
 	"github.com/vareversat/chabo-api/internal/utils"
 )
 
@@ -88,7 +87,7 @@ func (fU *forecastUsecase) RefreshAll(ctx context.Context) (domains.Refresh, err
 	defer cancel()
 
 	if refreshIsNeeded(ctx, fU.refreshRepository) {
-		var openDataForecasts models.OpenDataAPIResponse
+		var openDataForecasts domains.OpenDataAPIResponse
 		var forecasts domains.Forecasts
 
 		// Start the timer

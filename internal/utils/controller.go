@@ -9,7 +9,7 @@ import (
 	_ "time/tzdata"
 
 	"github.com/gin-gonic/gin"
-	"github.com/vareversat/chabo-api/internal/models"
+	"github.com/vareversat/chabo-api/internal/domains"
 )
 
 // Get the int param paramName passed into the request.
@@ -57,19 +57,19 @@ func GetTimezoneFromHeader(c *gin.Context) (*time.Location, error) {
 func ComputeMetadaLinks(itemCount int, limit int, offset int, path string) []interface{} {
 	var links []interface{}
 
-	links = append(links, models.OpenAPISelfLink{Self: models.OpenAPILink{Link: path}})
+	links = append(links, domains.OpenAPISelfLink{Self: domains.OpenAPILink{Link: path}})
 	reOffset := regexp.MustCompile(`offset=\d+`)
 
 	if offset+limit < itemCount {
 		newOffset := limit + offset
 		newLink := reOffset.ReplaceAllString(path, fmt.Sprintf("offset=%d", newOffset))
-		links = append(links, models.OpenAPINextLink{Self: models.OpenAPILink{Link: newLink}})
+		links = append(links, domains.OpenAPINextLink{Self: domains.OpenAPILink{Link: newLink}})
 	}
 
 	if offset != 0 && offset < itemCount && offset-limit >= 0 {
 		newOffset := offset - limit
 		newLink := reOffset.ReplaceAllString(path, fmt.Sprintf("offset=%d", newOffset))
-		links = append(links, models.OpenAPIPreviousLink{Self: models.OpenAPILink{Link: newLink}})
+		links = append(links, domains.OpenAPIPreviousLink{Self: domains.OpenAPILink{Link: newLink}})
 	}
 
 	return links

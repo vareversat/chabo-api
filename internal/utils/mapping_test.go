@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/vareversat/chabo-api/internal/domains"
-	"github.com/vareversat/chabo-api/internal/models"
 )
 
 func TestMapClosingType_OUI(t *testing.T) {
@@ -48,8 +47,8 @@ func TestMapBoats(t *testing.T) {
 	duration = 10000000000
 	crossingTime := localTime.Add(duration / 2)
 
-	want := []models.Boat{
-		{Name: "MY_BOAT", Maneuver: models.Entering, ApproximativeCrossingDate: crossingTime},
+	want := []domains.Boat{
+		{Name: "MY_BOAT", Maneuver: domains.Entering, ApproximativeCrossingDate: crossingTime},
 	}
 	value := MapBoats(
 		domains.BoatReason,
@@ -72,11 +71,11 @@ func TestMapBoatsMultiBoats(t *testing.T) {
 	crossingTimeBoat1 := localTime.Add(duration / 3)
 	crossingTimeBoat2 := localTime.Add(time.Duration(float64(duration) * (float64(2) / float64(3))))
 
-	want := []models.Boat{
-		{Name: "MY_BOAT", Maneuver: models.Entering, ApproximativeCrossingDate: crossingTimeBoat1},
+	want := []domains.Boat{
+		{Name: "MY_BOAT", Maneuver: domains.Entering, ApproximativeCrossingDate: crossingTimeBoat1},
 		{
 			Name:                      "MY_SECOND_BOAT",
-			Maneuver:                  models.Entering,
+			Maneuver:                  domains.Entering,
 			ApproximativeCrossingDate: crossingTimeBoat2,
 		},
 	}
@@ -101,8 +100,8 @@ func TestMapBoatsExistingBoats(t *testing.T) {
 	duration = 10000000000
 	crossingTime := localTime.Add(duration / 2)
 
-	want := []models.Boat{
-		{Name: "MY_BOAT", Maneuver: models.Leaving, ApproximativeCrossingDate: crossingTime},
+	want := []domains.Boat{
+		{Name: "MY_BOAT", Maneuver: domains.Leaving, ApproximativeCrossingDate: crossingTime},
 	}
 	value := MapBoats(
 		domains.BoatReason,

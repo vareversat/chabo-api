@@ -1,4 +1,4 @@
-package models
+package domains
 
 type OpenAPISelfLink struct {
 	Self OpenAPILink `json:"self"`

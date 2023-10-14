@@ -10,7 +10,6 @@ import (
 	"github.com/vareversat/chabo-api/internal/api/routers"
 	"github.com/vareversat/chabo-api/internal/db"
 	"github.com/vareversat/chabo-api/internal/domains"
-	"github.com/vareversat/chabo-api/internal/models"
 	"github.com/vareversat/chabo-api/internal/repositories"
 	"github.com/vareversat/chabo-api/internal/usecases"
 	"github.com/vareversat/chabo-api/internal/utils"
@@ -18,7 +17,7 @@ import (
 )
 
 var (
-	openDataForecasts models.OpenDataAPIResponse
+	openDataForecasts domains.OpenDataAPIResponse
 	forecasts         domains.Forecasts
 	mongoClient       *mongo.Client
 	mongoDatabase     mongo.Database

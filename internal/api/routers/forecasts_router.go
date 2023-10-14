@@ -27,5 +27,5 @@ func ForecastsRouter(timeout time.Duration, db mongo.Database, group *gin.Router
 	forecastGroup := group.Group("/forecasts")
 	forecastGroup.GET("", forecastController.GetAllForecats())
 	forecastGroup.GET(":id", forecastController.GetForecastByID())
-	forecastGroup.POST("/refresh", forecastController.RefreshForcast())
+	forecastGroup.POST("/refresh", forecastController.RefreshForecasts())
 }

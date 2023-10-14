@@ -8,7 +8,7 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
-	"github.com/vareversat/chabo-api/internal/models"
+	"github.com/vareversat/chabo-api/internal/domains"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -44,7 +44,7 @@ func InitMongoClient(logger *log.Entry) *mongo.Client {
 
 func GetAllForecasts(
 	client *mongo.Client,
-	mongoResponse *models.MongoResponse,
+	mongoResponse *domains.ForecastMongoResponse,
 	limit int,
 	offset int,
 	filter bson.D,
@@ -76,7 +76,7 @@ func GetAllForecasts(
 
 }
 
-func GetForecastbyID(client *mongo.Client, forecast *models.Forecast, ID string) error {
+func GetForecastbyID(client *mongo.Client, forecast *domains.Forecast, ID string) error {
 
 	coll := client.Database(DatabaseName).Collection(ForecastsCollectionName)
 	opts := options.FindOne()
@@ -107,7 +107,7 @@ func GetForecastbyID(client *mongo.Client, forecast *models.Forecast, ID string)
 
 // Insert all forecast to refrehs the data
 // Return an error and wither or not it failed under cooldown (too many request)
-func InsertAllForecasts(client *mongo.Client, forecasts []models.Forecast) (error, bool) {
+func InsertAllForecasts(client *mongo.Client, forecasts []domains.Forecast) (error, bool) {
 	interfaceRecords := make([]interface{}, len(forecasts))
 
 	if refreshIsNeeded(client) {
@@ -147,7 +147,7 @@ func InsertAllForecasts(client *mongo.Client, forecasts []models.Forecast) (erro
 
 		elapsed := time.Since(start)
 
-		refreshProof := models.Refresh{
+		refreshProof := domains.Refresh{
 			ItemCount: len(forecasts),
 			Duration:  elapsed,
 			Timestamp: start,
@@ -168,7 +168,7 @@ func InsertAllForecasts(client *mongo.Client, forecasts []models.Forecast) (erro
 
 }
 
-func InsertRefresh(client *mongo.Client, refresh models.Refresh) error {
+func InsertRefresh(client *mongo.Client, refresh domains.Refresh) error {
 
 	coll := client.Database(DatabaseName).Collection(RefreshesCollectionName)
 
@@ -187,7 +187,7 @@ func InsertRefresh(client *mongo.Client, refresh models.Refresh) error {
 
 }
 
-func GetLastRefresh(client *mongo.Client, refresh *models.Refresh) error {
+func GetLastRefresh(client *mongo.Client, refresh *domains.Refresh) error {
 
 	coll := client.Database(DatabaseName).Collection(RefreshesCollectionName)
 
@@ -222,7 +222,7 @@ func Ping(client *mongo.Client) error {
 // Check if it's possible to perform a data refresh
 func refreshIsNeeded(client *mongo.Client) bool {
 
-	var lastRefresh models.Refresh
+	var lastRefresh domains.Refresh
 
 	// Get the last refresh to be sure this is not too early
 	err := GetLastRefresh(client, &lastRefresh)
