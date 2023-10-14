@@ -34,7 +34,7 @@ func (sC *SystemController) Healthcheck() gin.HandlerFunc {
 			return
 		}
 
-		c.JSON(http.StatusOK, domains.SystemHealthOK{Message: "chabo-api is healthy"})
+		c.JSON(http.StatusOK, domains.SystemHealthOK{Message: "system is running properly"})
 	}
 
 	return gin.HandlerFunc(fn)
