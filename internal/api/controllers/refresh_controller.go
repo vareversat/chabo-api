@@ -19,8 +19,8 @@ type RefreshController struct {
 //	@Tags			Refreshes
 //	@Produce		json
 //	@Success		200	{object}	domains.Refresh{}
-//	@Failure		404	{object}	domains.ErrorResponse{}	"No previous refresh action exists"
-//	@Failure		500	{object}	domains.ErrorResponse{}	"An error occured on the server side"
+//	@Failure		404	{object}	domains.APIErrorResponse{}	"No previous refresh action exists"
+//	@Failure		500	{object}	domains.APIErrorResponse{}	"An error occured on the server side"
 //	@Router			/refresh/last [get]
 func (mC *RefreshController) GetLastRefresh() gin.HandlerFunc {
 	fn := func(c *gin.Context) {

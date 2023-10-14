@@ -107,13 +107,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Some params are missing and/or not properly formatted fror the requests",
                         "schema": {
-                            "$ref": "#/definitions/domains.ErrorResponse"
+                            "$ref": "#/definitions/domains.APIErrorResponse"
                         }
                     },
                     "500": {
                         "description": "An error occured on the server side",
                         "schema": {
-                            "$ref": "#/definitions/domains.ErrorResponse"
+                            "$ref": "#/definitions/domains.APIErrorResponse"
                         }
                     }
                 }
@@ -142,13 +142,13 @@ const docTemplate = `{
                     "429": {
                         "description": "Too many attempt to refresh",
                         "schema": {
-                            "$ref": "#/definitions/domains.ErrorResponse"
+                            "$ref": "#/definitions/domains.APIErrorResponse"
                         }
                     },
                     "500": {
                         "description": "An error occured on the server side",
                         "schema": {
-                            "$ref": "#/definitions/domains.ErrorResponse"
+                            "$ref": "#/definitions/domains.APIErrorResponse"
                         }
                     }
                 }
@@ -193,19 +193,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Some params are missing and/or not properly formatted fror the requests",
                         "schema": {
-                            "$ref": "#/definitions/domains.ErrorResponse"
+                            "$ref": "#/definitions/domains.APIErrorResponse"
                         }
                     },
                     "404": {
                         "description": "The ID does not match any forecast",
                         "schema": {
-                            "$ref": "#/definitions/domains.ErrorResponse"
+                            "$ref": "#/definitions/domains.APIErrorResponse"
                         }
                     },
                     "500": {
                         "description": "An error occured on the server side",
                         "schema": {
-                            "$ref": "#/definitions/domains.ErrorResponse"
+                            "$ref": "#/definitions/domains.APIErrorResponse"
                         }
                     }
                 }
@@ -231,13 +231,13 @@ const docTemplate = `{
                     "404": {
                         "description": "No previous refresh action exists",
                         "schema": {
-                            "$ref": "#/definitions/domains.ErrorResponse"
+                            "$ref": "#/definitions/domains.APIErrorResponse"
                         }
                     },
                     "500": {
                         "description": "An error occured on the server side",
                         "schema": {
-                            "$ref": "#/definitions/domains.ErrorResponse"
+                            "$ref": "#/definitions/domains.APIErrorResponse"
                         }
                     }
                 }
@@ -270,6 +270,15 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "domains.APIErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string",
+                    "example": "error in params"
+                }
+            }
+        },
         "domains.Boat": {
             "type": "object",
             "properties": {
@@ -319,15 +328,6 @@ const docTemplate = `{
                 "TwoWay",
                 "OneWay"
             ]
-        },
-        "domains.ErrorResponse": {
-            "type": "object",
-            "properties": {
-                "error": {
-                    "type": "string",
-                    "example": "error in params"
-                }
-            }
         },
         "domains.Forecast": {
             "type": "object",

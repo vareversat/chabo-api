@@ -1,4 +1,10 @@
 definitions:
+  domains.APIErrorResponse:
+    properties:
+      error:
+        example: error in params
+        type: string
+    type: object
   domains.Boat:
     properties:
       approximative_crossing_date:
@@ -35,12 +41,6 @@ definitions:
     x-enum-varnames:
     - TwoWay
     - OneWay
-  domains.ErrorResponse:
-    properties:
-      error:
-        example: error in params
-        type: string
-    type: object
   domains.Forecast:
     properties:
       boats:
@@ -190,11 +190,11 @@ paths:
           description: Some params are missing and/or not properly formatted fror
             the requests
           schema:
-            $ref: '#/definitions/domains.ErrorResponse'
+            $ref: '#/definitions/domains.APIErrorResponse'
         "500":
           description: An error occured on the server side
           schema:
-            $ref: '#/definitions/domains.ErrorResponse'
+            $ref: '#/definitions/domains.APIErrorResponse'
       summary: Get all foracasts
       tags:
       - Forecasts
@@ -225,15 +225,15 @@ paths:
           description: Some params are missing and/or not properly formatted fror
             the requests
           schema:
-            $ref: '#/definitions/domains.ErrorResponse'
+            $ref: '#/definitions/domains.APIErrorResponse'
         "404":
           description: The ID does not match any forecast
           schema:
-            $ref: '#/definitions/domains.ErrorResponse'
+            $ref: '#/definitions/domains.APIErrorResponse'
         "500":
           description: An error occured on the server side
           schema:
-            $ref: '#/definitions/domains.ErrorResponse'
+            $ref: '#/definitions/domains.APIErrorResponse'
       summary: Get a foracast
       tags:
       - Forecasts
@@ -253,11 +253,11 @@ paths:
         "429":
           description: Too many attempt to refresh
           schema:
-            $ref: '#/definitions/domains.ErrorResponse'
+            $ref: '#/definitions/domains.APIErrorResponse'
         "500":
           description: An error occured on the server side
           schema:
-            $ref: '#/definitions/domains.ErrorResponse'
+            $ref: '#/definitions/domains.APIErrorResponse'
       summary: Refresh the forecasts with the ones from the OpenData API
       tags:
       - Forecasts
@@ -274,11 +274,11 @@ paths:
         "404":
           description: No previous refresh action exists
           schema:
-            $ref: '#/definitions/domains.ErrorResponse'
+            $ref: '#/definitions/domains.APIErrorResponse'
         "500":
           description: An error occured on the server side
           schema:
-            $ref: '#/definitions/domains.ErrorResponse'
+            $ref: '#/definitions/domains.APIErrorResponse'
       summary: Get the last refresh action
       tags:
       - Refreshes

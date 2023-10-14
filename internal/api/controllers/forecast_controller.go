@@ -24,8 +24,8 @@ type ForecastController struct {
 //	@Accept			json
 //	@Produce		json
 //	@Success		200			{object}	domains.ForecastsResponse{}
-//	@Failure		400			{object}	domains.ErrorResponse{}	"Some params are missing and/or not properly formatted fror the requests"
-//	@Failure		500			{object}	domains.ErrorResponse{}	"An error occured on the server side"
+//	@Failure		400			{object}	domains.APIErrorResponse{}	"Some params are missing and/or not properly formatted fror the requests"
+//	@Failure		500			{object}	domains.APIErrorResponse{}	"An error occured on the server side"
 //	@Param			from		query		string					false	"The date to filter from (RFC3339)"		Format(date-time)
 //	@Param			limit		query		int						true	"Set the limit of the queried results"	Format(int)	default(10)
 //	@Param			offset		query		int						true	"Set the offset of the queried results"	Format(int)	default(0)
@@ -137,8 +137,8 @@ func (fC *ForecastController) GetAllForecats() gin.HandlerFunc {
 //	@Accept			json
 //	@Produce		json
 //	@Success		200	{object}	domains.Refresh{}
-//	@Failure		500	{object}	domains.ErrorResponse{}	"An error occured on the server side"
-//	@Failure		429	{object}	domains.ErrorResponse{}	"Too many attempt to refresh"
+//	@Failure		500	{object}	domains.APIErrorResponse{}	"An error occured on the server side"
+//	@Failure		429	{object}	domains.APIErrorResponse{}	"Too many attempt to refresh"
 //	@Router			/forecasts/refresh [post]
 func (fC *ForecastController) RefreshForecasts() gin.HandlerFunc {
 	fn := func(c *gin.Context) {
@@ -168,9 +168,9 @@ func (fC *ForecastController) RefreshForecasts() gin.HandlerFunc {
 //	@Accept			json
 //	@Produce		json
 //	@Success		200			{object}	domains.ForecastResponse{}
-//	@Failure		404			{object}	domains.ErrorResponse{}	"The ID does not match any forecast"
-//	@Failure		400			{object}	domains.ErrorResponse{}	"Some params are missing and/or not properly formatted fror the requests"
-//	@Failure		500			{object}	domains.ErrorResponse{}	"An error occured on the server side"
+//	@Failure		404			{object}	domains.APIErrorResponse{}	"The ID does not match any forecast"
+//	@Failure		400			{object}	domains.APIErrorResponse{}	"Some params are missing and/or not properly formatted fror the requests"
+//	@Failure		500			{object}	domains.APIErrorResponse{}	"An error occured on the server side"
 //	@Param			id			path		string					true	"The forecast ID"
 //	@Param			Timezone	header		string					false	"Timezone to format the date related fields (TZ identifier)"	default(UTC)
 //	@Router			/forecasts/{id} [get]
