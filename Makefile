@@ -54,6 +54,7 @@ run: swag
 fmt:
 	$(GOCMD) fmt ./...
 	golines . -w --ignored-dirs=vendor
+	swag fmt
 
 # Lint the code using a linter tool
 lint:
