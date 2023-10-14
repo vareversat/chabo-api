@@ -94,5 +94,5 @@ func main() {
 		"Welcome to Chabo API ! Starting the project in " + Env + " mode (Gin " + GinMode + ")",
 	)
 
-	routers.MainRouter(mongoClient, mongoDatabase)
+	routers.MainRouter(mongoDatabase)
 }

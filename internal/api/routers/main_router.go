@@ -25,7 +25,7 @@ import (
 //	@License.name				MIT
 //	@License.url				https://github.com/vareversat/chabo-api/blob/main/LICENSE.md
 
-func MainRouter(mongoClient *mongo.Client, mongoDatabase mongo.Database) {
+func MainRouter(mongoDatabase mongo.Database) {
 
 	// Configure Gin web server
 	router := gin.New()
@@ -47,7 +47,7 @@ func MainRouter(mongoClient *mongo.Client, mongoDatabase mongo.Database) {
 	timeout := time.Duration(30) * time.Second
 	ForecastsRouter(timeout, mongoDatabase, rootRouterGroup)
 	RefreshRouter(timeout, mongoDatabase, rootRouterGroup)
-	SystemRouter(timeout, mongoClient, rootRouterGroup)
+	SystemRouter(timeout, mongoDatabase.Client(), rootRouterGroup)
 
 	if err := router.Run(fmt.Sprintf("%s:%s", os.Getenv("APP_URI"), os.Getenv("APP_PORT"))); err != nil {
 		panic(err)
