@@ -49,7 +49,10 @@ func MainRouter(mongoDatabase mongo.Database) {
 	RefreshRouter(timeout, mongoDatabase, rootRouterGroup)
 	SystemRouter(timeout, mongoDatabase.Client(), rootRouterGroup)
 
-	if err := router.Run(fmt.Sprintf("%s:%s", os.Getenv("APP_URI"), os.Getenv("APP_PORT"))); err != nil {
+	// Compute the app address
+	appAddr := fmt.Sprintf("%s:%s", os.Getenv("APP_URI"), os.Getenv("APP_PORT"))
+
+	if err := router.Run(appAddr); err != nil {
 		panic(err)
 	}
 
