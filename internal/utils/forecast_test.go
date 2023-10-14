@@ -11,21 +11,21 @@ import (
 func TestComputeForecasts(t *testing.T) {
 	var forecasts domains.Forecasts
 	recordTimestamp, _ := time.Parse(time.RFC3339, "2023-02-26T21:00:00Z")
-	openDataForecasts := domains.OpenDataAPIResponse{
+	openDataForecasts := domains.BordeauxAPIResponse{
 		Hits: 1,
-		Parameters: domains.OpenDataAPIResponseParameters{
+		Parameters: domains.BordeauxAPIResponseParameters{
 			Dataset:  "dataset",
 			Row:      1,
 			Start:    0,
 			Format:   "format",
 			Timezone: "UTC",
 		},
-		Records: []domains.OpenDataAPIResponseForecast{
+		Records: []domains.BordeauxAPIResponseForecast{
 			{
 				DatasetID:       "datasetid",
 				RecordID:        "recordid",
 				RecordTimestamp: recordTimestamp,
-				Fields: domains.OpenDataAPIResponseForecastField{
+				Fields: domains.BordeauxAPIResponseForecastField{
 					ClosingDate:  "2023-02-26",
 					ClosingTime:  "21:00",
 					OpeningTime:  "23:00",
@@ -54,8 +54,8 @@ func TestComputeForecasts(t *testing.T) {
 					ApproximativeCrossingDate: approximativeCrossingDate,
 				},
 			},
-			Link: domains.OpenAPISelfLink{
-				Self: domains.OpenAPILink{Link: "/v1/forecasts/recordid"},
+			Link: domains.APIResponseSelfLink{
+				Self: domains.APIResponseLink{Link: "/v1/forecasts/recordid"},
 			},
 		},
 	}

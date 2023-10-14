@@ -55,7 +55,7 @@ func (fC *ForecastController) GetAllForecats() gin.HandlerFunc {
 		if timeErr != nil && utils.GetStringParams(c, "from") != "" {
 			c.JSON(
 				http.StatusBadRequest,
-				domains.ErrorResponse{
+				domains.APIErrorResponse{
 					Error: "your 'from' param is not in RFC3339 format. See https://datatracker.ietf.org/doc/html/rfc3339#section-5.8",
 				},
 			)
@@ -64,26 +64,26 @@ func (fC *ForecastController) GetAllForecats() gin.HandlerFunc {
 		}
 
 		if limitErr != nil {
-			c.JSON(http.StatusBadRequest, domains.ErrorResponse{Error: limitErr.Error()})
+			c.JSON(http.StatusBadRequest, domains.APIErrorResponse{Error: limitErr.Error()})
 			sentry.CaptureException(limitErr)
 			return
 		}
 
 		if offsetErr != nil {
-			c.JSON(http.StatusBadRequest, domains.ErrorResponse{Error: offsetErr.Error()})
+			c.JSON(http.StatusBadRequest, domains.APIErrorResponse{Error: offsetErr.Error()})
 			sentry.CaptureException(offsetErr)
 			return
 		}
 
 		if locationErr != nil {
-			c.JSON(http.StatusBadRequest, domains.ErrorResponse{Error: locationErr.Error()})
+			c.JSON(http.StatusBadRequest, domains.APIErrorResponse{Error: locationErr.Error()})
 			sentry.CaptureException(locationErr)
 			return
 		}
 
 		if limit == 0 {
 			errMessage := "the limit param need to be greater or equal to 1"
-			c.JSON(http.StatusBadRequest, domains.ErrorResponse{Error: errMessage})
+			c.JSON(http.StatusBadRequest, domains.APIErrorResponse{Error: errMessage})
 			sentry.CaptureException(fmt.Errorf(errMessage))
 			return
 		}
@@ -102,7 +102,7 @@ func (fC *ForecastController) GetAllForecats() gin.HandlerFunc {
 		)
 
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, domains.ErrorResponse{Error: err.Error()})
+			c.JSON(http.StatusInternalServerError, domains.APIErrorResponse{Error: err.Error()})
 			sentry.CaptureException(locationErr)
 			return
 		}
@@ -150,7 +150,7 @@ func (fC *ForecastController) RefreshForecasts() gin.HandlerFunc {
 		refresh, err := fC.ForecastUsecase.RefreshAll(c)
 
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, domains.ErrorResponse{Error: err.Error()})
+			c.JSON(http.StatusInternalServerError, domains.APIErrorResponse{Error: err.Error()})
 			return
 		}
 
@@ -183,7 +183,7 @@ func (fC *ForecastController) GetForecastByID() gin.HandlerFunc {
 		location, locationErr := utils.GetTimezoneFromHeader(c)
 
 		if locationErr != nil {
-			c.JSON(http.StatusBadRequest, domains.ErrorResponse{Error: locationErr.Error()})
+			c.JSON(http.StatusBadRequest, domains.APIErrorResponse{Error: locationErr.Error()})
 			return
 		}
 
@@ -193,14 +193,14 @@ func (fC *ForecastController) GetForecastByID() gin.HandlerFunc {
 
 		err := c.ShouldBind(&forecast)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, domains.ErrorResponse{Error: err.Error()})
+			c.JSON(http.StatusBadRequest, domains.APIErrorResponse{Error: err.Error()})
 			return
 		}
 
 		err = fC.ForecastUsecase.GetByID(c, id, &forecast, location)
 
 		if err != nil {
-			c.JSON(http.StatusNotFound, domains.ErrorResponse{Error: err.Error()})
+			c.JSON(http.StatusNotFound, domains.APIErrorResponse{Error: err.Error()})
 			return
 		}
 

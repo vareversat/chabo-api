@@ -14,7 +14,7 @@ func InitForecast(logger *log.Entry) {
 }
 
 // Populate a *domains.Forecasts pointer with the OpenAPI data
-func ComputeForecasts(forecasts *domains.Forecasts, openDataForecasts domains.OpenDataAPIResponse) {
+func ComputeForecasts(forecasts *domains.Forecasts, openDataForecasts domains.BordeauxAPIResponse) {
 	// alreadySeenBoatNames is used to compute the maneuver of each boats
 	var alreadySeenBoatNames []string
 
@@ -59,8 +59,8 @@ func ComputeForecasts(forecasts *domains.Forecasts, openDataForecasts domains.Op
 				&alreadySeenBoatNames,
 				openAPIForecast.RecordID,
 			),
-			Link: domains.OpenAPISelfLink{
-				Self: domains.OpenAPILink{Link: "/v1/forecasts/" + openAPIForecast.RecordID},
+			Link: domains.APIResponseSelfLink{
+				Self: domains.APIResponseLink{Link: "/v1/forecasts/" + openAPIForecast.RecordID},
 			},
 		})
 	}

@@ -19,7 +19,7 @@ func InitOpenApi(logger *log.Entry) {
 
 // Get forecasts data from the Opendata API
 // Populate the *domains.OpenDataAPIResponse pointer if the data are correct
-func GetOpenAPIData(openDataAPIResponse *domains.OpenDataAPIResponse) error {
+func GetOpenAPIData(openDataAPIResponse *domains.BordeauxAPIResponse) error {
 
 	data, err := http.Get(os.Getenv("OPENDATA_API_URL"))
 

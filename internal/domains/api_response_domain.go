@@ -1,9 +1,9 @@
 package domains
 
-type ErrorResponse struct {
+type APIErrorResponse struct {
 	Error string `json:"error" example:"error in params"`
 }
 
-type OKResponse struct {
+type APIOKResponse struct {
 	Message string `json:"message" example:"ok"`
 }

@@ -57,19 +57,19 @@ func GetTimezoneFromHeader(c *gin.Context) (*time.Location, error) {
 func ComputeMetadaLinks(itemCount int, limit int, offset int, path string) []interface{} {
 	var links []interface{}
 
-	links = append(links, domains.OpenAPISelfLink{Self: domains.OpenAPILink{Link: path}})
+	links = append(links, domains.APIResponseSelfLink{Self: domains.APIResponseLink{Link: path}})
 	reOffset := regexp.MustCompile(`offset=\d+`)
 
 	if offset+limit < itemCount {
 		newOffset := limit + offset
 		newLink := reOffset.ReplaceAllString(path, fmt.Sprintf("offset=%d", newOffset))
-		links = append(links, domains.OpenAPINextLink{Self: domains.OpenAPILink{Link: newLink}})
+		links = append(links, domains.APIResponseNextLink{Self: domains.APIResponseLink{Link: newLink}})
 	}
 
 	if offset != 0 && offset < itemCount && offset-limit >= 0 {
 		newOffset := offset - limit
 		newLink := reOffset.ReplaceAllString(path, fmt.Sprintf("offset=%d", newOffset))
-		links = append(links, domains.OpenAPIPreviousLink{Self: domains.OpenAPILink{Link: newLink}})
+		links = append(links, domains.APIResponsePreviousLink{Self: domains.APIResponseLink{Link: newLink}})
 	}
 
 	return links

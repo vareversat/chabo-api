@@ -23,7 +23,7 @@ func TestForecastIsEqualOK(t *testing.T) {
 				ApproximativeCrossingDate: approximativeCrossingDate,
 			},
 		},
-		Link: OpenAPISelfLink{Self: OpenAPILink{Link: "/v1/forecasts/recordid"}},
+		Link: APIResponseSelfLink{Self: APIResponseLink{Link: "/v1/forecasts/recordid"}},
 	}
 	otherForecast := Forecast{
 		ID:                       "recordid",
@@ -39,7 +39,7 @@ func TestForecastIsEqualOK(t *testing.T) {
 				ApproximativeCrossingDate: approximativeCrossingDate,
 			},
 		},
-		Link: OpenAPISelfLink{Self: OpenAPILink{Link: "/v1/forecasts/recordid"}},
+		Link: APIResponseSelfLink{Self: APIResponseLink{Link: "/v1/forecasts/recordid"}},
 	}
 	result := forecast.IsEqual(otherForecast)
 	want := true
@@ -67,7 +67,7 @@ func TestForecastIsEqualNOK(t *testing.T) {
 				ApproximativeCrossingDate: approximativeCrossingDate,
 			},
 		},
-		Link: OpenAPISelfLink{Self: OpenAPILink{Link: "/v1/forecasts/recordid"}},
+		Link: APIResponseSelfLink{Self: APIResponseLink{Link: "/v1/forecasts/recordid"}},
 	}
 	otherForecast := Forecast{
 		ID:                       "recordid",
@@ -83,7 +83,7 @@ func TestForecastIsEqualNOK(t *testing.T) {
 				ApproximativeCrossingDate: approximativeCrossingDate,
 			},
 		},
-		Link: OpenAPISelfLink{Self: OpenAPILink{Link: "/v1/forecasts/recordid"}},
+		Link: APIResponseSelfLink{Self: APIResponseLink{Link: "/v1/forecasts/recordid"}},
 	}
 	result := forecast.IsEqual(otherForecast)
 	want := false
@@ -111,7 +111,7 @@ func TestForecastsAreEqualOK(t *testing.T) {
 				ApproximativeCrossingDate: approximativeCrossingDate,
 			},
 		},
-		Link: OpenAPISelfLink{Self: OpenAPILink{Link: "/v1/forecasts/recordid"}},
+		Link: APIResponseSelfLink{Self: APIResponseLink{Link: "/v1/forecasts/recordid"}},
 	}}
 	otherForecasts := Forecasts{Forecast{
 		ID:                       "recordid",
@@ -127,7 +127,7 @@ func TestForecastsAreEqualOK(t *testing.T) {
 				ApproximativeCrossingDate: approximativeCrossingDate,
 			},
 		},
-		Link: OpenAPISelfLink{Self: OpenAPILink{Link: "/v1/forecasts/recordid"}},
+		Link: APIResponseSelfLink{Self: APIResponseLink{Link: "/v1/forecasts/recordid"}},
 	}}
 	result := forecasts.AreEqual(otherForecasts)
 	want := true
@@ -155,7 +155,7 @@ func TestForecastsAreEqualNOK(t *testing.T) {
 				ApproximativeCrossingDate: approximativeCrossingDate,
 			},
 		},
-		Link: OpenAPISelfLink{Self: OpenAPILink{Link: "/v1/forecasts/recordid"}},
+		Link: APIResponseSelfLink{Self: APIResponseLink{Link: "/v1/forecasts/recordid"}},
 	}}
 	otherForecasts := Forecasts{Forecast{
 		ID:                       "recordid2",
@@ -171,7 +171,7 @@ func TestForecastsAreEqualNOK(t *testing.T) {
 				ApproximativeCrossingDate: approximativeCrossingDate,
 			},
 		},
-		Link: OpenAPISelfLink{Self: OpenAPILink{Link: "/v1/forecasts/recordid"}},
+		Link: APIResponseSelfLink{Self: APIResponseLink{Link: "/v1/forecasts/recordid"}},
 	}}
 	result := forecasts.AreEqual(otherForecasts)
 	want := false

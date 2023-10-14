@@ -34,7 +34,7 @@ func (mC *RefreshController) GetLastRefresh() gin.HandlerFunc {
 		err := mC.RefreshUsecase.GetLast(c, &refresh)
 
 		if err != nil {
-			c.JSON(http.StatusNotFound, domains.ErrorResponse{Error: err.Error()})
+			c.JSON(http.StatusNotFound, domains.APIErrorResponse{Error: err.Error()})
 			return
 		}
 

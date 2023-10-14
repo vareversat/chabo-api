@@ -17,7 +17,7 @@ import (
 )
 
 var (
-	openDataForecasts domains.OpenDataAPIResponse
+	openDataForecasts domains.BordeauxAPIResponse
 	forecasts         domains.Forecasts
 	mongoClient       *mongo.Client
 	mongoDatabase     mongo.Database

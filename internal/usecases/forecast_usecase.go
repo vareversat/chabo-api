@@ -87,7 +87,7 @@ func (fU *forecastUsecase) RefreshAll(ctx context.Context) (domains.Refresh, err
 	defer cancel()
 
 	if refreshIsNeeded(ctx, fU.refreshRepository) {
-		var openDataForecasts domains.OpenDataAPIResponse
+		var openDataForecasts domains.BordeauxAPIResponse
 		var forecasts domains.Forecasts
 
 		// Start the timer

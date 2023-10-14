@@ -2,13 +2,13 @@ package domains
 
 import "time"
 
-type OpenDataAPIResponse struct {
+type BordeauxAPIResponse struct {
 	Hits       int                           `json:"nhits"`
-	Parameters OpenDataAPIResponseParameters `json:"parameters"`
-	Records    []OpenDataAPIResponseForecast `json:"records"`
+	Parameters BordeauxAPIResponseParameters `json:"parameters"`
+	Records    []BordeauxAPIResponseForecast `json:"records"`
 }
 
-type OpenDataAPIResponseParameters struct {
+type BordeauxAPIResponseParameters struct {
 	Dataset  string   `json:"dataset"`
 	Row      int      `json:"rows"`
 	Start    int      `json:"start"`
@@ -17,14 +17,14 @@ type OpenDataAPIResponseParameters struct {
 	Timezone string   `json:"timezone"`
 }
 
-type OpenDataAPIResponseForecast struct {
+type BordeauxAPIResponseForecast struct {
 	DatasetID       string                           `json:"datasetid"`
 	RecordID        string                           `json:"recordid"`
-	Fields          OpenDataAPIResponseForecastField `json:"fields"`
+	Fields          BordeauxAPIResponseForecastField `json:"fields"`
 	RecordTimestamp time.Time                        `json:"record_timestamp"`
 }
 
-type OpenDataAPIResponseForecastField struct {
+type BordeauxAPIResponseForecastField struct {
 	ClosingDate  string `json:"date_passage"`
 	ClosingTime  string `json:"fermeture_a_la_circulation"`
 	OpeningTime  string `json:"re_ouverture_a_la_circulation"`
