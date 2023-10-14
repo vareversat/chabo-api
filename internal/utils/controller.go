@@ -63,13 +63,19 @@ func ComputeMetadaLinks(itemCount int, limit int, offset int, path string) []int
 	if offset+limit < itemCount {
 		newOffset := limit + offset
 		newLink := reOffset.ReplaceAllString(path, fmt.Sprintf("offset=%d", newOffset))
-		links = append(links, domains.APIResponseNextLink{Self: domains.APIResponseLink{Link: newLink}})
+		links = append(
+			links,
+			domains.APIResponseNextLink{Self: domains.APIResponseLink{Link: newLink}},
+		)
 	}
 
 	if offset != 0 && offset < itemCount && offset-limit >= 0 {
 		newOffset := offset - limit
 		newLink := reOffset.ReplaceAllString(path, fmt.Sprintf("offset=%d", newOffset))
-		links = append(links, domains.APIResponsePreviousLink{Self: domains.APIResponseLink{Link: newLink}})
+		links = append(
+			links,
+			domains.APIResponsePreviousLink{Self: domains.APIResponseLink{Link: newLink}},
+		)
 	}
 
 	return links

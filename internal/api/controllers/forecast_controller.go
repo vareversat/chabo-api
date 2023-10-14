@@ -26,13 +26,13 @@ type ForecastController struct {
 //	@Success		200			{object}	domains.ForecastsResponse{}
 //	@Failure		400			{object}	domains.APIErrorResponse{}	"Some params are missing and/or not properly formatted fror the requests"
 //	@Failure		500			{object}	domains.APIErrorResponse{}	"An error occured on the server side"
-//	@Param			from		query		string					false	"The date to filter from (RFC3339)"		Format(date-time)
-//	@Param			limit		query		int						true	"Set the limit of the queried results"	Format(int)	default(10)
-//	@Param			offset		query		int						true	"Set the offset of the queried results"	Format(int)	default(0)
-//	@Param			reason		query		string					false	"The closing reason"					Enums(boat, maintenance)
-//	@Param			boat		query		string					false	"The boat name of the event"
-//	@Param			maneuver	query		string					false	"The boat maneuver of the event"								Enums(leaving_bordeaux, entering_in_bordeaux)
-//	@Param			Timezone	header		string					false	"Timezone to format the date related fields (TZ identifier)"	default(UTC)
+//	@Param			from		query		string						false	"The date to filter from (RFC3339)"		Format(date-time)
+//	@Param			limit		query		int							true	"Set the limit of the queried results"	Format(int)	default(10)
+//	@Param			offset		query		int							true	"Set the offset of the queried results"	Format(int)	default(0)
+//	@Param			reason		query		string						false	"The closing reason"					Enums(boat, maintenance)
+//	@Param			boat		query		string						false	"The boat name of the event"
+//	@Param			maneuver	query		string						false	"The boat maneuver of the event"								Enums(leaving_bordeaux, entering_in_bordeaux)
+//	@Param			Timezone	header		string						false	"Timezone to format the date related fields (TZ identifier)"	default(UTC)
 //	@Router			/forecasts [get]
 func (fC *ForecastController) GetAllForecats() gin.HandlerFunc {
 	fn := func(c *gin.Context) {
@@ -171,8 +171,8 @@ func (fC *ForecastController) RefreshForecasts() gin.HandlerFunc {
 //	@Failure		404			{object}	domains.APIErrorResponse{}	"The ID does not match any forecast"
 //	@Failure		400			{object}	domains.APIErrorResponse{}	"Some params are missing and/or not properly formatted fror the requests"
 //	@Failure		500			{object}	domains.APIErrorResponse{}	"An error occured on the server side"
-//	@Param			id			path		string					true	"The forecast ID"
-//	@Param			Timezone	header		string					false	"Timezone to format the date related fields (TZ identifier)"	default(UTC)
+//	@Param			id			path		string						true	"The forecast ID"
+//	@Param			Timezone	header		string						false	"Timezone to format the date related fields (TZ identifier)"	default(UTC)
 //	@Router			/forecasts/{id} [get]
 func (fC *ForecastController) GetForecastByID() gin.HandlerFunc {
 	fn := func(c *gin.Context) {
