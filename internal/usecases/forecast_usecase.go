@@ -39,10 +39,9 @@ func (fU *forecastUsecase) GetByID(
 	defer cancel()
 
 	// Do a refresh attempt in case of the data are too old
-	_, err := fU.RefreshAll(ctx)
-	fmt.Println(err)
+	fU.RefreshAll(ctx)
 
-	err = fU.forecastRepository.GetByID(ctx, id, forecast)
+	err := fU.forecastRepository.GetByID(ctx, id, forecast)
 	if err != nil {
 		return err
 	}
@@ -67,10 +66,9 @@ func (fU *forecastUsecase) GetAllFiltered(
 	defer cancel()
 
 	// Do a refresh attempt in case of the data are too old
-	_, err := fU.RefreshAll(ctx)
-	fmt.Println(err)
+	fU.RefreshAll(ctx)
 
-	err = fU.forecastRepository.GetAllFiltered(
+	err := fU.forecastRepository.GetAllFiltered(
 		ctx,
 		location,
 		offset,
