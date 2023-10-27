@@ -120,7 +120,6 @@ func (fU *forecastUsecase) GetAllFiltered(
 
 	err := fU.forecastRepository.GetAllFiltered(
 		ctx,
-		location,
 		offset,
 		limit,
 		from,

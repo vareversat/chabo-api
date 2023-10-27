@@ -83,7 +83,6 @@ func (fR *forecastRepository) GetAllBetweenTwoDates(
 
 func (fR *forecastRepository) GetAllFiltered(
 	ctx context.Context,
-	location *time.Location,
 	offset int,
 	limit int,
 	from time.Time,
