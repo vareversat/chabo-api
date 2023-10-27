@@ -35,6 +35,52 @@ func (fR *forecastRepository) GetByID(
 
 }
 
+func (fR *forecastRepository) GetAllBetweenTwoDates(
+	ctx context.Context,
+	offset int,
+	limit int,
+	from time.Time,
+	to time.Time,
+	forecasts *domains.Forecasts,
+	totalItemCount *int,
+) error {
+	var mongoResponse domains.ForecastMongoResponse
+	mongoFilter := bson.D{}
+
+	mongoFilter = append(
+		mongoFilter,
+		bson.E{
+			Key:   "circulation_closing_date",
+			Value: bson.D{{Key: "$gte", Value: from}},
+		},
+	)
+
+	mongoFilter = append(
+		mongoFilter,
+		bson.E{
+			Key:   "circulation_closing_date",
+			Value: bson.D{{Key: "$lt", Value: to}},
+		},
+	)
+
+	cursor, err := computeMongoCursor(ctx, mongoFilter, fR.collection, limit, offset)
+	if err != nil {
+		return err
+	}
+
+	for cursor.Next(ctx) {
+		if err := cursor.Decode(&mongoResponse); err != nil {
+			logrus.Info(err.Error())
+			return err
+		}
+	}
+
+	*forecasts = mongoResponse.Results
+	*totalItemCount = mongoResponse.Count[0].ItemCount
+
+	return err
+}
+
 func (fR *forecastRepository) GetAllFiltered(
 	ctx context.Context,
 	location *time.Location,

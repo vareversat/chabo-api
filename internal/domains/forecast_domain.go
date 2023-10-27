@@ -103,6 +103,15 @@ func (forecasts *Forecasts) ChangeLocations(location *time.Location) {
 
 type ForecastRepository interface {
 	GetByID(ctx context.Context, id string, forecast *Forecast) error
+	GetAllBetweenTwoDates(
+		ctx context.Context,
+		offset int,
+		limit int,
+		from time.Time,
+		to time.Time,
+		forecasts *Forecasts,
+		totalItemCount *int,
+	) error
 	GetAllFiltered(
 		ctx context.Context,
 		location *time.Location,
@@ -121,6 +130,14 @@ type ForecastRepository interface {
 
 type ForecastUsecase interface {
 	GetByID(ctx context.Context, id string, forecast *Forecast, location *time.Location) error
+	GetTodayForecasts(
+		ctx context.Context,
+		forecasts *Forecasts,
+		offset int,
+		limit int,
+		location *time.Location,
+		totalItemCount *int,
+	) error
 	GetAllFiltered(
 		ctx context.Context,
 		location *time.Location,

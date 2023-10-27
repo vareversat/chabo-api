@@ -261,6 +261,50 @@ paths:
       summary: Refresh the forecasts with the ones from the OpenData API
       tags:
       - Forecasts
+  /forecasts/today:
+    get:
+      consumes:
+      - application/json
+      description: Get the closing schedule for today
+      parameters:
+      - default: 10
+        description: Set the limit of the queried results
+        format: int
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 0
+        description: Set the offset of the queried results
+        format: int
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - default: UTC
+        description: Timezone to format the date related fields (TZ identifier)
+        in: header
+        name: Timezone
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domains.ForecastsResponse'
+        "400":
+          description: Some params are missing and/or not properly formatted fror
+            the requests
+          schema:
+            $ref: '#/definitions/domains.APIErrorResponse'
+        "500":
+          description: An error occured on the server side
+          schema:
+            $ref: '#/definitions/domains.APIErrorResponse'
+      summary: Get the closing schedule for today
+      tags:
+      - Forecasts
   /refresh/last:
     get:
       description: Get the last trace of refresh action on POST /forecasts/refresh

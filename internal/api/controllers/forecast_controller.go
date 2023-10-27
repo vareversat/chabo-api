@@ -129,6 +129,96 @@ func (fC *ForecastController) GetAllForecats() gin.HandlerFunc {
 	return gin.HandlerFunc(fn)
 }
 
+// GetTodayForecasts godoc
+//
+//	@Summary		Get the closing schedule for today
+//	@Description	Get the closing schedule for today
+//	@Tags			Forecasts
+//	@Accept			json
+//	@Produce		json
+//	@Success		200			{object}	domains.ForecastsResponse{}
+//	@Failure		400			{object}	domains.APIErrorResponse{}	"Some params are missing and/or not properly formatted fror the requests"
+//	@Failure		500			{object}	domains.APIErrorResponse{}	"An error occured on the server side"
+//	@Param			limit		query		int							true	"Set the limit of the queried results"							Format(int)	default(10)
+//	@Param			offset		query		int							true	"Set the offset of the queried results"							Format(int)	default(0)
+//	@Param			Timezone	header		string						false	"Timezone to format the date related fields (TZ identifier)"	default(UTC)
+//	@Router			/forecasts/today [get]
+func (fC *ForecastController) GetTodayForecasts() gin.HandlerFunc {
+	fn := func(c *gin.Context) {
+
+		if hub := sentrygin.GetHubFromContext(c); hub != nil {
+			hub.Scope().SetTag("controller", "GetCurrentForecasts")
+		}
+
+		var forecasts domains.Forecasts
+		var totalItemCount int
+
+		location, locationErr := utils.GetTimezoneFromHeader(c)
+		limit, limitErr := utils.GetIntParams(c, "limit")
+		offset, offsetErr := utils.GetIntParams(c, "offset")
+
+		if limitErr != nil {
+			c.JSON(http.StatusBadRequest, domains.APIErrorResponse{Error: limitErr.Error()})
+			sentry.CaptureException(limitErr)
+			return
+		}
+
+		if offsetErr != nil {
+			c.JSON(http.StatusBadRequest, domains.APIErrorResponse{Error: offsetErr.Error()})
+			sentry.CaptureException(offsetErr)
+			return
+		}
+
+		if locationErr != nil {
+			c.JSON(http.StatusBadRequest, domains.APIErrorResponse{Error: locationErr.Error()})
+			sentry.CaptureException(locationErr)
+			return
+		}
+
+		if limit == 0 {
+			errMessage := "the limit param need to be greater or equal to 1"
+			c.JSON(http.StatusBadRequest, domains.APIErrorResponse{Error: errMessage})
+			sentry.CaptureException(fmt.Errorf(errMessage))
+			return
+		}
+
+		err := fC.ForecastUsecase.GetTodayForecasts(
+			c,
+			&forecasts,
+			offset,
+			limit,
+			location,
+			&totalItemCount,
+		)
+
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, domains.APIErrorResponse{Error: err.Error()})
+			sentry.CaptureException(locationErr)
+			return
+		}
+
+		links := utils.ComputeMetadaLinks(
+			totalItemCount,
+			limit,
+			offset,
+			fmt.Sprintf("%s/%s", c.Request.URL.Path, c.Request.URL.RawQuery),
+		)
+
+		response := domains.ForecastsResponse{
+			Links:     links,
+			Hits:      totalItemCount,
+			Forecasts: forecasts,
+			Limit:     limit,
+			Offset:    offset,
+			Timezone:  location.String(),
+		}
+
+		c.JSON(http.StatusOK, response)
+	}
+
+	return gin.HandlerFunc(fn)
+}
+
 // RefreshForecasts godoc
 //
 //	@Summary		Refresh the forecasts with the ones from the OpenData API

@@ -154,6 +154,68 @@ const docTemplate = `{
                 }
             }
         },
+        "/forecasts/today": {
+            "get": {
+                "description": "Get the closing schedule for today",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Forecasts"
+                ],
+                "summary": "Get the closing schedule for today",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "format": "int",
+                        "default": 10,
+                        "description": "Set the limit of the queried results",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "format": "int",
+                        "default": 0,
+                        "description": "Set the offset of the queried results",
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "UTC",
+                        "description": "Timezone to format the date related fields (TZ identifier)",
+                        "name": "Timezone",
+                        "in": "header"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domains.ForecastsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Some params are missing and/or not properly formatted fror the requests",
+                        "schema": {
+                            "$ref": "#/definitions/domains.APIErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "An error occured on the server side",
+                        "schema": {
+                            "$ref": "#/definitions/domains.APIErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/forecasts/{id}": {
             "get": {
                 "description": "Fetch a forecast by his unique ID",

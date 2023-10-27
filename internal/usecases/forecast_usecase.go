@@ -50,6 +50,56 @@ func (fU *forecastUsecase) GetByID(
 	return nil
 }
 
+func (fU *forecastUsecase) GetTodayForecasts(
+	ctx context.Context,
+	forecasts *domains.Forecasts,
+	offset int,
+	limit int,
+	location *time.Location,
+	totalItemCount *int,
+) error {
+	ctx, cancel := context.WithTimeout(ctx, fU.contextTimeout)
+	// Get the current time
+	from := time.Now()
+	// Convert the local time into the requested TZ
+	fromLocal := from.In(location)
+	// Get the first second of the current day
+	fromRounded := time.Date(
+		fromLocal.Year(),
+		fromLocal.Month(),
+		fromLocal.Day(),
+		0,
+		0,
+		0,
+		0,
+		location,
+	)
+	// The 'to' time is computed by adding one day to the 'fromRounded' time
+	to := fromRounded.AddDate(0, 0, 1).In(location)
+	// Get the first second of the next day
+	toRounded := time.Date(to.Year(), to.Month(), to.Day(), 0, 0, 0, 0, location)
+	defer cancel()
+
+	// Do a refresh attempt in case of the data are too old
+	fU.RefreshAll(ctx)
+
+	err := fU.forecastRepository.GetAllBetweenTwoDates(
+		ctx,
+		offset,
+		limit,
+		fromRounded,
+		toRounded,
+		forecasts,
+		totalItemCount,
+	)
+	if err != nil {
+		return err
+	}
+
+	forecasts.ChangeLocations(location)
+	return nil
+}
+
 func (fU *forecastUsecase) GetAllFiltered(
 	ctx context.Context,
 	location *time.Location,
