@@ -3,6 +3,8 @@ package domains
 import (
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestBoatIsEqualOK(t *testing.T) {
@@ -18,11 +20,8 @@ func TestBoatIsEqualOK(t *testing.T) {
 		ApproximativeCrossingDate: approximativeCrossingDate,
 	}
 	result := boat.IsEqual(otherBoat)
-	want := true
 
-	if want != result {
-		t.Fatalf(`IsEqual("otherBoat") = %v, want match for %v`, result, want)
-	}
+	assert.True(t, result)
 }
 
 func TestBoatIsEqualNOK(t *testing.T) {
@@ -38,11 +37,8 @@ func TestBoatIsEqualNOK(t *testing.T) {
 		ApproximativeCrossingDate: approximativeCrossingDate,
 	}
 	result := boat.IsEqual(otherBoat)
-	want := false
 
-	if want != result {
-		t.Fatalf(`IsEqual("otherBoat") = %v, want match for %v`, result, want)
-	}
+	assert.False(t, result)
 }
 
 func TestBoatsAreEqualOK(t *testing.T) {
@@ -62,11 +58,8 @@ func TestBoatsAreEqualOK(t *testing.T) {
 		},
 	}
 	result := boats.AreEqual(otherBoats)
-	want := true
 
-	if want != result {
-		t.Fatalf(`AreEqual("otherBoats") = %v, want match for %v`, result, want)
-	}
+	assert.True(t, result)
 }
 
 func TestBoatsAreEqualNOK(t *testing.T) {
@@ -86,9 +79,6 @@ func TestBoatsAreEqualNOK(t *testing.T) {
 		},
 	}
 	result := boats.AreEqual(otherBoats)
-	want := false
 
-	if want != result {
-		t.Fatalf(`AreEqual("otherBoats") = %v, want match for %v`, result, want)
-	}
+	assert.False(t, result)
 }

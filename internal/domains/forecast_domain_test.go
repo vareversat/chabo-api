@@ -3,6 +3,8 @@ package domains
 import (
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestForecastIsEqualOK(t *testing.T) {
@@ -42,11 +44,8 @@ func TestForecastIsEqualOK(t *testing.T) {
 		Link: APIResponseSelfLink{Self: APIResponseLink{Link: "/v1/forecasts/recordid"}},
 	}
 	result := forecast.IsEqual(otherForecast)
-	want := true
 
-	if want != result {
-		t.Fatalf(`IsEqual("otherForecast") = %v, want match for %v`, result, want)
-	}
+	assert.True(t, result)
 }
 
 func TestForecastIsEqualNOK(t *testing.T) {
@@ -86,11 +85,8 @@ func TestForecastIsEqualNOK(t *testing.T) {
 		Link: APIResponseSelfLink{Self: APIResponseLink{Link: "/v1/forecasts/recordid"}},
 	}
 	result := forecast.IsEqual(otherForecast)
-	want := false
 
-	if want != result {
-		t.Fatalf(`IsEqual("otherForecast") = %v, want match for %v`, result, want)
-	}
+	assert.False(t, result)
 }
 
 func TestForecastsAreEqualOK(t *testing.T) {
@@ -130,11 +126,8 @@ func TestForecastsAreEqualOK(t *testing.T) {
 		Link: APIResponseSelfLink{Self: APIResponseLink{Link: "/v1/forecasts/recordid"}},
 	}}
 	result := forecasts.AreEqual(otherForecasts)
-	want := true
 
-	if want != result {
-		t.Fatalf(`AreEqual("otherForecasts") = %v, want match for %v`, result, want)
-	}
+	assert.True(t, result)
 }
 
 func TestForecastsAreEqualNOK(t *testing.T) {
@@ -174,9 +167,6 @@ func TestForecastsAreEqualNOK(t *testing.T) {
 		Link: APIResponseSelfLink{Self: APIResponseLink{Link: "/v1/forecasts/recordid"}},
 	}}
 	result := forecasts.AreEqual(otherForecasts)
-	want := false
 
-	if want != result {
-		t.Fatalf(`AreEqual("otherForecasts") = %v, want match for %v`, result, want)
-	}
+	assert.False(t, result)
 }

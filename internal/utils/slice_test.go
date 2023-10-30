@@ -3,59 +3,53 @@ package utils
 import (
 	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestContainsOK(t *testing.T) {
 	s := []string{"toto"}
-	want := true
 	value := contains(s, "toto")
-	if want != value {
-		t.Fatalf(`contains("toto") = %t, want match for %t`, value, want)
-	}
+
+	assert.True(t, value)
 }
 
 func TestContainsNOK(t *testing.T) {
 	s := []string{"toto"}
-	want := false
 	value := contains(s, "tutu")
-	if want != value {
-		t.Fatalf(`contains("toto") = %t, want match for %t`, value, want)
-	}
+
+	assert.False(t, value)
 }
 
 func TestRemoveIOne(t *testing.T) {
 	s := []string{"toto", "tutu"}
-	want := []string{"toto"}
+	expected := []string{"toto"}
 	value := remove(s, "tutu")
-	if !reflect.DeepEqual(want, value) {
-		t.Fatalf(`remove("tutu") = %q, want match for %#q`, value, want)
-	}
+
+	assert.True(t, reflect.DeepEqual(expected, value))
 
 }
 
 func TestRemoveITwo(t *testing.T) {
 	s := []string{"tutu"}
-	want := []string{}
+	expected := []string{}
 	value := remove(s, "tutu")
-	if !reflect.DeepEqual(want, value) {
-		t.Fatalf(`remove("tutu") = %q, want match for %#q`, value, want)
-	}
+
+	assert.True(t, reflect.DeepEqual(expected, value))
 }
 
 func TestIndexOfOK(t *testing.T) {
 	s := []string{"tutu"}
-	want := 0
+	expected := 0
 	value := indexOf(s, "tutu")
-	if want != value {
-		t.Fatalf(`indexOf("tutu") = %d, want match for %d`, value, want)
-	}
+
+	assert.Equal(t, expected, value)
 }
 
 func TestIndexOfNOK(t *testing.T) {
 	s := []string{"tutu"}
-	want := -1
+	expected := -1
 	value := indexOf(s, "toto")
-	if want != value {
-		t.Fatalf(`indexOf("tutu") = %d, want match for %d`, value, want)
-	}
+
+	assert.Equal(t, expected, value)
 }
