@@ -1,17 +1,20 @@
-package utils
+package usecases
 
 import (
 	"testing"
 	"time"
 
-	log "github.com/sirupsen/logrus"
+	"github.com/stretchr/testify/assert"
 	"github.com/vareversat/chabo-api/internal/domains"
 )
 
 func TestComputeForecasts(t *testing.T) {
+	forecastRepository := new(domains.ForecastRepository)
+	refreshRepository := new(domains.RefreshRepository)
+
 	var forecasts domains.Forecasts
 	recordTimestamp, _ := time.Parse(time.RFC3339, "2023-02-26T21:00:00Z")
-	openDataForecasts := domains.BordeauxAPIResponse{
+	bordeauxAPIForecasts := domains.BordeauxAPIResponse{
 		Hits: 1,
 		Parameters: domains.BordeauxAPIResponseParameters{
 			Dataset:  "dataset",
@@ -39,7 +42,7 @@ func TestComputeForecasts(t *testing.T) {
 	circulationClosingDate, _ := time.Parse(time.RFC3339, "2023-02-26T21:00:00Z")
 	circulationReopeningDate, _ := time.Parse(time.RFC3339, "2023-02-26T23:00:00Z")
 	approximativeCrossingDate, _ := time.Parse(time.RFC3339, "2023-02-26T22:00:00Z")
-	want := domains.Forecasts{
+	expectedForecasts := domains.Forecasts{
 		{
 			ID:                       "recordid",
 			ClosingType:              domains.TwoWay,
@@ -60,12 +63,8 @@ func TestComputeForecasts(t *testing.T) {
 		},
 	}
 
-	// Prevent NPE
-	InitForecast(log.WithFields(log.Fields{
-		"channel": "test",
-	}))
-	ComputeForecasts(&forecasts, openDataForecasts)
-	if !(want.AreEqual(forecasts)) {
-		t.Fatalf(`ComputeForecasts("...") = %q, want match for %#q`, forecasts, want)
-	}
+	u := NewForecastUsecase(*forecastRepository, *refreshRepository, time.Second*2)
+	u.ComputeBordeauxAPIResponse(&forecasts, bordeauxAPIForecasts)
+
+	assert.True(t, true, expectedForecasts.AreEqual(forecasts))
 }

@@ -26,11 +26,7 @@ func init() {
 	openApiLogger := log.WithFields(log.Fields{
 		"channel": "open_api",
 	})
-	forecastLogger := log.WithFields(log.Fields{
-		"channel": "forecast",
-	})
 	utils.InitOpenApi(openApiLogger)
-	utils.InitForecast(forecastLogger)
 	// Init Mongo
 	mongoDatabase = *repositories.NewMongoClient().Database(mongoDatabaseName)
 }

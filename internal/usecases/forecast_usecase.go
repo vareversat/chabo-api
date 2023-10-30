@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/sirupsen/logrus"
 	"github.com/vareversat/chabo-api/internal/domains"
 	"github.com/vareversat/chabo-api/internal/utils"
 )
@@ -141,7 +142,7 @@ func (fU *forecastUsecase) RefreshAll(ctx context.Context) (domains.Refresh, err
 	ctx, cancel := context.WithTimeout(ctx, fU.contextTimeout)
 	defer cancel()
 
-	if refreshIsNeeded(ctx, fU.refreshRepository) {
+	if fU.RefreshIsNeeded(ctx) {
 		var openDataForecasts domains.BordeauxAPIResponse
 		var forecasts domains.Forecasts
 
@@ -153,9 +154,12 @@ func (fU *forecastUsecase) RefreshAll(ctx context.Context) (domains.Refresh, err
 			return domains.Refresh{}, fmt.Errorf(errGet.Error())
 		}
 		// Compute all forecasts
-		utils.ComputeForecasts(&forecasts, openDataForecasts)
+		err := fU.ComputeBordeauxAPIResponse(&forecasts, openDataForecasts)
+		if err != nil {
+			return domains.Refresh{}, err
+		}
 		// Delete all forecasts
-		_, err := fU.forecastRepository.DeleteAll(ctx)
+		_, err = fU.forecastRepository.DeleteAll(ctx)
 		if err != nil {
 			return domains.Refresh{}, err
 		}
@@ -183,13 +187,75 @@ func (fU *forecastUsecase) RefreshAll(ctx context.Context) (domains.Refresh, err
 	return domains.Refresh{}, fmt.Errorf("data does not need to be refresh (aborting the refresh)")
 }
 
+func (fU *forecastUsecase) ComputeBordeauxAPIResponse(
+	forecasts *domains.Forecasts,
+	boredeauxAPIResponse domains.BordeauxAPIResponse,
+) error {
+	// alreadySeenBoatNames is used to compute the maneuver of each boats
+	var alreadySeenBoatNames []string
+
+	for _, openAPIForecast := range boredeauxAPIResponse.Records {
+		_, offset := openAPIForecast.RecordTimestamp.Zone()
+		closingReason := utils.MapClosingReason(openAPIForecast.Fields.Boat)
+		circulationClosingDate, errClosingDate := utils.FormatDataTime(
+			openAPIForecast.Fields.ClosingTime,
+			openAPIForecast.Fields.ClosingDate,
+			offset,
+			*time.UTC,
+		)
+		if errClosingDate != nil {
+			logrus.Fatalf(errClosingDate.Error())
+			return errClosingDate
+		}
+		circulationReopeningDate, errReopeningDate := utils.FormatDataTime(
+			openAPIForecast.Fields.OpeningTime,
+			openAPIForecast.Fields.ClosingDate,
+			offset,
+			*time.UTC,
+		)
+		if errReopeningDate != nil {
+			logrus.Fatalf(errReopeningDate.Error())
+			return errReopeningDate
+		}
+
+		// Check if the forecast is during 2 days
+		if circulationReopeningDate.Compare(circulationClosingDate) == -1 {
+			// On day is added because the closing date is after the reopening date
+			circulationReopeningDate = circulationReopeningDate.AddDate(0, 0, 1)
+		}
+		closingDuration := circulationReopeningDate.Sub(circulationClosingDate)
+		*forecasts = append(*forecasts, domains.Forecast{
+			ID:                       openAPIForecast.RecordID,
+			ClosingDuration:          closingDuration,
+			CirculationClosingDate:   circulationClosingDate,
+			CirculationReopeningDate: circulationReopeningDate,
+			ClosingType:              utils.MapClosingType(openAPIForecast.Fields.TotalClosing),
+			ClosingReason:            closingReason,
+			Boats: utils.MapBoats(
+				closingReason,
+				openAPIForecast.Fields.Boat,
+				closingDuration,
+				circulationClosingDate,
+				&alreadySeenBoatNames,
+				openAPIForecast.RecordID,
+			),
+			Link: domains.APIResponseSelfLink{
+				Self: domains.APIResponseLink{Link: "/v1/forecasts/" + openAPIForecast.RecordID},
+			},
+		})
+	}
+	logrus.Infof("all %d forecasts computed with success", len(*forecasts))
+	return nil
+
+}
+
 // Check if it's possible to perform a data refresh
-func refreshIsNeeded(ctx context.Context, refreshRepository domains.RefreshRepository) bool {
+func (fU *forecastUsecase) RefreshIsNeeded(ctx context.Context) bool {
 
 	var lastRefresh domains.Refresh
 
 	// Get the last refresh to be sure this is not too early
-	err := refreshRepository.GetLast(ctx, &lastRefresh)
+	err := fU.refreshRepository.GetLast(ctx, &lastRefresh)
 
 	if err != nil {
 		// An error here means that the collection is empty
