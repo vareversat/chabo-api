@@ -50,7 +50,14 @@ func MainRouter(mongoDatabase mongo.Database) {
 	SystemRouter(timeout, mongoDatabase.Client(), rootRouterGroup)
 
 	// Compute the app address
-	appAddr := fmt.Sprintf("%s:%s", os.Getenv("APP_URI"), os.Getenv("APP_PORT"))
+	// $PORT is automatically injected by Heroku when the app is deployed
+	// Use $LOCAL_PORT when $PORT is not defined
+	var port string
+	var ok bool
+	if port, ok = os.LookupEnv("PORT"); !ok {
+		port = os.Getenv("LOCAL_PORT")
+	}
+	appAddr := fmt.Sprintf("%s:%s", os.Getenv("APP_URI"), port)
 
 	if err := router.Run(appAddr); err != nil {
 		panic(err)
