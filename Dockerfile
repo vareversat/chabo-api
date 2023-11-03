@@ -13,4 +13,4 @@ FROM alpine:3.14
 COPY --from=build /app/chabo-api /usr/bin/local/chabo-api
 EXPOSE 8080
 
-ENTRYPOINT [ "/usr/bin/local/chabo-api" ]
+CMD [ "/usr/bin/local/chabo-api" ]
