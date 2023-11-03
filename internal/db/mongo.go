@@ -16,7 +16,7 @@ import (
 
 var (
 	ForecastsCollectionName = os.Getenv("MONGO_FORECASTS_COLLECTION_NAME")
-	RefreshesCollectionName = os.Getenv("MONGO_REFRESHES_COLLECTION_NAME")
+	SyncsCollectionName     = os.Getenv("MONGO_SYNCS_COLLECTION_NAME")
 	DatabaseName            = os.Getenv("MONGO_DATABASE_NAME")
 	logrus                  *log.Entry
 )
@@ -110,9 +110,9 @@ func GetForecastbyID(client *mongo.Client, forecast *domains.Forecast, ID string
 func InsertAllForecasts(client *mongo.Client, forecasts []domains.Forecast) (error, bool) {
 	interfaceRecords := make([]interface{}, len(forecasts))
 
-	if refreshIsNeeded(client) {
+	if syncIsNeeded(client) {
 		start := time.Now()
-		logrus.Info("Refresh is needed")
+		logrus.Info("Sync is needed")
 		// Transform to generic interface to be usable by ´coll.InsertMany´
 		for i := range forecasts {
 			interfaceRecords[i] = forecasts[i]
@@ -147,32 +147,32 @@ func InsertAllForecasts(client *mongo.Client, forecasts []domains.Forecast) (err
 
 		elapsed := time.Since(start)
 
-		refreshProof := domains.Refresh{
+		syncProof := domains.Sync{
 			ItemCount: len(forecasts),
 			Duration:  elapsed,
 			Timestamp: start,
 		}
 
-		errInsertRefreshProof := InsertRefresh(client, refreshProof)
+		errInsertSyncProof := InsertSync(client, syncProof)
 
-		if errInsertRefreshProof != nil {
+		if errInsertSyncProof != nil {
 			logrus.Fatalf(err.Error())
 			return err, false
 		}
 
 		return nil, false
 	} else {
-		logrus.Warningf("the last refresh is too recent. Please retry in few minutes")
-		return fmt.Errorf("you cannot refresh too many time"), true
+		logrus.Warningf("the last sync is too recent. Please retry in few minutes")
+		return fmt.Errorf("you cannot sync too many time"), true
 	}
 
 }
 
-func InsertRefresh(client *mongo.Client, refresh domains.Refresh) error {
+func InsertSync(client *mongo.Client, sync domains.Sync) error {
 
-	coll := client.Database(DatabaseName).Collection(RefreshesCollectionName)
+	coll := client.Database(DatabaseName).Collection(SyncsCollectionName)
 
-	_, err := coll.InsertOne(context.TODO(), refresh)
+	_, err := coll.InsertOne(context.TODO(), sync)
 	if err != nil {
 		logrus.Fatal(err.Error())
 
@@ -187,14 +187,14 @@ func InsertRefresh(client *mongo.Client, refresh domains.Refresh) error {
 
 }
 
-func GetLastRefresh(client *mongo.Client, refresh *domains.Refresh) error {
+func GetLastSync(client *mongo.Client, sync *domains.Sync) error {
 
-	coll := client.Database(DatabaseName).Collection(RefreshesCollectionName)
+	coll := client.Database(DatabaseName).Collection(SyncsCollectionName)
 
 	opts := options.FindOne().SetSort(bson.D{{Key: "timestamp", Value: -1}})
 	cursor := coll.FindOne(context.TODO(), bson.D{}, opts)
 
-	err := cursor.Decode(&refresh)
+	err := cursor.Decode(&sync)
 
 	if err != nil {
 		return fmt.Errorf("not found")
@@ -219,22 +219,22 @@ func Ping(client *mongo.Client) error {
 
 }
 
-// Check if it's possible to perform a data refresh
-func refreshIsNeeded(client *mongo.Client) bool {
+// Check if it's possible to perform a data sync
+func syncIsNeeded(client *mongo.Client) bool {
 
-	var lastRefresh domains.Refresh
+	var lastSync domains.Sync
 
-	// Get the last refresh to be sure this is not too early
-	err := GetLastRefresh(client, &lastRefresh)
+	// Get the last sync to be sure this is not too early
+	err := GetLastSync(client, &lastSync)
 
 	if err != nil {
 		// An error here means that the collection is empty
 		return true
 	} else {
 		currentTime := time.Now()
-		diff := currentTime.Sub(lastRefresh.Timestamp)
+		diff := currentTime.Sub(lastSync.Timestamp)
 
-		cooldown, _ := strconv.Atoi(os.Getenv("REFRESH_COOLDOWN_SECONDS"))
+		cooldown, _ := strconv.Atoi(os.Getenv("SYNC_COOLDOWN_SECONDS"))
 
 		return int(diff.Seconds()) >= cooldown
 	}

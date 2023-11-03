@@ -93,7 +93,7 @@ definitions:
         example: UTC
         type: string
     type: object
-  domains.Refresh:
+  domains.Sync:
     properties:
       duration_ns:
         example: 348872934
@@ -237,7 +237,7 @@ paths:
       summary: Get a foracast
       tags:
       - Forecasts
-  /forecasts/refresh:
+  /forecasts/sync:
     post:
       consumes:
       - application/json
@@ -249,16 +249,16 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domains.Refresh'
+            $ref: '#/definitions/domains.Sync'
         "429":
-          description: Too many attempt to refresh
+          description: Too many attempt to sync
           schema:
             $ref: '#/definitions/domains.APIErrorResponse'
         "500":
           description: An error occured on the server side
           schema:
             $ref: '#/definitions/domains.APIErrorResponse'
-      summary: Refresh the forecasts with the ones from the OpenData API
+      summary: Sync the forecasts with the ones from the OpenData API
       tags:
       - Forecasts
   /forecasts/today:
@@ -305,27 +305,27 @@ paths:
       summary: Get the closing schedule for today
       tags:
       - Forecasts
-  /refresh/last:
+  /syncs/last:
     get:
-      description: Get the last trace of refresh action on POST /forecasts/refresh
+      description: Get the last trace of sync action on POST /forecasts/sync
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domains.Refresh'
+            $ref: '#/definitions/domains.Sync'
         "404":
-          description: No previous refresh action exists
+          description: No previous sync action exists
           schema:
             $ref: '#/definitions/domains.APIErrorResponse'
         "500":
           description: An error occured on the server side
           schema:
             $ref: '#/definitions/domains.APIErrorResponse'
-      summary: Get the last refresh action
+      summary: Get the last sync action
       tags:
-      - Refreshes
+      - Syncs
   /system/healthcheck:
     get:
       produces:

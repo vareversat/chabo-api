@@ -51,7 +51,7 @@ func MainRouter(mongoDatabase mongo.Database) {
 
 	timeout := time.Duration(30) * time.Second
 	ForecastsRouter(timeout, mongoDatabase, rootRouterGroup)
-	RefreshRouter(timeout, mongoDatabase, rootRouterGroup)
+	SyncRouter(timeout, mongoDatabase, rootRouterGroup)
 	SystemRouter(timeout, mongoDatabase.Client(), rootRouterGroup)
 
 	// Compute the app address

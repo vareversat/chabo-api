@@ -9,26 +9,26 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type refreshRepository struct {
+type syncRepository struct {
 	collection *mongo.Collection
 }
 
-func NewRefreshRepository(collection *mongo.Collection) domains.RefreshRepository {
-	return &refreshRepository{
+func NewSyncRepository(collection *mongo.Collection) domains.SyncRepository {
+	return &syncRepository{
 		collection: collection,
 	}
 }
 
-func (rR *refreshRepository) InsertOne(ctx context.Context, refresh domains.Refresh) error {
-	_, err := rR.collection.InsertOne(ctx, refresh)
+func (rR *syncRepository) InsertOne(ctx context.Context, sync domains.Sync) error {
+	_, err := rR.collection.InsertOne(ctx, sync)
 
 	return err
 
 }
 
-func (rR *refreshRepository) GetLast(ctx context.Context, refresh *domains.Refresh) error {
+func (rR *syncRepository) GetLast(ctx context.Context, sync *domains.Sync) error {
 	opts := options.FindOne().SetSort(bson.D{{Key: "timestamp", Value: -1}})
 	cursor := rR.collection.FindOne(ctx, bson.D{}, opts)
 
-	return cursor.Decode(&refresh)
+	return cursor.Decode(&sync)
 }
