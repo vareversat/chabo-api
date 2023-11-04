@@ -75,6 +75,14 @@ func (fR *forecastRepository) GetAllBetweenTwoDates(
 		}
 	}
 
+	// Test if the cusor.Next succeded to populated the pointer
+	if len(mongoResponse.Results) == 0 {
+		*forecasts = domains.Forecasts{}
+		*totalItemCount = 0
+
+		return nil
+	}
+
 	*forecasts = mongoResponse.Results
 	*totalItemCount = mongoResponse.Count[0].ItemCount
 
@@ -128,6 +136,14 @@ func (fR *forecastRepository) GetAllFiltered(
 			logrus.Info(err.Error())
 			return err
 		}
+	}
+
+	// Test if the cusor.Next succeded to populated the pointer
+	if len(mongoResponse.Results) == 0 {
+		*forecasts = domains.Forecasts{}
+		*totalItemCount = 0
+
+		return nil
 	}
 
 	*forecasts = mongoResponse.Results
