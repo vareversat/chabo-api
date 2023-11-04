@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/vareversat/chabo-api/internal/errors"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -25,6 +26,6 @@ type SyncRepository interface {
 }
 
 type SyncUsecase interface {
-	InsertOne(ctx context.Context, sync Sync) error
-	GetLast(ctx context.Context, sync *Sync) error
+	InsertOne(ctx context.Context, sync Sync) errors.CustomError
+	GetLast(ctx context.Context, sync *Sync) errors.CustomError
 }

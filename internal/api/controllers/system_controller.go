@@ -27,10 +27,13 @@ func (sC *SystemController) Healthcheck() gin.HandlerFunc {
 			hub.Scope().SetTag("controller", "healthcheck")
 		}
 
-		err := sC.HealthCheckUsecase.GetHealth(c)
+		customError := sC.HealthCheckUsecase.GetHealth(c)
 
-		if err != nil {
-			c.JSON(http.StatusServiceUnavailable, domains.SystemHealthNOK{Error: err.Error()})
+		if customError != nil {
+			c.JSON(
+				customError.GetStatusCode(),
+				domains.SystemHealthNOK{Error: customError.GetErrorMessage()},
+			)
 			return
 		}
 

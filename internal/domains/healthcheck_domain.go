@@ -1,6 +1,10 @@
 package domains
 
-import "context"
+import (
+	"context"
+
+	"github.com/vareversat/chabo-api/internal/errors"
+)
 
 type SystemHealthOK struct {
 	Message string `json:"message" example:"system is running properly"`
@@ -15,5 +19,5 @@ type HealthCheckRepository interface {
 }
 
 type HealthCheckUsecase interface {
-	GetHealth(ctx context.Context) error
+	GetHealth(ctx context.Context) errors.CustomError
 }

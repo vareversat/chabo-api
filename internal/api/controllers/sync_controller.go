@@ -31,10 +31,13 @@ func (mC *SyncController) GetLastSync() gin.HandlerFunc {
 
 		var sync domains.Sync
 
-		err := mC.SyncUsecase.GetLast(c, &sync)
+		customError := mC.SyncUsecase.GetLast(c, &sync)
 
-		if err != nil {
-			c.JSON(http.StatusNotFound, domains.APIErrorResponse{Error: err.Error()})
+		if customError != nil {
+			c.JSON(
+				customError.GetStatusCode(),
+				domains.APIErrorResponse{Error: customError.GetErrorMessage()},
+			)
 			return
 		}
 

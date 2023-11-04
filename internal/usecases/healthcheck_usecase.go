@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/vareversat/chabo-api/internal/domains"
+	"github.com/vareversat/chabo-api/internal/errors"
 )
 
 type healthcheckUsecase struct {
@@ -22,8 +23,14 @@ func NewHealthCheckUsecase(
 	}
 }
 
-func (rU *healthcheckUsecase) GetHealth(ctx context.Context) error {
+func (rU *healthcheckUsecase) GetHealth(ctx context.Context) errors.CustomError {
 	ctx, cancel := context.WithTimeout(ctx, rU.contextTimeout)
 	defer cancel()
-	return rU.healthcheckRepository.GetDBHealth(ctx)
+
+	err := rU.healthcheckRepository.GetDBHealth(ctx)
+
+	if err != nil {
+		return errors.NewInternalServerError(err.Error())
+	}
+	return nil
 }

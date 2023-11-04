@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/vareversat/chabo-api/internal/domains"
+	"github.com/vareversat/chabo-api/internal/errors"
 )
 
 type syncUsecase struct {
@@ -22,14 +23,24 @@ func NewSyncUsecase(
 	}
 }
 
-func (rU *syncUsecase) InsertOne(ctx context.Context, sync domains.Sync) error {
+func (rU *syncUsecase) InsertOne(ctx context.Context, sync domains.Sync) errors.CustomError {
 	ctx, cancel := context.WithTimeout(ctx, rU.contextTimeout)
 	defer cancel()
-	return rU.syncRepository.InsertOne(ctx, sync)
+	err := rU.syncRepository.InsertOne(ctx, sync)
+
+	if err != nil {
+		return errors.NewNotFoundError("No sync status exists in database")
+	}
+	return nil
 }
 
-func (rU *syncUsecase) GetLast(ctx context.Context, sync *domains.Sync) error {
+func (rU *syncUsecase) GetLast(ctx context.Context, sync *domains.Sync) errors.CustomError {
 	ctx, cancel := context.WithTimeout(ctx, rU.contextTimeout)
 	defer cancel()
-	return rU.syncRepository.GetLast(ctx, sync)
+	err := rU.syncRepository.GetLast(ctx, sync)
+
+	if err != nil {
+		return errors.NewInternalServerError(err.Error())
+	}
+	return nil
 }

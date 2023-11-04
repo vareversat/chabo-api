@@ -5,6 +5,8 @@ import (
 	"os"
 	"reflect"
 	"time"
+
+	"github.com/vareversat/chabo-api/internal/errors"
 )
 
 var (
@@ -128,7 +130,12 @@ type ForecastRepository interface {
 }
 
 type ForecastUsecase interface {
-	GetByID(ctx context.Context, id string, forecast *Forecast, location *time.Location) error
+	GetByID(
+		ctx context.Context,
+		id string,
+		forecast *Forecast,
+		location *time.Location,
+	) errors.CustomError
 	GetTodayForecasts(
 		ctx context.Context,
 		forecasts *Forecasts,
@@ -136,7 +143,7 @@ type ForecastUsecase interface {
 		limit int,
 		location *time.Location,
 		totalItemCount *int,
-	) error
+	) errors.CustomError
 	GetAllFiltered(
 		ctx context.Context,
 		location *time.Location,
@@ -148,8 +155,11 @@ type ForecastUsecase interface {
 		boat string,
 		forecasts *Forecasts,
 		totalItemCount *int,
-	) error
-	SyncAll(ctx context.Context) (Sync, error)
-	ComputeBordeauxAPIResponse(forecasts *Forecasts, boredeauxAPIResponse BordeauxAPIResponse) error
+	) errors.CustomError
+	SyncAll(ctx context.Context) (Sync, errors.CustomError)
+	ComputeBordeauxAPIResponse(
+		forecasts *Forecasts,
+		boredeauxAPIResponse BordeauxAPIResponse,
+	) errors.CustomError
 	SyncIsNeeded(ctx context.Context) bool
 }

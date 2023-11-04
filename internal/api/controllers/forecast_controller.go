@@ -88,7 +88,7 @@ func (fC *ForecastController) GetAllForecats() gin.HandlerFunc {
 			return
 		}
 
-		err := fC.ForecastUsecase.GetAllFiltered(
+		customError := fC.ForecastUsecase.GetAllFiltered(
 			c,
 			location,
 			offset,
@@ -101,8 +101,11 @@ func (fC *ForecastController) GetAllForecats() gin.HandlerFunc {
 			&totalItemCount,
 		)
 
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, domains.APIErrorResponse{Error: err.Error()})
+		if customError != nil {
+			c.JSON(
+				customError.GetStatusCode(),
+				domains.APIErrorResponse{Error: customError.GetErrorMessage()},
+			)
 			sentry.CaptureException(locationErr)
 			return
 		}
@@ -182,7 +185,7 @@ func (fC *ForecastController) GetTodayForecasts() gin.HandlerFunc {
 			return
 		}
 
-		err := fC.ForecastUsecase.GetTodayForecasts(
+		customError := fC.ForecastUsecase.GetTodayForecasts(
 			c,
 			&forecasts,
 			offset,
@@ -191,8 +194,11 @@ func (fC *ForecastController) GetTodayForecasts() gin.HandlerFunc {
 			&totalItemCount,
 		)
 
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, domains.APIErrorResponse{Error: err.Error()})
+		if customError != nil {
+			c.JSON(
+				customError.GetStatusCode(),
+				domains.APIErrorResponse{Error: customError.GetErrorMessage()},
+			)
 			sentry.CaptureException(locationErr)
 			return
 		}
@@ -237,10 +243,13 @@ func (fC *ForecastController) SyncForecasts() gin.HandlerFunc {
 			hub.Scope().SetTag("controller", "SyncForecasts")
 		}
 
-		sync, err := fC.ForecastUsecase.SyncAll(c)
+		sync, customError := fC.ForecastUsecase.SyncAll(c)
 
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, domains.APIErrorResponse{Error: err.Error()})
+		if customError != nil {
+			c.JSON(
+				customError.GetStatusCode(),
+				domains.APIErrorResponse{Error: customError.GetErrorMessage()},
+			)
 			return
 		}
 
@@ -287,10 +296,13 @@ func (fC *ForecastController) GetForecastByID() gin.HandlerFunc {
 			return
 		}
 
-		err = fC.ForecastUsecase.GetByID(c, id, &forecast, location)
+		customError := fC.ForecastUsecase.GetByID(c, id, &forecast, location)
 
-		if err != nil {
-			c.JSON(http.StatusNotFound, domains.APIErrorResponse{Error: err.Error()})
+		if customError != nil {
+			c.JSON(
+				customError.GetStatusCode(),
+				domains.APIErrorResponse{Error: customError.GetErrorMessage()},
+			)
 			return
 		}
 
