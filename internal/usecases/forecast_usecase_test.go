@@ -46,7 +46,7 @@ func TestComputeForecasts(t *testing.T) {
 		{
 			ID:                       "recordid",
 			ClosingType:              domains.TwoWay,
-			ClosingDuration:          7200000000000,
+			ClosingDuration:          120,
 			CirculationClosingDate:   circulationClosingDate,
 			CirculationReopeningDate: circulationReopeningDate,
 			ClosingReason:            domains.BoatReason,
@@ -66,5 +66,5 @@ func TestComputeForecasts(t *testing.T) {
 	u := NewForecastUsecase(*forecastRepository, *syncRepository, time.Second*2)
 	u.ComputeBordeauxAPIResponse(&forecasts, bordeauxAPIForecasts)
 
-	assert.True(t, true, expectedForecasts.AreEqual(forecasts))
+	assert.True(t, expectedForecasts.AreEqual(forecasts))
 }

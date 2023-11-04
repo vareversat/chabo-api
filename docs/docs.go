@@ -410,9 +410,9 @@ const docTemplate = `{
                     "format": "date-time",
                     "example": "2021-05-25T00:53:16.535668Z"
                 },
-                "closing_duration_ns": {
+                "closing_duration_min": {
                     "type": "integer",
-                    "example": 4980000000000
+                    "example": 83
                 },
                 "closing_reason": {
                     "$ref": "#/definitions/domains.ClosingReason"
@@ -469,9 +469,9 @@ const docTemplate = `{
         "domains.Sync": {
             "type": "object",
             "properties": {
-                "duration_ns": {
+                "duration_ms": {
                     "type": "integer",
-                    "example": 348872934
+                    "example": 130
                 },
                 "item_count": {
                     "type": "integer",

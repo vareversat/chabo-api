@@ -173,7 +173,7 @@ func (fU *forecastUsecase) SyncAll(ctx context.Context) (domains.Sync, error) {
 		// Insert a sync proof
 		sync := domains.Sync{
 			ItemCount: insertCount,
-			Duration:  elapsed,
+			Duration:  time.Duration(elapsed.Milliseconds()),
 			Timestamp: start,
 		}
 		err = fU.syncRepository.InsertOne(ctx, sync)
@@ -225,8 +225,10 @@ func (fU *forecastUsecase) ComputeBordeauxAPIResponse(
 		}
 		closingDuration := circulationReopeningDate.Sub(circulationClosingDate)
 		*forecasts = append(*forecasts, domains.Forecast{
-			ID:                       openAPIForecast.RecordID,
-			ClosingDuration:          closingDuration,
+			ID: openAPIForecast.RecordID,
+			ClosingDuration: time.Duration(
+				closingDuration.Minutes(),
+			), // Convert into minutes
 			CirculationClosingDate:   circulationClosingDate,
 			CirculationReopeningDate: circulationReopeningDate,
 			ClosingType:              utils.MapClosingType(openAPIForecast.Fields.TotalClosing),
@@ -244,7 +246,6 @@ func (fU *forecastUsecase) ComputeBordeauxAPIResponse(
 			},
 		})
 	}
-	logrus.Infof("all %d forecasts computed with success", len(*forecasts))
 	return nil
 
 }

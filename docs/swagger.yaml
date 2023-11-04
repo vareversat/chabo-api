@@ -55,8 +55,8 @@ definitions:
         example: "2021-05-25T00:53:16.535668Z"
         format: date-time
         type: string
-      closing_duration_ns:
-        example: 4980000000000
+      closing_duration_min:
+        example: 83
         type: integer
       closing_reason:
         $ref: '#/definitions/domains.ClosingReason'
@@ -95,8 +95,8 @@ definitions:
     type: object
   domains.Sync:
     properties:
-      duration_ns:
-        example: 348872934
+      duration_ms:
+        example: 130
         type: integer
       item_count:
         example: 10
