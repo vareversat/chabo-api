@@ -20,6 +20,6 @@ func SyncRouter(timeout time.Duration, db mongo.Database, group *gin.RouterGroup
 		),
 	}
 
-	syncGroup := group.Group("/sync")
+	syncGroup := group.Group("/syncs")
 	syncGroup.GET("/last", syncContoller.GetLastSync())
 }
