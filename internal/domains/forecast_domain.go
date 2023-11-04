@@ -149,7 +149,7 @@ type ForecastUsecase interface {
 		forecasts *Forecasts,
 		totalItemCount *int,
 	) error
-	RefreshAll(ctx context.Context) (Refresh, error)
+	SyncAll(ctx context.Context) (Sync, error)
 	ComputeBordeauxAPIResponse(forecasts *Forecasts, boredeauxAPIResponse BordeauxAPIResponse) error
-	RefreshIsNeeded(ctx context.Context) bool
+	SyncIsNeeded(ctx context.Context) bool
 }

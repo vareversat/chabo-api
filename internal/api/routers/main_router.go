@@ -32,9 +32,14 @@ func MainRouter(mongoDatabase mongo.Database) {
 	router.Use(gin.Recovery())
 	router.Use(utils.JsonLoggerMiddleware())
 	router.Use(sentrygin.New(sentrygin.Options{}))
+	router.GET(
+		"/swagger/*any",
+		ginSwagger.WrapHandler(swaggerfiles.Handler, ginSwagger.DefaultModelsExpandDepth(-1)),
+	)
+
+	// Configure the swagger
 	docs.SwaggerInfo.BasePath = "/v1"
 	docs.SwaggerInfo.Version = os.Getenv("API_VERSION")
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	// Set default fallback to the Swagger UI
 	router.NoRoute(func(c *gin.Context) {
@@ -46,11 +51,18 @@ func MainRouter(mongoDatabase mongo.Database) {
 
 	timeout := time.Duration(30) * time.Second
 	ForecastsRouter(timeout, mongoDatabase, rootRouterGroup)
-	RefreshRouter(timeout, mongoDatabase, rootRouterGroup)
+	SyncRouter(timeout, mongoDatabase, rootRouterGroup)
 	SystemRouter(timeout, mongoDatabase.Client(), rootRouterGroup)
 
 	// Compute the app address
-	appAddr := fmt.Sprintf("%s:%s", os.Getenv("APP_URI"), os.Getenv("APP_PORT"))
+	// $PORT is automatically injected by Heroku when the app is deployed
+	// Use $LOCAL_PORT when $PORT is not defined
+	var port string
+	var ok bool
+	if port, ok = os.LookupEnv("PORT"); !ok {
+		port = os.Getenv("LOCAL_PORT")
+	}
+	appAddr := fmt.Sprintf("%s:%s", os.Getenv("APP_URI"), port)
 
 	if err := router.Run(appAddr); err != nil {
 		panic(err)

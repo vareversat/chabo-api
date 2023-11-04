@@ -10,7 +10,7 @@ import (
 
 func TestComputeForecasts(t *testing.T) {
 	forecastRepository := new(domains.ForecastRepository)
-	refreshRepository := new(domains.RefreshRepository)
+	syncRepository := new(domains.SyncRepository)
 
 	var forecasts domains.Forecasts
 	recordTimestamp, _ := time.Parse(time.RFC3339, "2023-02-26T21:00:00Z")
@@ -63,7 +63,7 @@ func TestComputeForecasts(t *testing.T) {
 		},
 	}
 
-	u := NewForecastUsecase(*forecastRepository, *refreshRepository, time.Second*2)
+	u := NewForecastUsecase(*forecastRepository, *syncRepository, time.Second*2)
 	u.ComputeBordeauxAPIResponse(&forecasts, bordeauxAPIForecasts)
 
 	assert.True(t, true, expectedForecasts.AreEqual(forecasts))

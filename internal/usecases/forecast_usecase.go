@@ -14,18 +14,18 @@ import (
 
 type forecastUsecase struct {
 	forecastRepository domains.ForecastRepository
-	refreshRepository  domains.RefreshRepository
+	syncRepository     domains.SyncRepository
 	contextTimeout     time.Duration
 }
 
 func NewForecastUsecase(
 	forecastRepository domains.ForecastRepository,
-	refreshRepository domains.RefreshRepository,
+	syncRepository domains.SyncRepository,
 	timeout time.Duration,
 ) domains.ForecastUsecase {
 	return &forecastUsecase{
 		forecastRepository: forecastRepository,
-		refreshRepository:  refreshRepository,
+		syncRepository:     syncRepository,
 		contextTimeout:     timeout,
 	}
 }
@@ -39,8 +39,8 @@ func (fU *forecastUsecase) GetByID(
 	ctx, cancel := context.WithTimeout(ctx, fU.contextTimeout)
 	defer cancel()
 
-	// Do a refresh attempt in case of the data are too old
-	fU.RefreshAll(ctx)
+	// Do a sync attempt in case of the data are too old
+	fU.SyncAll(ctx)
 
 	err := fU.forecastRepository.GetByID(ctx, id, forecast)
 	if err != nil {
@@ -81,8 +81,8 @@ func (fU *forecastUsecase) GetTodayForecasts(
 	toRounded := time.Date(to.Year(), to.Month(), to.Day(), 0, 0, 0, 0, location)
 	defer cancel()
 
-	// Do a refresh attempt in case of the data are too old
-	fU.RefreshAll(ctx)
+	// Do a sync attempt in case of the data are too old
+	fU.SyncAll(ctx)
 
 	err := fU.forecastRepository.GetAllBetweenTwoDates(
 		ctx,
@@ -116,8 +116,8 @@ func (fU *forecastUsecase) GetAllFiltered(
 	ctx, cancel := context.WithTimeout(ctx, fU.contextTimeout)
 	defer cancel()
 
-	// Do a refresh attempt in case of the data are too old
-	fU.RefreshAll(ctx)
+	// Do a sync attempt in case of the data are too old
+	fU.SyncAll(ctx)
 
 	err := fU.forecastRepository.GetAllFiltered(
 		ctx,
@@ -138,11 +138,11 @@ func (fU *forecastUsecase) GetAllFiltered(
 	return nil
 }
 
-func (fU *forecastUsecase) RefreshAll(ctx context.Context) (domains.Refresh, error) {
+func (fU *forecastUsecase) SyncAll(ctx context.Context) (domains.Sync, error) {
 	ctx, cancel := context.WithTimeout(ctx, fU.contextTimeout)
 	defer cancel()
 
-	if fU.RefreshIsNeeded(ctx) {
+	if fU.SyncIsNeeded(ctx) {
 		var openDataForecasts domains.BordeauxAPIResponse
 		var forecasts domains.Forecasts
 
@@ -151,40 +151,40 @@ func (fU *forecastUsecase) RefreshAll(ctx context.Context) (domains.Refresh, err
 		// Fetch the fresh data
 		errGet := utils.GetOpenAPIData(&openDataForecasts)
 		if errGet != nil {
-			return domains.Refresh{}, fmt.Errorf(errGet.Error())
+			return domains.Sync{}, fmt.Errorf(errGet.Error())
 		}
 		// Compute all forecasts
 		err := fU.ComputeBordeauxAPIResponse(&forecasts, openDataForecasts)
 		if err != nil {
-			return domains.Refresh{}, err
+			return domains.Sync{}, err
 		}
 		// Delete all forecasts
 		_, err = fU.forecastRepository.DeleteAll(ctx)
 		if err != nil {
-			return domains.Refresh{}, err
+			return domains.Sync{}, err
 		}
 		// Insert all forecasts
 		insertCount, err := fU.forecastRepository.InsertAll(ctx, forecasts)
 		if err != nil {
-			return domains.Refresh{}, err
+			return domains.Sync{}, err
 		}
 		// STOP the timer
 		elapsed := time.Since(start)
-		// Insert a refresh proof
-		refresh := domains.Refresh{
+		// Insert a sync proof
+		sync := domains.Sync{
 			ItemCount: insertCount,
 			Duration:  elapsed,
 			Timestamp: start,
 		}
-		err = fU.refreshRepository.InsertOne(ctx, refresh)
+		err = fU.syncRepository.InsertOne(ctx, sync)
 		if err != nil {
-			return domains.Refresh{}, err
+			return domains.Sync{}, err
 		}
-		return refresh, nil
+		return sync, nil
 
 	}
 
-	return domains.Refresh{}, fmt.Errorf("data does not need to be refresh (aborting the refresh)")
+	return domains.Sync{}, fmt.Errorf("data does not need to be refresh (aborting the refresh)")
 }
 
 func (fU *forecastUsecase) ComputeBordeauxAPIResponse(
@@ -249,22 +249,22 @@ func (fU *forecastUsecase) ComputeBordeauxAPIResponse(
 
 }
 
-// Check if it's possible to perform a data refresh
-func (fU *forecastUsecase) RefreshIsNeeded(ctx context.Context) bool {
+// Check if it's possible to perform a data sync
+func (fU *forecastUsecase) SyncIsNeeded(ctx context.Context) bool {
 
-	var lastRefresh domains.Refresh
+	var lastSync domains.Sync
 
-	// Get the last refresh to be sure this is not too early
-	err := fU.refreshRepository.GetLast(ctx, &lastRefresh)
+	// Get the last sync to be sure this is not too early
+	err := fU.syncRepository.GetLast(ctx, &lastSync)
 
 	if err != nil {
 		// An error here means that the collection is empty
 		return true
 	} else {
 		currentTime := time.Now()
-		diff := currentTime.Sub(lastRefresh.Timestamp)
+		diff := currentTime.Sub(lastSync.Timestamp)
 
-		cooldown, _ := strconv.Atoi(os.Getenv("REFRESH_COOLDOWN_SECONDS"))
+		cooldown, _ := strconv.Atoi(os.Getenv("SYNC_COOLDOWN_SECONDS"))
 
 		return int(diff.Seconds()) >= cooldown
 	}

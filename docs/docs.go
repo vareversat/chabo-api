@@ -119,7 +119,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/forecasts/refresh": {
+        "/forecasts/sync": {
             "post": {
                 "description": "Get, format et populate database with the data from the OpenData API",
                 "consumes": [
@@ -131,16 +131,16 @@ const docTemplate = `{
                 "tags": [
                     "Forecasts"
                 ],
-                "summary": "Refresh the forecasts with the ones from the OpenData API",
+                "summary": "Sync the forecasts with the ones from the OpenData API",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domains.Refresh"
+                            "$ref": "#/definitions/domains.Sync"
                         }
                     },
                     "429": {
-                        "description": "Too many attempt to refresh",
+                        "description": "Too many attempt to sync",
                         "schema": {
                             "$ref": "#/definitions/domains.APIErrorResponse"
                         }
@@ -273,25 +273,25 @@ const docTemplate = `{
                 }
             }
         },
-        "/refresh/last": {
+        "/syncs/last": {
             "get": {
-                "description": "Get the last trace of refresh action on POST /forecasts/refresh",
+                "description": "Get the last trace of sync action on POST /forecasts/sync",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Refreshes"
+                    "Syncs"
                 ],
-                "summary": "Get the last refresh action",
+                "summary": "Get the last sync action",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domains.Refresh"
+                            "$ref": "#/definitions/domains.Sync"
                         }
                     },
                     "404": {
-                        "description": "No previous refresh action exists",
+                        "description": "No previous sync action exists",
                         "schema": {
                             "$ref": "#/definitions/domains.APIErrorResponse"
                         }
@@ -466,7 +466,7 @@ const docTemplate = `{
                 }
             }
         },
-        "domains.Refresh": {
+        "domains.Sync": {
             "type": "object",
             "properties": {
                 "duration_ns": {

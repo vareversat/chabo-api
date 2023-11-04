@@ -219,32 +219,32 @@ func (fC *ForecastController) GetTodayForecasts() gin.HandlerFunc {
 	return gin.HandlerFunc(fn)
 }
 
-// RefreshForecasts godoc
+// SyncForecasts godoc
 //
-//	@Summary		Refresh the forecasts with the ones from the OpenData API
+//	@Summary		Sync the forecasts with the ones from the OpenData API
 //	@Description	Get, format et populate database with the data from the OpenData API
 //	@Tags			Forecasts
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{object}	domains.Refresh{}
+//	@Success		200	{object}	domains.Sync{}
 //	@Failure		500	{object}	domains.APIErrorResponse{}	"An error occured on the server side"
-//	@Failure		429	{object}	domains.APIErrorResponse{}	"Too many attempt to refresh"
-//	@Router			/forecasts/refresh [post]
-func (fC *ForecastController) RefreshForecasts() gin.HandlerFunc {
+//	@Failure		429	{object}	domains.APIErrorResponse{}	"Too many attempt to sync"
+//	@Router			/forecasts/sync [post]
+func (fC *ForecastController) SyncForecasts() gin.HandlerFunc {
 	fn := func(c *gin.Context) {
 
 		if hub := sentrygin.GetHubFromContext(c); hub != nil {
-			hub.Scope().SetTag("controller", "RefreshForecasts")
+			hub.Scope().SetTag("controller", "SyncForecasts")
 		}
 
-		refresh, err := fC.ForecastUsecase.RefreshAll(c)
+		sync, err := fC.ForecastUsecase.SyncAll(c)
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, domains.APIErrorResponse{Error: err.Error()})
 			return
 		}
 
-		c.JSON(http.StatusOK, refresh)
+		c.JSON(http.StatusOK, sync)
 	}
 
 	return gin.HandlerFunc(fn)
