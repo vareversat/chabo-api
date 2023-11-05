@@ -13,8 +13,8 @@ on:
         required: true
 
 jobs:
-  build:
-    name: 'Build'
+  build-push:
+    name: 'Build & Push'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source code
@@ -34,11 +34,6 @@ jobs:
         run: heroku container:push web --app chabo-api-${{ inputs.env_name }} --arg VERSION=${{ env.VERSION_NUMBER }}
         env: 
           HEROKU_API_KEY: ${{ secrets.heroku_api_key }}
-  push:
-    needs: [ build ]
-    name: 'Push'
-    runs-on: ubuntu-latest
-    steps:
       - name: Promote build to Heroku
         run: heroku container:release web --app chabo-api-${{ inputs.env_name }}
         env: 
