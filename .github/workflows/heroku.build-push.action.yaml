@@ -27,7 +27,8 @@ jobs:
         run: curl https://cli-assets.heroku.com/install-ubuntu.sh | sh
       - name: Login to Heroku
         run: heroku container:login
-        with: {{ secrets.HEROKU_API_KEY }}
+        env: 
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
       - name: Build & Push to Heroku
         run: heroku container:push web --app chabo-api-${{ inputs.env_name }} --arg VERSION=${{ env.VERSION_NUMBER }}
       - name: Promote build to Heroku
