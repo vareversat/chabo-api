@@ -35,7 +35,7 @@ jobs:
         env: 
           HEROKU_API_KEY: ${{ secrets.heroku_api_key }}
       - name: Promote build to Heroku
-        run: heroku container:release web
+        run: heroku container:release web --app chabo-api-${{ inputs.env_name }}
         env: 
           HEROKU_API_KEY: ${{ secrets.heroku_api_key }}
   push:
