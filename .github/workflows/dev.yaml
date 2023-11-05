@@ -19,3 +19,5 @@ jobs:
     uses: ./.github/workflows/heroku.build-push.action.yaml
     with:
       env_name: 'beta'
+    secrets:
+      heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
