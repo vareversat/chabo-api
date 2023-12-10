@@ -5,7 +5,8 @@ go 1.21
 require (
 	github.com/getsentry/sentry-go v0.25.0
 	github.com/gin-gonic/gin v1.9.1
-	go.mongodb.org/mongo-driver v1.12.1
+	github.com/stretchr/testify v1.8.4
+	go.mongodb.org/mongo-driver v1.13.1
 )
 
 require (
@@ -17,7 +18,6 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rogpeppe/go-internal v1.9.0 // indirect
 	github.com/stretchr/objx v0.5.1 // indirect
-	github.com/stretchr/testify v1.8.4 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.2 // indirect
 	github.com/xdg-go/stringprep v1.0.4 // indirect
