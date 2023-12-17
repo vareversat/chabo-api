@@ -25,7 +25,7 @@ jobs:
           tags: chabo-api:${{ github.sha }}
           outputs: type=docker,dest=/tmp/chabo-api-image.tar
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: chabo-api-image
           path: /tmp/chabo-api-image.tar
