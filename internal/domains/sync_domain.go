@@ -25,7 +25,7 @@ type SyncRepository interface {
 	GetLast(ctx context.Context, sync *Sync) error
 }
 
-type SyncUsecase interface {
+type SyncUseCase interface {
 	InsertOne(ctx context.Context, sync Sync) errors.CustomError
 	GetLast(ctx context.Context, sync *Sync) errors.CustomError
 }

@@ -8,22 +8,22 @@ import (
 	"github.com/vareversat/chabo-api/internal/errors"
 )
 
-type syncUsecase struct {
+type syncUseCase struct {
 	syncRepository domains.SyncRepository
 	contextTimeout time.Duration
 }
 
-func NewSyncUsecase(
+func NewSyncUseCase(
 	syncRepository domains.SyncRepository,
 	timeout time.Duration,
-) domains.SyncUsecase {
-	return &syncUsecase{
+) domains.SyncUseCase {
+	return &syncUseCase{
 		syncRepository: syncRepository,
 		contextTimeout: timeout,
 	}
 }
 
-func (rU *syncUsecase) InsertOne(ctx context.Context, sync domains.Sync) errors.CustomError {
+func (rU *syncUseCase) InsertOne(ctx context.Context, sync domains.Sync) errors.CustomError {
 	ctx, cancel := context.WithTimeout(ctx, rU.contextTimeout)
 	defer cancel()
 	err := rU.syncRepository.InsertOne(ctx, sync)
@@ -34,13 +34,13 @@ func (rU *syncUsecase) InsertOne(ctx context.Context, sync domains.Sync) errors.
 	return nil
 }
 
-func (rU *syncUsecase) GetLast(ctx context.Context, sync *domains.Sync) errors.CustomError {
+func (rU *syncUseCase) GetLast(ctx context.Context, sync *domains.Sync) errors.CustomError {
 	ctx, cancel := context.WithTimeout(ctx, rU.contextTimeout)
 	defer cancel()
 	err := rU.syncRepository.GetLast(ctx, sync)
 
 	if err != nil {
-		return errors.NewInternalServerError(err.Error())
+		return errors.NewInternalServerError()
 	}
 	return nil
 }

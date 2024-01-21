@@ -6,7 +6,7 @@ type internalServerError struct {
 	Info string
 }
 
-func NewInternalServerError(info string) CustomError {
+func NewInternalServerError() CustomError {
 	return &internalServerError{}
 }
 

@@ -12,12 +12,12 @@ import (
 
 var logrus *log.Entry
 
-// Init the logger
+// InitOpenApi Init the logger
 func InitOpenApi(logger *log.Entry) {
 	logrus = logger
 }
 
-// Get forecasts data from the Opendata API
+// GetOpenAPIData Get forecasts data from the Open-data API
 // Populate the *domains.OpenDataAPIResponse pointer if the data are correct
 func GetOpenAPIData(openDataAPIResponse *domains.BordeauxAPIResponse) error {
 
@@ -43,7 +43,7 @@ func GetOpenAPIData(openDataAPIResponse *domains.BordeauxAPIResponse) error {
 		return err
 	}
 
-	logrus.Info("Open Data fetch with success")
+	logrus.Info("Open Data fetched with success")
 
 	return nil
 }

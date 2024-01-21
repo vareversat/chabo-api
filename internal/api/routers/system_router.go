@@ -12,13 +12,13 @@ import (
 
 func SystemRouter(timeout time.Duration, mongoClient *mongo.Client, group *gin.RouterGroup) {
 	healthcheckRepository := repositories.NewHealthCheckRepository(mongoClient)
-	systemContoller := &controllers.SystemController{
-		HealthCheckUsecase: usecases.NewHealthCheckUsecase(
+	systemController := &controllers.SystemController{
+		HealthCheckUseCase: usecases.NewHealthCheckUseCase(
 			healthcheckRepository,
 			timeout,
 		),
 	}
 
 	systemGroup := group.Group("/system")
-	systemGroup.GET("/healthcheck", systemContoller.Healthcheck())
+	systemGroup.GET("/healthcheck", systemController.Healthcheck())
 }

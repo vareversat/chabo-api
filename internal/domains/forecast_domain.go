@@ -73,11 +73,11 @@ func (f Forecast) IsEqual(other Forecast) bool {
 		reflect.DeepEqual(f.Link, other.Link)
 }
 
-func (forecats Forecasts) AreEqual(other Forecasts) bool {
-	if len(forecats) != len(other) {
+func (forecasts Forecasts) AreEqual(other Forecasts) bool {
+	if len(forecasts) != len(other) {
 		return false
 	}
-	for i, b := range forecats {
+	for i, b := range forecasts {
 		if !b.IsEqual(other[i]) {
 			return false
 		}
@@ -90,7 +90,7 @@ func (f *Forecast) ChangeLocation(location *time.Location) {
 	f.CirculationClosingDate = f.CirculationClosingDate.In(location)
 	f.CirculationReopeningDate = f.CirculationReopeningDate.In(location)
 	for index, boat := range f.Boats {
-		f.Boats[index].ApproximativeCrossingDate = boat.ApproximativeCrossingDate.In(
+		f.Boats[index].CrossingDateApproximation = boat.CrossingDateApproximation.In(
 			location,
 		)
 	}
@@ -129,7 +129,7 @@ type ForecastRepository interface {
 	InsertAll(ctx context.Context, forecasts Forecasts) (int, error)
 }
 
-type ForecastUsecase interface {
+type ForecastUseCase interface {
 	GetByID(
 		ctx context.Context,
 		id string,

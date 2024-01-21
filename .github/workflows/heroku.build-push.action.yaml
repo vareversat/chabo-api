@@ -4,12 +4,12 @@ on:
   workflow_call:
     inputs:
       env_name:
-        description: 'Then env on which the app wil be exectuted (beta or prod)'
+        description: 'Then env on which the app wil be executed (beta or prod)'
         required: true
         type: string
     secrets:
       heroku_api_key:
-        description: 'Secret used to login againt Heroku API'
+        description: 'Secret used to login against Heroku API'
         required: true
 
 jobs:

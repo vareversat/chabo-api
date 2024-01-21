@@ -12,7 +12,8 @@
         "license": {
             "name": "MIT",
             "url": "https://github.com/vareversat/chabo-api/blob/main/LICENSE.md"
-        }
+        },
+        "version": "0.0.0"
     },
     "paths": {
         "/forecasts": {
@@ -27,7 +28,7 @@
                 "tags": [
                     "Forecasts"
                 ],
-                "summary": "Get all foracasts",
+                "summary": "Get all forecasts",
                 "parameters": [
                     {
                         "type": "string",
@@ -96,13 +97,13 @@
                         }
                     },
                     "400": {
-                        "description": "Some params are missing and/or not properly formatted fror the requests",
+                        "description": "Some params are missing and/or not properly formatted from the requests",
                         "schema": {
                             "$ref": "#/definitions/domains.APIErrorResponse"
                         }
                     },
                     "500": {
-                        "description": "An error occured on the server side",
+                        "description": "An error occurred on the server side",
                         "schema": {
                             "$ref": "#/definitions/domains.APIErrorResponse"
                         }
@@ -137,7 +138,7 @@
                         }
                     },
                     "500": {
-                        "description": "An error occured on the server side",
+                        "description": "An error occurred on the server side",
                         "schema": {
                             "$ref": "#/definitions/domains.APIErrorResponse"
                         }
@@ -193,13 +194,13 @@
                         }
                     },
                     "400": {
-                        "description": "Some params are missing and/or not properly formatted fror the requests",
+                        "description": "Some params are missing and/or not properly formatted for the requests",
                         "schema": {
                             "$ref": "#/definitions/domains.APIErrorResponse"
                         }
                     },
                     "500": {
-                        "description": "An error occured on the server side",
+                        "description": "An error occurred on the server side",
                         "schema": {
                             "$ref": "#/definitions/domains.APIErrorResponse"
                         }
@@ -219,7 +220,7 @@
                 "tags": [
                     "Forecasts"
                 ],
-                "summary": "Get a foracast",
+                "summary": "Get a forecast",
                 "parameters": [
                     {
                         "type": "string",
@@ -244,7 +245,7 @@
                         }
                     },
                     "400": {
-                        "description": "Some params are missing and/or not properly formatted fror the requests",
+                        "description": "Some params are missing and/or not properly formatted from the requests",
                         "schema": {
                             "$ref": "#/definitions/domains.APIErrorResponse"
                         }
@@ -256,7 +257,7 @@
                         }
                     },
                     "500": {
-                        "description": "An error occured on the server side",
+                        "description": "An error occurred on the server side",
                         "schema": {
                             "$ref": "#/definitions/domains.APIErrorResponse"
                         }
@@ -288,7 +289,7 @@
                         }
                     },
                     "500": {
-                        "description": "An error occured on the server side",
+                        "description": "An error occurred on the server side",
                         "schema": {
                             "$ref": "#/definitions/domains.APIErrorResponse"
                         }
@@ -335,7 +336,7 @@
         "domains.Boat": {
             "type": "object",
             "properties": {
-                "approximative_crossing_date": {
+                "crossing_date_approximation": {
                     "type": "string",
                     "format": "date-time",
                     "example": "2021-05-25T00:53:16.535668Z"
