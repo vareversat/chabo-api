@@ -13,19 +13,19 @@ import (
 )
 
 type ForecastController struct {
-	ForecastUsecase domains.ForecastUsecase
+	ForecastUseCase domains.ForecastUseCase
 }
 
-// GetAllForecats godoc
+// GetAllForecasts godoc
 //
-//	@Summary		Get all foracasts
+//	@Summary		Get all forecasts
 //	@Description	Fetch all existing forecasts
 //	@Tags			Forecasts
 //	@Accept			json
 //	@Produce		json
 //	@Success		200			{object}	domains.ForecastsResponse{}
-//	@Failure		400			{object}	domains.APIErrorResponse{}	"Some params are missing and/or not properly formatted fror the requests"
-//	@Failure		500			{object}	domains.APIErrorResponse{}	"An error occured on the server side"
+//	@Failure		400			{object}	domains.APIErrorResponse{}	"Some params are missing and/or not properly formatted from the requests"
+//	@Failure		500			{object}	domains.APIErrorResponse{}	"An error occurred on the server side"
 //	@Param			from		query		string						false	"The date to filter from (RFC3339)"		Format(date-time)
 //	@Param			limit		query		int							true	"Set the limit of the queried results"	Format(int)	default(10)
 //	@Param			offset		query		int							true	"Set the offset of the queried results"	Format(int)	default(0)
@@ -34,11 +34,11 @@ type ForecastController struct {
 //	@Param			maneuver	query		string						false	"The boat maneuver of the event"								Enums(leaving_bordeaux, entering_in_bordeaux)
 //	@Param			Timezone	header		string						false	"Timezone to format the date related fields (TZ identifier)"	default(UTC)
 //	@Router			/forecasts [get]
-func (fC *ForecastController) GetAllForecats() gin.HandlerFunc {
+func (fC *ForecastController) GetAllForecasts() gin.HandlerFunc {
 	fn := func(c *gin.Context) {
 
 		if hub := sentrygin.GetHubFromContext(c); hub != nil {
-			hub.Scope().SetTag("controller", "GetAllForecats")
+			hub.Scope().SetTag("controller", "GetAllForecasts")
 		}
 
 		var forecasts domains.Forecasts
@@ -50,7 +50,7 @@ func (fC *ForecastController) GetAllForecats() gin.HandlerFunc {
 		reason := utils.GetStringParams(c, "reason")
 		boat := utils.GetStringParams(c, "boat")
 		maneuver := utils.GetStringParams(c, "maneuver")
-		time, timeErr := time.Parse(time.RFC3339, utils.GetStringParams(c, "from"))
+		parsedTime, timeErr := time.Parse(time.RFC3339, utils.GetStringParams(c, "from"))
 
 		if timeErr != nil && utils.GetStringParams(c, "from") != "" {
 			c.JSON(
@@ -88,12 +88,12 @@ func (fC *ForecastController) GetAllForecats() gin.HandlerFunc {
 			return
 		}
 
-		customError := fC.ForecastUsecase.GetAllFiltered(
+		customError := fC.ForecastUseCase.GetAllFiltered(
 			c,
 			location,
 			offset,
 			limit,
-			time,
+			parsedTime,
 			reason,
 			maneuver,
 			boat,
@@ -110,7 +110,7 @@ func (fC *ForecastController) GetAllForecats() gin.HandlerFunc {
 			return
 		}
 
-		links := utils.ComputeMetadaLinks(
+		links := utils.ComputeMetadataLinks(
 			totalItemCount,
 			limit,
 			offset,
@@ -140,8 +140,8 @@ func (fC *ForecastController) GetAllForecats() gin.HandlerFunc {
 //	@Accept			json
 //	@Produce		json
 //	@Success		200			{object}	domains.ForecastsResponse{}
-//	@Failure		400			{object}	domains.APIErrorResponse{}	"Some params are missing and/or not properly formatted fror the requests"
-//	@Failure		500			{object}	domains.APIErrorResponse{}	"An error occured on the server side"
+//	@Failure		400			{object}	domains.APIErrorResponse{}	"Some params are missing and/or not properly formatted for the requests"
+//	@Failure		500			{object}	domains.APIErrorResponse{}	"An error occurred on the server side"
 //	@Param			limit		query		int							true	"Set the limit of the queried results"							Format(int)	default(10)
 //	@Param			offset		query		int							true	"Set the offset of the queried results"							Format(int)	default(0)
 //	@Param			Timezone	header		string						false	"Timezone to format the date related fields (TZ identifier)"	default(UTC)
@@ -185,7 +185,7 @@ func (fC *ForecastController) GetTodayForecasts() gin.HandlerFunc {
 			return
 		}
 
-		customError := fC.ForecastUsecase.GetTodayForecasts(
+		customError := fC.ForecastUseCase.GetTodayForecasts(
 			c,
 			&forecasts,
 			offset,
@@ -203,7 +203,7 @@ func (fC *ForecastController) GetTodayForecasts() gin.HandlerFunc {
 			return
 		}
 
-		links := utils.ComputeMetadaLinks(
+		links := utils.ComputeMetadataLinks(
 			totalItemCount,
 			limit,
 			offset,
@@ -233,7 +233,7 @@ func (fC *ForecastController) GetTodayForecasts() gin.HandlerFunc {
 //	@Accept			json
 //	@Produce		json
 //	@Success		200	{object}	domains.Sync{}
-//	@Failure		500	{object}	domains.APIErrorResponse{}	"An error occured on the server side"
+//	@Failure		500	{object}	domains.APIErrorResponse{}	"An error occurred on the server side"
 //	@Failure		429	{object}	domains.APIErrorResponse{}	"Too many attempt to sync"
 //	@Router			/forecasts/sync [post]
 func (fC *ForecastController) SyncForecasts() gin.HandlerFunc {
@@ -243,7 +243,7 @@ func (fC *ForecastController) SyncForecasts() gin.HandlerFunc {
 			hub.Scope().SetTag("controller", "SyncForecasts")
 		}
 
-		sync, customError := fC.ForecastUsecase.SyncAll(c)
+		sync, customError := fC.ForecastUseCase.SyncAll(c)
 
 		if customError != nil {
 			c.JSON(
@@ -261,15 +261,15 @@ func (fC *ForecastController) SyncForecasts() gin.HandlerFunc {
 
 // GetForecastByID godoc
 //
-//	@Summary		Get a foracast
+//	@Summary		Get a forecast
 //	@Description	Fetch a forecast by his unique ID
 //	@Tags			Forecasts
 //	@Accept			json
 //	@Produce		json
 //	@Success		200			{object}	domains.ForecastResponse{}
 //	@Failure		404			{object}	domains.APIErrorResponse{}	"The ID does not match any forecast"
-//	@Failure		400			{object}	domains.APIErrorResponse{}	"Some params are missing and/or not properly formatted fror the requests"
-//	@Failure		500			{object}	domains.APIErrorResponse{}	"An error occured on the server side"
+//	@Failure		400			{object}	domains.APIErrorResponse{}	"Some params are missing and/or not properly formatted from the requests"
+//	@Failure		500			{object}	domains.APIErrorResponse{}	"An error occurred on the server side"
 //	@Param			id			path		string						true	"The forecast ID"
 //	@Param			Timezone	header		string						false	"Timezone to format the date related fields (TZ identifier)"	default(UTC)
 //	@Router			/forecasts/{id} [get]
@@ -296,7 +296,7 @@ func (fC *ForecastController) GetForecastByID() gin.HandlerFunc {
 			return
 		}
 
-		customError := fC.ForecastUsecase.GetByID(c, id, &forecast, location)
+		customError := fC.ForecastUseCase.GetByID(c, id, &forecast, location)
 
 		if customError != nil {
 			c.JSON(

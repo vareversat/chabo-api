@@ -15,12 +15,13 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-// Add the variable to be rewrite during build stage via -ldflags
+// Add the variable to be rewritten during build stage via -ldflags
 var version = "undefined"
 
 //	@Title						Chabo API - The Chaban-Delmas bridge API
 //	@Description				You can get every info you need about all the events of the Chaban-Delmas bridge in Bordeaux, France
 //	@Contact.email				dev@vareversat.fr
+//	@version					0.0.0
 //	@Produce					json
 //	@Scheme						http
 //	@ExternalDocs.description	All data comes from the Bordeaux Open Data API

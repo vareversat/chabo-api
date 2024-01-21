@@ -8,29 +8,29 @@ import (
 	"github.com/vareversat/chabo-api/internal/errors"
 )
 
-type healthcheckUsecase struct {
+type healthcheckUseCase struct {
 	healthcheckRepository domains.HealthCheckRepository
 	contextTimeout        time.Duration
 }
 
-func NewHealthCheckUsecase(
+func NewHealthCheckUseCase(
 	healthcheckRepository domains.HealthCheckRepository,
 	timeout time.Duration,
 ) domains.HealthCheckUsecase {
-	return &healthcheckUsecase{
+	return &healthcheckUseCase{
 		healthcheckRepository: healthcheckRepository,
 		contextTimeout:        timeout,
 	}
 }
 
-func (rU *healthcheckUsecase) GetHealth(ctx context.Context) errors.CustomError {
+func (rU *healthcheckUseCase) GetHealth(ctx context.Context) errors.CustomError {
 	ctx, cancel := context.WithTimeout(ctx, rU.contextTimeout)
 	defer cancel()
 
 	err := rU.healthcheckRepository.GetDBHealth(ctx)
 
 	if err != nil {
-		return errors.NewInternalServerError(err.Error())
+		return errors.NewInternalServerError()
 	}
 	return nil
 }

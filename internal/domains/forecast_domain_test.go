@@ -8,11 +8,11 @@ import (
 )
 
 func TestForecastIsEqualOK(t *testing.T) {
-	approximativeCrossingDate, _ := time.Parse(time.RFC3339, "2023-02-26T21:00:00+01:00")
+	crossingDateApproximation, _ := time.Parse(time.RFC3339, "2023-02-26T21:00:00+01:00")
 	circulationClosingDate, _ := time.Parse(time.RFC3339, "2023-02-26T21:00:00Z")
 	circulationReopeningDate, _ := time.Parse(time.RFC3339, "2023-02-26T23:00:00Z")
 	forecast := Forecast{
-		ID:                       "recordid",
+		ID:                       "recordId",
 		ClosingType:              TwoWay,
 		ClosingDuration:          7200000000000,
 		CirculationClosingDate:   circulationClosingDate,
@@ -22,13 +22,13 @@ func TestForecastIsEqualOK(t *testing.T) {
 			{
 				Name:                      "MY_BOAT",
 				Maneuver:                  Entering,
-				ApproximativeCrossingDate: approximativeCrossingDate,
+				CrossingDateApproximation: crossingDateApproximation,
 			},
 		},
-		Link: APIResponseSelfLink{Self: APIResponseLink{Link: "/v1/forecasts/recordid"}},
+		Link: APIResponseSelfLink{Self: APIResponseLink{Link: "/v1/forecasts/recordId"}},
 	}
 	otherForecast := Forecast{
-		ID:                       "recordid",
+		ID:                       "recordId",
 		ClosingType:              TwoWay,
 		ClosingDuration:          7200000000000,
 		CirculationClosingDate:   circulationClosingDate,
@@ -38,10 +38,10 @@ func TestForecastIsEqualOK(t *testing.T) {
 			{
 				Name:                      "MY_BOAT",
 				Maneuver:                  Entering,
-				ApproximativeCrossingDate: approximativeCrossingDate,
+				CrossingDateApproximation: crossingDateApproximation,
 			},
 		},
-		Link: APIResponseSelfLink{Self: APIResponseLink{Link: "/v1/forecasts/recordid"}},
+		Link: APIResponseSelfLink{Self: APIResponseLink{Link: "/v1/forecasts/recordId"}},
 	}
 	result := forecast.IsEqual(otherForecast)
 
@@ -49,11 +49,11 @@ func TestForecastIsEqualOK(t *testing.T) {
 }
 
 func TestForecastIsEqualNOK(t *testing.T) {
-	approximativeCrossingDate, _ := time.Parse(time.RFC3339, "2023-02-26T21:00:00+01:00")
+	crossingDateApproximation, _ := time.Parse(time.RFC3339, "2023-02-26T21:00:00+01:00")
 	circulationClosingDate, _ := time.Parse(time.RFC3339, "2023-02-26T21:00:00Z")
 	circulationReopeningDate, _ := time.Parse(time.RFC3339, "2023-02-26T23:00:00Z")
 	forecast := Forecast{
-		ID:                       "recordid",
+		ID:                       "recordId",
 		ClosingType:              TwoWay,
 		ClosingDuration:          7200000000000,
 		CirculationClosingDate:   circulationClosingDate,
@@ -63,13 +63,13 @@ func TestForecastIsEqualNOK(t *testing.T) {
 			{
 				Name:                      "MY_BOAT2",
 				Maneuver:                  Entering,
-				ApproximativeCrossingDate: approximativeCrossingDate,
+				CrossingDateApproximation: crossingDateApproximation,
 			},
 		},
-		Link: APIResponseSelfLink{Self: APIResponseLink{Link: "/v1/forecasts/recordid"}},
+		Link: APIResponseSelfLink{Self: APIResponseLink{Link: "/v1/forecasts/recordId"}},
 	}
 	otherForecast := Forecast{
-		ID:                       "recordid",
+		ID:                       "recordId",
 		ClosingType:              TwoWay,
 		ClosingDuration:          7200000000000,
 		CirculationClosingDate:   circulationClosingDate,
@@ -79,10 +79,10 @@ func TestForecastIsEqualNOK(t *testing.T) {
 			{
 				Name:                      "MY_BOAT",
 				Maneuver:                  Entering,
-				ApproximativeCrossingDate: approximativeCrossingDate,
+				CrossingDateApproximation: crossingDateApproximation,
 			},
 		},
-		Link: APIResponseSelfLink{Self: APIResponseLink{Link: "/v1/forecasts/recordid"}},
+		Link: APIResponseSelfLink{Self: APIResponseLink{Link: "/v1/forecasts/recordId"}},
 	}
 	result := forecast.IsEqual(otherForecast)
 
@@ -90,11 +90,11 @@ func TestForecastIsEqualNOK(t *testing.T) {
 }
 
 func TestForecastsAreEqualOK(t *testing.T) {
-	approximativeCrossingDate, _ := time.Parse(time.RFC3339, "2023-02-26T21:00:00+01:00")
+	crossingDateApproximation, _ := time.Parse(time.RFC3339, "2023-02-26T21:00:00+01:00")
 	circulationClosingDate, _ := time.Parse(time.RFC3339, "2023-02-26T21:00:00Z")
 	circulationReopeningDate, _ := time.Parse(time.RFC3339, "2023-02-26T23:00:00Z")
 	forecasts := Forecasts{Forecast{
-		ID:                       "recordid",
+		ID:                       "recordId",
 		ClosingType:              TwoWay,
 		ClosingDuration:          7200000000000,
 		CirculationClosingDate:   circulationClosingDate,
@@ -104,13 +104,13 @@ func TestForecastsAreEqualOK(t *testing.T) {
 			{
 				Name:                      "MY_BOAT",
 				Maneuver:                  Entering,
-				ApproximativeCrossingDate: approximativeCrossingDate,
+				CrossingDateApproximation: crossingDateApproximation,
 			},
 		},
-		Link: APIResponseSelfLink{Self: APIResponseLink{Link: "/v1/forecasts/recordid"}},
+		Link: APIResponseSelfLink{Self: APIResponseLink{Link: "/v1/forecasts/recordId"}},
 	}}
 	otherForecasts := Forecasts{Forecast{
-		ID:                       "recordid",
+		ID:                       "recordId",
 		ClosingType:              TwoWay,
 		ClosingDuration:          7200000000000,
 		CirculationClosingDate:   circulationClosingDate,
@@ -120,10 +120,10 @@ func TestForecastsAreEqualOK(t *testing.T) {
 			{
 				Name:                      "MY_BOAT",
 				Maneuver:                  Entering,
-				ApproximativeCrossingDate: approximativeCrossingDate,
+				CrossingDateApproximation: crossingDateApproximation,
 			},
 		},
-		Link: APIResponseSelfLink{Self: APIResponseLink{Link: "/v1/forecasts/recordid"}},
+		Link: APIResponseSelfLink{Self: APIResponseLink{Link: "/v1/forecasts/recordId"}},
 	}}
 	result := forecasts.AreEqual(otherForecasts)
 
@@ -131,11 +131,11 @@ func TestForecastsAreEqualOK(t *testing.T) {
 }
 
 func TestForecastsAreEqualNOK(t *testing.T) {
-	approximativeCrossingDate, _ := time.Parse(time.RFC3339, "2023-02-26T21:00:00+01:00")
+	crossingDateApproximation, _ := time.Parse(time.RFC3339, "2023-02-26T21:00:00+01:00")
 	circulationClosingDate, _ := time.Parse(time.RFC3339, "2023-02-26T21:00:00Z")
 	circulationReopeningDate, _ := time.Parse(time.RFC3339, "2023-02-26T23:00:00Z")
 	forecasts := Forecasts{Forecast{
-		ID:                       "recordid",
+		ID:                       "recordId",
 		ClosingType:              TwoWay,
 		ClosingDuration:          7200000000000,
 		CirculationClosingDate:   circulationClosingDate,
@@ -145,13 +145,13 @@ func TestForecastsAreEqualNOK(t *testing.T) {
 			{
 				Name:                      "MY_BOAT2",
 				Maneuver:                  Entering,
-				ApproximativeCrossingDate: approximativeCrossingDate,
+				CrossingDateApproximation: crossingDateApproximation,
 			},
 		},
-		Link: APIResponseSelfLink{Self: APIResponseLink{Link: "/v1/forecasts/recordid"}},
+		Link: APIResponseSelfLink{Self: APIResponseLink{Link: "/v1/forecasts/recordId"}},
 	}}
 	otherForecasts := Forecasts{Forecast{
-		ID:                       "recordid2",
+		ID:                       "recordId2",
 		ClosingType:              TwoWay,
 		ClosingDuration:          7200000000000,
 		CirculationClosingDate:   circulationClosingDate,
@@ -161,10 +161,10 @@ func TestForecastsAreEqualNOK(t *testing.T) {
 			{
 				Name:                      "MY_BOAT2",
 				Maneuver:                  Entering,
-				ApproximativeCrossingDate: approximativeCrossingDate,
+				CrossingDateApproximation: crossingDateApproximation,
 			},
 		},
-		Link: APIResponseSelfLink{Self: APIResponseLink{Link: "/v1/forecasts/recordid"}},
+		Link: APIResponseSelfLink{Self: APIResponseLink{Link: "/v1/forecasts/recordId"}},
 	}}
 	result := forecasts.AreEqual(otherForecasts)
 

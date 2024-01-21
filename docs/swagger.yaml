@@ -7,7 +7,7 @@ definitions:
     type: object
   domains.Boat:
     properties:
-      approximative_crossing_date:
+      crossing_date_approximation:
         example: "2021-05-25T00:53:16.535668Z"
         format: date-time
         type: string
@@ -130,6 +130,7 @@ info:
     name: MIT
     url: https://github.com/vareversat/chabo-api/blob/main/LICENSE.md
   title: Chabo API - The Chaban-Delmas bridge API
+  version: 0.0.0
 paths:
   /forecasts:
     get:
@@ -187,15 +188,15 @@ paths:
           schema:
             $ref: '#/definitions/domains.ForecastsResponse'
         "400":
-          description: Some params are missing and/or not properly formatted fror
+          description: Some params are missing and/or not properly formatted from
             the requests
           schema:
             $ref: '#/definitions/domains.APIErrorResponse'
         "500":
-          description: An error occured on the server side
+          description: An error occurred on the server side
           schema:
             $ref: '#/definitions/domains.APIErrorResponse'
-      summary: Get all foracasts
+      summary: Get all forecasts
       tags:
       - Forecasts
   /forecasts/{id}:
@@ -222,7 +223,7 @@ paths:
           schema:
             $ref: '#/definitions/domains.ForecastResponse'
         "400":
-          description: Some params are missing and/or not properly formatted fror
+          description: Some params are missing and/or not properly formatted from
             the requests
           schema:
             $ref: '#/definitions/domains.APIErrorResponse'
@@ -231,10 +232,10 @@ paths:
           schema:
             $ref: '#/definitions/domains.APIErrorResponse'
         "500":
-          description: An error occured on the server side
+          description: An error occurred on the server side
           schema:
             $ref: '#/definitions/domains.APIErrorResponse'
-      summary: Get a foracast
+      summary: Get a forecast
       tags:
       - Forecasts
   /forecasts/sync:
@@ -255,7 +256,7 @@ paths:
           schema:
             $ref: '#/definitions/domains.APIErrorResponse'
         "500":
-          description: An error occured on the server side
+          description: An error occurred on the server side
           schema:
             $ref: '#/definitions/domains.APIErrorResponse'
       summary: Sync the forecasts with the ones from the OpenData API
@@ -294,12 +295,12 @@ paths:
           schema:
             $ref: '#/definitions/domains.ForecastsResponse'
         "400":
-          description: Some params are missing and/or not properly formatted fror
-            the requests
+          description: Some params are missing and/or not properly formatted for the
+            requests
           schema:
             $ref: '#/definitions/domains.APIErrorResponse'
         "500":
-          description: An error occured on the server side
+          description: An error occurred on the server side
           schema:
             $ref: '#/definitions/domains.APIErrorResponse'
       summary: Get the closing schedule for today
@@ -320,7 +321,7 @@ paths:
           schema:
             $ref: '#/definitions/domains.APIErrorResponse'
         "500":
-          description: An error occured on the server side
+          description: An error occurred on the server side
           schema:
             $ref: '#/definitions/domains.APIErrorResponse'
       summary: Get the last sync action

@@ -9,7 +9,7 @@ import (
 )
 
 type SystemController struct {
-	HealthCheckUsecase domains.HealthCheckUsecase
+	HealthCheckUseCase domains.HealthCheckUsecase
 }
 
 // Healthcheck godoc
@@ -27,7 +27,7 @@ func (sC *SystemController) Healthcheck() gin.HandlerFunc {
 			hub.Scope().SetTag("controller", "healthcheck")
 		}
 
-		customError := sC.HealthCheckUsecase.GetHealth(c)
+		customError := sC.HealthCheckUseCase.GetHealth(c)
 
 		if customError != nil {
 			c.JSON(

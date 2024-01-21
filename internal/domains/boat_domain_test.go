@@ -8,16 +8,16 @@ import (
 )
 
 func TestBoatIsEqualOK(t *testing.T) {
-	approximativeCrossingDate, _ := time.Parse(time.RFC3339, "2023-02-26T21:00:00+01:00")
+	crossingDateApproximation, _ := time.Parse(time.RFC3339, "2023-02-26T21:00:00+01:00")
 	boat := Boat{
 		Name:                      "MY_BOAT",
 		Maneuver:                  Entering,
-		ApproximativeCrossingDate: approximativeCrossingDate,
+		CrossingDateApproximation: crossingDateApproximation,
 	}
 	otherBoat := Boat{
 		Name:                      "MY_BOAT",
 		Maneuver:                  Entering,
-		ApproximativeCrossingDate: approximativeCrossingDate,
+		CrossingDateApproximation: crossingDateApproximation,
 	}
 	result := boat.IsEqual(otherBoat)
 
@@ -25,16 +25,16 @@ func TestBoatIsEqualOK(t *testing.T) {
 }
 
 func TestBoatIsEqualNOK(t *testing.T) {
-	approximativeCrossingDate, _ := time.Parse(time.RFC3339, "2023-02-26T21:00:00+01:00")
+	crossingDateApproximation, _ := time.Parse(time.RFC3339, "2023-02-26T21:00:00+01:00")
 	boat := Boat{
 		Name:                      "MY_BOAT",
 		Maneuver:                  Entering,
-		ApproximativeCrossingDate: approximativeCrossingDate,
+		CrossingDateApproximation: crossingDateApproximation,
 	}
 	otherBoat := Boat{
 		Name:                      "MY_BOAT",
 		Maneuver:                  Leaving,
-		ApproximativeCrossingDate: approximativeCrossingDate,
+		CrossingDateApproximation: crossingDateApproximation,
 	}
 	result := boat.IsEqual(otherBoat)
 
@@ -42,19 +42,19 @@ func TestBoatIsEqualNOK(t *testing.T) {
 }
 
 func TestBoatsAreEqualOK(t *testing.T) {
-	approximativeCrossingDate, _ := time.Parse(time.RFC3339, "2023-02-26T21:00:00+01:00")
+	crossingDateApproximation, _ := time.Parse(time.RFC3339, "2023-02-26T21:00:00+01:00")
 	boats := Boats{
 		Boat{
 			Name:                      "MY_BOAT",
 			Maneuver:                  Entering,
-			ApproximativeCrossingDate: approximativeCrossingDate,
+			CrossingDateApproximation: crossingDateApproximation,
 		},
 	}
 	otherBoats := Boats{
 		Boat{
 			Name:                      "MY_BOAT",
 			Maneuver:                  Entering,
-			ApproximativeCrossingDate: approximativeCrossingDate,
+			CrossingDateApproximation: crossingDateApproximation,
 		},
 	}
 	result := boats.AreEqual(otherBoats)
@@ -63,19 +63,19 @@ func TestBoatsAreEqualOK(t *testing.T) {
 }
 
 func TestBoatsAreEqualNOK(t *testing.T) {
-	approximativeCrossingDate, _ := time.Parse(time.RFC3339, "2023-02-26T21:00:00+01:00")
+	crossingDateApproximation, _ := time.Parse(time.RFC3339, "2023-02-26T21:00:00+01:00")
 	boats := Boats{
 		Boat{
 			Name:                      "MY_BOAT",
 			Maneuver:                  Entering,
-			ApproximativeCrossingDate: approximativeCrossingDate,
+			CrossingDateApproximation: crossingDateApproximation,
 		},
 	}
 	otherBoats := Boats{
 		Boat{
 			Name:                      "MY_BOAT2",
 			Maneuver:                  Entering,
-			ApproximativeCrossingDate: approximativeCrossingDate,
+			CrossingDateApproximation: crossingDateApproximation,
 		},
 	}
 	result := boats.AreEqual(otherBoats)

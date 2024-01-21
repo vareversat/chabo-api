@@ -29,7 +29,7 @@ func (fR *forecastRepository) GetByID(
 	opts := options.FindOne()
 	filter := bson.D{{Key: "_id", Value: id}}
 
-	cursor := fR.collection.FindOne(context.TODO(), filter, opts)
+	cursor := fR.collection.FindOne(ctx, filter, opts)
 
 	return cursor.Decode(&forecast)
 
@@ -75,7 +75,7 @@ func (fR *forecastRepository) GetAllBetweenTwoDates(
 		}
 	}
 
-	// Test if the cusor.Next succeded to populated the pointer
+	// Test if the cursor.Next succeeded to populate the pointer
 	if len(mongoResponse.Results) == 0 {
 		*forecasts = domains.Forecasts{}
 		*totalItemCount = 0
@@ -138,7 +138,7 @@ func (fR *forecastRepository) GetAllFiltered(
 		}
 	}
 
-	// Test if the cusor.Next succeded to populated the pointer
+	// Test if the cursor.Next succeeded to populate the pointer
 	if len(mongoResponse.Results) == 0 {
 		*forecasts = domains.Forecasts{}
 		*totalItemCount = 0
@@ -155,7 +155,7 @@ func (fR *forecastRepository) GetAllFiltered(
 func (fR *forecastRepository) DeleteAll(
 	ctx context.Context,
 ) (int64, error) {
-	deleteResult, err := fR.collection.DeleteMany(context.TODO(), bson.D{})
+	deleteResult, err := fR.collection.DeleteMany(ctx, bson.D{})
 
 	return deleteResult.DeletedCount, err
 
@@ -169,7 +169,7 @@ func (fR *forecastRepository) InsertAll(
 	for i := range forecasts {
 		interfaceRecords[i] = forecasts[i]
 	}
-	insertResult, err := fR.collection.InsertMany(context.TODO(), interfaceRecords)
+	insertResult, err := fR.collection.InsertMany(ctx, interfaceRecords)
 
 	return len(insertResult.InsertedIDs), err
 

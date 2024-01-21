@@ -54,7 +54,7 @@ func TestComputeForecasts(t *testing.T) {
 				{
 					Name:                      "MY_BOAT",
 					Maneuver:                  domains.Entering,
-					ApproximativeCrossingDate: approximativeCrossingDate,
+					CrossingDateApproximation: approximativeCrossingDate,
 				},
 			},
 			Link: domains.APIResponseSelfLink{
@@ -63,7 +63,7 @@ func TestComputeForecasts(t *testing.T) {
 		},
 	}
 
-	u := NewForecastUsecase(*forecastRepository, *syncRepository, time.Second*2)
+	u := NewForecastUseCase(*forecastRepository, *syncRepository, time.Second*2)
 	u.ComputeBordeauxAPIResponse(&forecasts, bordeauxAPIForecasts)
 
 	assert.True(t, expectedForecasts.AreEqual(forecasts))
