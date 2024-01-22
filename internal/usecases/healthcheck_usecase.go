@@ -30,7 +30,7 @@ func (rU *healthcheckUseCase) GetHealth(ctx context.Context) errors.CustomError 
 	err := rU.healthcheckRepository.GetDBHealth(ctx)
 
 	if err != nil {
-		return errors.NewInternalServerError()
+		return errors.NewInternalServerError(err.Error())
 	}
 	return nil
 }

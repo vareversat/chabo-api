@@ -29,7 +29,7 @@ func (rU *syncUseCase) InsertOne(ctx context.Context, sync domains.Sync) errors.
 	err := rU.syncRepository.InsertOne(ctx, sync)
 
 	if err != nil {
-		return errors.NewNotFoundError("No sync status exists in database")
+		return errors.NewInternalServerError(err.Error())
 	}
 	return nil
 }
@@ -40,7 +40,7 @@ func (rU *syncUseCase) GetLast(ctx context.Context, sync *domains.Sync) errors.C
 	err := rU.syncRepository.GetLast(ctx, sync)
 
 	if err != nil {
-		return errors.NewInternalServerError()
+		return errors.NewNotFoundError("No sync status exists in database")
 	}
 	return nil
 }

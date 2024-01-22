@@ -6,12 +6,12 @@ type internalServerError struct {
 	Info string
 }
 
-func NewInternalServerError() CustomError {
-	return &internalServerError{}
+func NewInternalServerError(info string) CustomError {
+	return &internalServerError{Info: info}
 }
 
 func (e *internalServerError) GetStatusCode() int {
-	return 404
+	return 500
 }
 
 func (e *internalServerError) GetErrorMessage() string {

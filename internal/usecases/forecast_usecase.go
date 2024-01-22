@@ -92,7 +92,7 @@ func (fU *forecastUseCase) GetTodayForecasts(
 		totalItemCount,
 	)
 	if err != nil {
-		return errors.NewInternalServerError()
+		return errors.NewInternalServerError(err.Error())
 	}
 
 	if len(*forecasts) == 0 {
@@ -133,7 +133,7 @@ func (fU *forecastUseCase) GetAllFiltered(
 		totalItemCount,
 	)
 	if err != nil {
-		return errors.NewInternalServerError()
+		return errors.NewInternalServerError(err.Error())
 	}
 
 	if len(*forecasts) == 0 {
@@ -157,7 +157,7 @@ func (fU *forecastUseCase) SyncAll(ctx context.Context) (domains.Sync, errors.Cu
 		// Fetch the fresh data
 		errGet := utils.GetOpenAPIData(&openDataForecasts)
 		if errGet != nil {
-			return domains.Sync{}, errors.NewInternalServerError()
+			return domains.Sync{}, errors.NewInternalServerError(errGet.Error())
 		}
 		// Compute all forecasts
 		customError := fU.ComputeBordeauxAPIResponse(&forecasts, openDataForecasts)
@@ -167,12 +167,12 @@ func (fU *forecastUseCase) SyncAll(ctx context.Context) (domains.Sync, errors.Cu
 		// Delete all forecasts
 		_, err := fU.forecastRepository.DeleteAll(ctx)
 		if err != nil {
-			return domains.Sync{}, errors.NewInternalServerError()
+			return domains.Sync{}, errors.NewInternalServerError(err.Error())
 		}
 		// Insert all forecasts
 		insertCount, err := fU.forecastRepository.InsertAll(ctx, forecasts)
 		if err != nil {
-			return domains.Sync{}, errors.NewInternalServerError()
+			return domains.Sync{}, errors.NewInternalServerError(err.Error())
 		}
 		// STOP the timer
 		elapsed := time.Since(start)
@@ -184,7 +184,7 @@ func (fU *forecastUseCase) SyncAll(ctx context.Context) (domains.Sync, errors.Cu
 		}
 		err = fU.syncRepository.InsertOne(ctx, sync)
 		if err != nil {
-			return domains.Sync{}, errors.NewInternalServerError()
+			return domains.Sync{}, errors.NewInternalServerError(err.Error())
 		}
 		return sync, nil
 
@@ -211,7 +211,7 @@ func (fU *forecastUseCase) ComputeBordeauxAPIResponse(
 		)
 		if errClosingDate != nil {
 			logrus.Fatalf(errClosingDate.Error())
-			return errors.NewInternalServerError()
+			return errors.NewInternalServerError(errClosingDate.Error())
 		}
 		circulationReopeningDate, errReopeningDate := utils.FormatDataTime(
 			openAPIForecast.Fields.OpeningTime,
@@ -221,7 +221,7 @@ func (fU *forecastUseCase) ComputeBordeauxAPIResponse(
 		)
 		if errReopeningDate != nil {
 			logrus.Fatalf(errReopeningDate.Error())
-			return errors.NewInternalServerError()
+			return errors.NewInternalServerError(errReopeningDate.Error())
 		}
 
 		// Check if the forecast is during 2 days
