@@ -62,7 +62,7 @@ type ForecastMongoCountResponse struct {
 	ItemCount int `json:"itemCount" bson:"itemCount"`
 }
 
-func (f Forecast) IsEqual(other Forecast) bool {
+func (f *Forecast) IsEqual(other Forecast) bool {
 	return f.ID == other.ID &&
 		f.ClosingType == other.ClosingType &&
 		f.ClosingDuration == other.ClosingDuration &&
@@ -73,11 +73,11 @@ func (f Forecast) IsEqual(other Forecast) bool {
 		reflect.DeepEqual(f.Link, other.Link)
 }
 
-func (forecasts Forecasts) AreEqual(other Forecasts) bool {
-	if len(forecasts) != len(other) {
+func (forecasts *Forecasts) AreEqual(other Forecasts) bool {
+	if len(*forecasts) != len(other) {
 		return false
 	}
-	for i, b := range forecasts {
+	for i, b := range *forecasts {
 		if !b.IsEqual(other[i]) {
 			return false
 		}
