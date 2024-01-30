@@ -249,6 +249,7 @@ func (fU *forecastUseCase) ComputeBordeauxAPIResponse(
 			Link: domains.APIResponseSelfLink{
 				Self: domains.APIResponseLink{Link: "/v1/forecasts/" + openAPIForecast.RecordID},
 			},
+			SpecialEventName: utils.GetSpecialEventName(closingReason, openAPIForecast.Fields.Boat),
 		})
 	}
 	return nil

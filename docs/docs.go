@@ -67,7 +67,9 @@ const docTemplate = `{
                     {
                         "enum": [
                             "boat",
-                            "maintenance"
+                            "maintenance",
+                            "wine_festival_boats",
+                            "special_event"
                         ],
                         "type": "string",
                         "description": "The closing reason",
@@ -374,11 +376,15 @@ const docTemplate = `{
             "type": "string",
             "enum": [
                 "boat",
-                "maintenance"
+                "maintenance",
+                "wine_festival_boats",
+                "special_event"
             ],
             "x-enum-varnames": [
                 "BoatReason",
-                "Maintenance"
+                "Maintenance",
+                "WineFestivalBoats",
+                "SpecialEvent"
             ]
         },
         "domains.ClosingType": {
@@ -512,7 +518,7 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "0.0.0",
+	Version:          "",
 	Host:             "",
 	BasePath:         "",
 	Schemes:          []string{},

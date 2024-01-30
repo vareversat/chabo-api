@@ -18,10 +18,27 @@ func MapClosingType(stringClosingType string) domains.ClosingType {
 
 // MapClosingReason Return the corresponding domains.ClosingReason according to the string value
 func MapClosingReason(stringClosingReason string) domains.ClosingReason {
-	if stringClosingReason == "MAINTENANCE" {
+	switch {
+	case strings.Contains(strings.ToLower(stringClosingReason), "vin"):
+		return domains.WineFestivalBoats
+	// Special events are returned as lower strings by the API
+	case StartWithUpperCase(stringClosingReason) && EndWithLowerCase(stringClosingReason):
+		return domains.SpecialEvent
+	case stringClosingReason == "MAINTENANCE":
 		return domains.Maintenance
-	} else {
+	default:
 		return domains.BoatReason
+	}
+}
+
+// GetSpecialEventName Return the special name event (if this is a special event)
+func GetSpecialEventName(reason domains.ClosingReason, eventName string) string {
+	switch {
+	// Return the name of the 'boat' (not an actual boat)
+	case reason == domains.SpecialEvent || reason == domains.WineFestivalBoats:
+		return eventName
+	default:
+		return ""
 	}
 }
 

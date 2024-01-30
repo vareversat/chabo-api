@@ -12,8 +12,7 @@
         "license": {
             "name": "MIT",
             "url": "https://github.com/vareversat/chabo-api/blob/main/LICENSE.md"
-        },
-        "version": "0.0.0"
+        }
     },
     "paths": {
         "/forecasts": {
@@ -58,7 +57,9 @@
                     {
                         "enum": [
                             "boat",
-                            "maintenance"
+                            "maintenance",
+                            "wine_festival_boats",
+                            "special_event"
                         ],
                         "type": "string",
                         "description": "The closing reason",
@@ -365,11 +366,15 @@
             "type": "string",
             "enum": [
                 "boat",
-                "maintenance"
+                "maintenance",
+                "wine_festival_boats",
+                "special_event"
             ],
             "x-enum-varnames": [
                 "BoatReason",
-                "Maintenance"
+                "Maintenance",
+                "WineFestivalBoats",
+                "SpecialEvent"
             ]
         },
         "domains.ClosingType": {

@@ -22,21 +22,24 @@ const (
 )
 
 const (
-	BoatReason  ClosingReason = "boat"
-	Maintenance ClosingReason = "maintenance"
+	BoatReason        ClosingReason = "boat"
+	Maintenance       ClosingReason = "maintenance"
+	WineFestivalBoats ClosingReason = "wine_festival_boats"
+	SpecialEvent      ClosingReason = "special_event"
 )
 
 type Forecasts []Forecast
 
 type Forecast struct {
-	ID                       string              `json:"id"                         bson:"_id"                        example:"63a6430fc07ff1d895c9555ef2ef6e41c1e3b1f5"`
+	ID                       string              `json:"id"                         bson:"_id"                          example:"63a6430fc07ff1d895c9555ef2ef6e41c1e3b1f5"`
 	ClosingType              ClosingType         `json:"closing_type"               bson:"closing_type"`
-	ClosingDuration          time.Duration       `json:"closing_duration_min"       bson:"closing_duration_min"       example:"83"                                       swaggertype:"primitive,integer"`
-	CirculationClosingDate   time.Time           `json:"circulation_closing_date"   bson:"circulation_closing_date"   example:"2021-05-25T00:53:16.535668Z"                                              format:"date-time"`
-	CirculationReopeningDate time.Time           `json:"circulation_reopening_date" bson:"circulation_reopening_date" example:"2021-05-25T00:53:16.535668Z"                                              format:"date-time"`
+	ClosingDuration          time.Duration       `json:"closing_duration_min"       bson:"closing_duration_min"         example:"83"                                       swaggertype:"primitive,integer"`
+	CirculationClosingDate   time.Time           `json:"circulation_closing_date"   bson:"circulation_closing_date"     example:"2021-05-25T00:53:16.535668Z"                                              format:"date-time"`
+	CirculationReopeningDate time.Time           `json:"circulation_reopening_date" bson:"circulation_reopening_date"   example:"2021-05-25T00:53:16.535668Z"                                              format:"date-time"`
 	ClosingReason            ClosingReason       `json:"closing_reason"             bson:"closing_reason"`
 	Boats                    Boats               `json:"boats,omitempty"            bson:"boats,omitempty"`
-	Link                     APIResponseSelfLink `json:"_links"                     bson:"_links,omitempty"                                                                                                                 swaggerignore:"true"`
+	Link                     APIResponseSelfLink `json:"_links"                     bson:"_links,omitempty"                                                                                                                   swaggerignore:"true"`
+	SpecialEventName         string              `json:"special_event_name"         bson:"special_event_name,omitempty" example:"Les étoiles filantes"                                                                        swaggerignore:"true"`
 }
 
 type ForecastsResponse struct {

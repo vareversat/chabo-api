@@ -32,7 +32,21 @@ func TestMapClosingReason_MAINTENANCE(t *testing.T) {
 
 func TestMapClosingReason_BOAT(t *testing.T) {
 	expected := domains.BoatReason
-	value := MapClosingReason("BOAT")
+	value := MapClosingReason("SILVER DAWN")
+
+	assert.Equal(t, expected, value)
+}
+
+func TestMapClosingReason_WINE_FESTIVAL(t *testing.T) {
+	expected := domains.WineFestivalBoats
+	value := MapClosingReason("Bateaux fete du vin")
+
+	assert.Equal(t, expected, value)
+}
+
+func TestMapClosingReason_SPECIAL_EVENT(t *testing.T) {
+	expected := domains.SpecialEvent
+	value := MapClosingReason("Les étoiles filantes")
 
 	assert.Equal(t, expected, value)
 }
