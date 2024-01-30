@@ -21,6 +21,7 @@ var version = "undefined"
 //	@Title						Chabo API - The Chaban-Delmas bridge API
 //	@Description				You can get every info you need about all the events of the Chaban-Delmas bridge in Bordeaux, France
 //	@Contact.email				dev@vareversat.fr
+//	@Version					v0.0.0
 //	@Produce					json
 //	@Scheme						http
 //	@ExternalDocs.description	All data comes from the Bordeaux Open Data API

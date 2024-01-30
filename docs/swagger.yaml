@@ -134,6 +134,7 @@ info:
     name: MIT
     url: https://github.com/vareversat/chabo-api/blob/main/LICENSE.md
   title: Chabo API - The Chaban-Delmas bridge API
+  version: 0.0.0
 paths:
   /forecasts:
     get:
