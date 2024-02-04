@@ -23,7 +23,7 @@ jobs:
       - name: 'Go test (with coverage)'
         run: go test ./internal/... -covermode=atomic -coverprofile='coverage.out'
       - name: 'Upload coverage report'
-        uses: codecov/codecov-action@v3.1.5
+        uses: codecov/codecov-action@v3.1.6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage.out
