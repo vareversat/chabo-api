@@ -40,7 +40,7 @@ func (fU *forecastUseCase) GetByID(
 	defer cancel()
 
 	// Do a sync attempt in case of the data are too old
-	fU.SyncAll(ctx)
+	fU.TryToSyncAll(ctx)
 
 	err := fU.forecastRepository.GetByID(ctx, id, forecast)
 	if err != nil {
@@ -80,7 +80,7 @@ func (fU *forecastUseCase) GetTodayForecasts(
 	toRounded := time.Date(to.Year(), to.Month(), to.Day(), 0, 0, 0, 0, location)
 
 	// Do a sync attempt in case of the data are too old
-	fU.SyncAll(ctx)
+	fU.TryToSyncAll(ctx)
 
 	err := fU.forecastRepository.GetAllBetweenTwoDates(
 		ctx,
@@ -119,7 +119,7 @@ func (fU *forecastUseCase) GetAllFiltered(
 	defer cancel()
 
 	// Do a sync attempt in case of the data are too old
-	fU.SyncAll(ctx)
+	fU.TryToSyncAll(ctx)
 
 	err := fU.forecastRepository.GetAllFiltered(
 		ctx,
@@ -144,7 +144,7 @@ func (fU *forecastUseCase) GetAllFiltered(
 	return nil
 }
 
-func (fU *forecastUseCase) SyncAll(ctx context.Context) (domains.Sync, errors.CustomError) {
+func (fU *forecastUseCase) TryToSyncAll(ctx context.Context) (domains.Sync, errors.CustomError) {
 	ctx, cancel := context.WithTimeout(ctx, fU.contextTimeout)
 	defer cancel()
 

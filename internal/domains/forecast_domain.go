@@ -159,7 +159,7 @@ type ForecastUseCase interface {
 		forecasts *Forecasts,
 		totalItemCount *int,
 	) errors.CustomError
-	SyncAll(ctx context.Context) (Sync, errors.CustomError)
+	TryToSyncAll(ctx context.Context) (Sync, errors.CustomError)
 	ComputeBordeauxAPIResponse(
 		forecasts *Forecasts,
 		boredeauxAPIResponse BordeauxAPIResponse,

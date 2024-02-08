@@ -243,7 +243,7 @@ func (fC *ForecastController) SyncForecasts() gin.HandlerFunc {
 			hub.Scope().SetTag("controller", "SyncForecasts")
 		}
 
-		sync, customError := fC.ForecastUseCase.SyncAll(c)
+		sync, customError := fC.ForecastUseCase.TryToSyncAll(c)
 
 		if customError != nil {
 			c.JSON(
