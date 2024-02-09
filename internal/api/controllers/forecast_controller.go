@@ -314,3 +314,111 @@ func (fC *ForecastController) GetForecastByID() gin.HandlerFunc {
 
 	return gin.HandlerFunc(fn)
 }
+
+// GetCurrentForecast godoc
+//
+//	@Summary		Fetch the current forecast
+//	@Description	Get the current forecast (the bridge is currently closed)
+//	@Tags			Forecasts
+//	@Accept			json
+//	@Produce		json
+//	@Success		200			{object}	domains.ForecastResponse{}
+//	@Failure		404			{object}	domains.APIErrorResponse{}	"The Chaban-Delmas bridge is currently open"
+//	@Failure		400			{object}	domains.APIErrorResponse{}	"Some params are missing and/or not properly formatted from the requests"
+//	@Failure		500			{object}	domains.APIErrorResponse{}	"An error occurred on the server side"
+//	@Param			Timezone	header		string						false	"Timezone to format the date related fields (TZ identifier)"	default(UTC)
+//	@Router			/forecasts/current [get]
+func (fC *ForecastController) GetCurrentForecast() gin.HandlerFunc {
+	fn := func(c *gin.Context) {
+
+		var forecast domains.Forecast
+
+		location, locationErr := utils.GetTimezoneFromHeader(c)
+
+		if locationErr != nil {
+			c.JSON(http.StatusBadRequest, domains.APIErrorResponse{Error: locationErr.Error()})
+			return
+		}
+
+		if hub := sentrygin.GetHubFromContext(c); hub != nil {
+			hub.Scope().SetTag("controller", "GetCurrentForecast")
+		}
+
+		err := c.ShouldBind(&forecast)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, domains.APIErrorResponse{Error: err.Error()})
+			return
+		}
+
+		customError := fC.ForecastUseCase.GetCurrentForecast(c, &forecast, location)
+
+		if customError != nil {
+			c.JSON(
+				customError.GetStatusCode(),
+				domains.APIErrorResponse{Error: customError.GetErrorMessage()},
+			)
+			return
+		}
+
+		c.JSON(
+			http.StatusOK,
+			domains.ForecastResponse{Forecast: forecast, Timezone: location.String()},
+		)
+	}
+
+	return gin.HandlerFunc(fn)
+}
+
+// GetNextForecast godoc
+//
+//	@Summary		Fetch the next forecast
+//	@Description	Get the next forecast (= current forecast if the bridge is closed)
+//	@Tags			Forecasts
+//	@Accept			json
+//	@Produce		json
+//	@Success		200			{object}	domains.ForecastResponse{}
+//	@Failure		404			{object}	domains.APIErrorResponse{}	"The city of Bordeaux has not yet posted the closing times online"
+//	@Failure		400			{object}	domains.APIErrorResponse{}	"Some params are missing and/or not properly formatted from the requests"
+//	@Failure		500			{object}	domains.APIErrorResponse{}	"An error occurred on the server side"
+//	@Param			Timezone	header		string						false	"Timezone to format the date related fields (TZ identifier)"	default(UTC)
+//	@Router			/forecasts/next [get]
+func (fC *ForecastController) GetNextForecast() gin.HandlerFunc {
+	fn := func(c *gin.Context) {
+
+		var forecast domains.Forecast
+
+		location, locationErr := utils.GetTimezoneFromHeader(c)
+
+		if locationErr != nil {
+			c.JSON(http.StatusBadRequest, domains.APIErrorResponse{Error: locationErr.Error()})
+			return
+		}
+
+		if hub := sentrygin.GetHubFromContext(c); hub != nil {
+			hub.Scope().SetTag("controller", "GetNextForecast")
+		}
+
+		err := c.ShouldBind(&forecast)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, domains.APIErrorResponse{Error: err.Error()})
+			return
+		}
+
+		customError := fC.ForecastUseCase.GetNextForecast(c, &forecast, location)
+
+		if customError != nil {
+			c.JSON(
+				customError.GetStatusCode(),
+				domains.APIErrorResponse{Error: customError.GetErrorMessage()},
+			)
+			return
+		}
+
+		c.JSON(
+			http.StatusOK,
+			domains.ForecastResponse{Forecast: forecast, Timezone: location.String()},
+		)
+	}
+
+	return gin.HandlerFunc(fn)
+}

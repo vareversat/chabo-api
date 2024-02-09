@@ -122,6 +122,106 @@ const docTemplate = `{
                 }
             }
         },
+        "/forecasts/current": {
+            "get": {
+                "description": "Get the current forecast (the bridge is currently closed)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Forecasts"
+                ],
+                "summary": "Fetch the current forecast",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "UTC",
+                        "description": "Timezone to format the date related fields (TZ identifier)",
+                        "name": "Timezone",
+                        "in": "header"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domains.ForecastResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Some params are missing and/or not properly formatted from the requests",
+                        "schema": {
+                            "$ref": "#/definitions/domains.APIErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "The Chaban-Delmas bridge is currently open",
+                        "schema": {
+                            "$ref": "#/definitions/domains.APIErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "An error occurred on the server side",
+                        "schema": {
+                            "$ref": "#/definitions/domains.APIErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/forecasts/next": {
+            "get": {
+                "description": "Get the next forecast (= current forecast if the bridge is closed)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Forecasts"
+                ],
+                "summary": "Fetch the next forecast",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "UTC",
+                        "description": "Timezone to format the date related fields (TZ identifier)",
+                        "name": "Timezone",
+                        "in": "header"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domains.ForecastResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Some params are missing and/or not properly formatted from the requests",
+                        "schema": {
+                            "$ref": "#/definitions/domains.APIErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "The city of Bordeaux has not yet posted the closing times online",
+                        "schema": {
+                            "$ref": "#/definitions/domains.APIErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "An error occurred on the server side",
+                        "schema": {
+                            "$ref": "#/definitions/domains.APIErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/forecasts/sync": {
             "post": {
                 "description": "Get, format et populate database with the data from the OpenData API",
@@ -518,7 +618,7 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "0.0.0",
+	Version:          "v0.0.0",
 	Host:             "",
 	BasePath:         "",
 	Schemes:          []string{},

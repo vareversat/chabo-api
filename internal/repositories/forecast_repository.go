@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -32,7 +33,57 @@ func (fR *forecastRepository) GetByID(
 	cursor := fR.collection.FindOne(ctx, filter, opts)
 
 	return cursor.Decode(&forecast)
+}
 
+func (fR *forecastRepository) GetNextForecast(
+	ctx context.Context,
+	forecast *domains.Forecast,
+	now time.Time,
+) error {
+	opts := options.FindOne()
+	filter := bson.D{
+		{
+			Key:   "circulation_closing_date",
+			Value: bson.D{{Key: "$gte", Value: now}},
+		},
+	}
+
+	fmt.Println(filter)
+
+	cursor := fR.collection.FindOne(ctx, filter, opts)
+
+	fmt.Println(cursor.Raw())
+	return cursor.Decode(&forecast)
+}
+
+func (fR *forecastRepository) GetCurrentForecast(
+	ctx context.Context,
+	forecast *domains.Forecast,
+) error {
+	mongoFilter := bson.D{}
+
+	mongoFilter = append(
+		mongoFilter,
+		bson.E{
+			Key:   "circulation_closing_date",
+			Value: bson.D{{Key: "$lte", Value: time.Now()}},
+		},
+	)
+
+	mongoFilter = append(
+		mongoFilter,
+		bson.E{
+			Key:   "circulation_opening_date",
+			Value: bson.D{{Key: "$gte", Value: time.Now()}},
+		},
+	)
+
+	cursor, err := computeMongoCursor(ctx, mongoFilter, fR.collection, 1, 0)
+	if err != nil {
+		return err
+	}
+
+	return cursor.Decode(&forecast)
 }
 
 func (fR *forecastRepository) GetAllBetweenTwoDates(
@@ -207,6 +258,10 @@ func computeMongoCursor(
 			},
 		},
 	}
+
+	fmt.Println(sortPipeline)
+	fmt.Println(filtersPipeline)
+	fmt.Println(constraintsPipeline)
 
 	cursor, err = collection.Aggregate(
 		ctx,

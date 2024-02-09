@@ -29,4 +29,6 @@ func ForecastsRouter(timeout time.Duration, db mongo.Database, group *gin.Router
 	forecastGroup.GET(":id", forecastController.GetForecastByID())
 	forecastGroup.GET("/today", forecastController.GetTodayForecasts())
 	forecastGroup.POST("/sync", forecastController.SyncForecasts())
+	forecastGroup.GET("/next", forecastController.GetNextForecast())
+	forecastGroup.GET("/current", forecastController.GetCurrentForecast())
 }

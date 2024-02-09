@@ -130,12 +130,31 @@ type ForecastRepository interface {
 	) error
 	DeleteAll(ctx context.Context) (int64, error)
 	InsertAll(ctx context.Context, forecasts Forecasts) (int, error)
+	GetNextForecast(
+		ctx context.Context,
+		forecast *Forecast,
+		now time.Time,
+	) error
+	GetCurrentForecast(
+		ctx context.Context,
+		forecast *Forecast,
+	) error
 }
 
 type ForecastUseCase interface {
 	GetByID(
 		ctx context.Context,
 		id string,
+		forecast *Forecast,
+		location *time.Location,
+	) errors.CustomError
+	GetCurrentForecast(
+		ctx context.Context,
+		forecast *Forecast,
+		location *time.Location,
+	) errors.CustomError
+	GetNextForecast(
+		ctx context.Context,
 		forecast *Forecast,
 		location *time.Location,
 	) errors.CustomError

@@ -51,6 +51,47 @@ func (fU *forecastUseCase) GetByID(
 	return nil
 }
 
+func (fU *forecastUseCase) GetCurrentForecast(ctx context.Context, forecast *domains.Forecast,
+	location *time.Location) errors.CustomError {
+	ctx, cancel := context.WithTimeout(ctx, fU.contextTimeout)
+	defer cancel()
+
+	// Do a sync attempt in case of the data are too old
+	fU.TryToSyncAll(ctx)
+
+	err := fU.forecastRepository.GetCurrentForecast(ctx, forecast)
+	if err != nil {
+		return errors.NewNotFoundError(
+			"No current forecast. The Chaban-Delmas bridge is currently open",
+		)
+	}
+
+	forecast.ChangeLocation(location)
+	return nil
+}
+
+func (fU *forecastUseCase) GetNextForecast(ctx context.Context, forecast *domains.Forecast,
+	location *time.Location) errors.CustomError {
+	ctx, cancel := context.WithTimeout(ctx, fU.contextTimeout)
+	defer cancel()
+
+	// Get the current time
+	now := time.Now()
+	// Convert the local time into the requested TZ
+	localNow := now.In(location)
+
+	// Do a sync attempt in case of the data are too old
+	fU.TryToSyncAll(ctx)
+
+	err := fU.forecastRepository.GetNextForecast(ctx, forecast, localNow)
+	if err != nil {
+		return errors.NewNotFoundError("No next forecast. Schedules will be available soon")
+	}
+
+	forecast.ChangeLocation(location)
+	return nil
+}
+
 func (fU *forecastUseCase) GetTodayForecasts(
 	ctx context.Context,
 	forecasts *domains.Forecasts,
