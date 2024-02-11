@@ -3,7 +3,7 @@ module github.com/vareversat/chabo-api
 go 1.21
 
 require (
-	github.com/getsentry/sentry-go v0.26.0
+	github.com/getsentry/sentry-go v0.27.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/stretchr/testify v1.8.4
 	github.com/swaggo/files v1.0.1
