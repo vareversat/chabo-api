@@ -17,7 +17,7 @@ services:
 
   mongo:
     container_name: mongo-server
-    image: mongo:6.0.13
+    image: mongo:6.0.14
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: my_password
