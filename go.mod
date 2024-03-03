@@ -5,7 +5,7 @@ go 1.21
 require (
 	github.com/getsentry/sentry-go v0.27.0
 	github.com/gin-gonic/gin v1.9.1
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
 	github.com/swaggo/files v1.0.1
 	go.mongodb.org/mongo-driver v1.14.0
 )
