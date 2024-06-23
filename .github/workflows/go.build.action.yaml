@@ -19,7 +19,7 @@ jobs:
           echo "BUILD_NUMBER=$BUILD_NUMBER" >> $GITHUB_ENV
           echo "This build is tagged as $BUILD_NUMBER on $GITHUB_REF"
       - name: Build and export
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           tags: chabo-api:${{ github.sha }}
