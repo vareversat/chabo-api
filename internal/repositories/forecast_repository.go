@@ -204,8 +204,10 @@ func (fR *forecastRepository) DeleteAll(
 ) (int64, error) {
 	deleteResult, err := fR.collection.DeleteMany(ctx, bson.D{})
 
-	return deleteResult.DeletedCount, err
-
+	if deleteResult != nil {
+		return deleteResult.DeletedCount, nil
+	}
+	return 0, err
 }
 
 func (fR *forecastRepository) InsertAll(
@@ -218,8 +220,10 @@ func (fR *forecastRepository) InsertAll(
 	}
 	insertResult, err := fR.collection.InsertMany(ctx, interfaceRecords)
 
-	return len(insertResult.InsertedIDs), err
-
+	if insertResult != nil {
+		return len(insertResult.InsertedIDs), nil
+	}
+	return 0, err
 }
 
 func computeMongoCursor(
