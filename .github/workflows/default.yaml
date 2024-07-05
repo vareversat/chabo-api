@@ -1,9 +1,9 @@
-name: Dev workflow
+name: Default workflow
 
 on:
   push:
-    branches:
-      - dev
+    branches-ignore:
+      - main
 
 jobs:
   go-lint:
@@ -17,6 +17,3 @@ jobs:
   go-build:
     needs: [ go-lint, go-test ]
     uses: ./.github/workflows/go.build.action.yaml
-  docker-build-push:
-    needs: [ go-build ]
-    uses: ./.github/workflows/docker.build-push.action.yaml
