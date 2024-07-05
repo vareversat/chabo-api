@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -48,11 +47,8 @@ func (fR *forecastRepository) GetNextForecast(
 		},
 	}
 
-	fmt.Println(filter)
-
 	cursor := fR.collection.FindOne(ctx, filter, opts)
 
-	fmt.Println(cursor.Raw())
 	return cursor.Decode(&forecast)
 }
 
@@ -258,10 +254,6 @@ func computeMongoCursor(
 			},
 		},
 	}
-
-	fmt.Println(sortPipeline)
-	fmt.Println(filtersPipeline)
-	fmt.Println(constraintsPipeline)
 
 	cursor, err = collection.Aggregate(
 		ctx,
