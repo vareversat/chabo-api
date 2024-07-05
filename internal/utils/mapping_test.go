@@ -32,7 +32,21 @@ func TestMapClosingReason_MAINTENANCE(t *testing.T) {
 
 func TestMapClosingReason_BOAT(t *testing.T) {
 	expected := domains.BoatReason
-	value := MapClosingReason("BOAT")
+	value := MapClosingReason("SILVER DAWN")
+
+	assert.Equal(t, expected, value)
+}
+
+func TestMapClosingReason_WINE_FESTIVAL(t *testing.T) {
+	expected := domains.WineFestivalBoats
+	value := MapClosingReason("Bateaux fete du vin")
+
+	assert.Equal(t, expected, value)
+}
+
+func TestMapClosingReason_SPECIAL_EVENT(t *testing.T) {
+	expected := domains.SpecialEvent
+	value := MapClosingReason("Les étoiles filantes")
 
 	assert.Equal(t, expected, value)
 }
@@ -45,15 +59,9 @@ func TestMapBoats(t *testing.T) {
 	crossingTime := localTime.Add(duration / 2)
 
 	expected := []domains.Boat{
-		{Name: "MY_BOAT", Maneuver: domains.Entering, ApproximativeCrossingDate: crossingTime},
+		{Name: "MY_BOAT", Maneuver: domains.Entering, CrossingDateApproximation: crossingTime},
 	}
-	value := MapBoats(
-		domains.BoatReason,
-		"MY_BOAT",
-		duration,
-		localTime,
-		&alreadySeenBoatNames,
-		"BOAT_ID")
+	value := MapBoats(domains.BoatReason, "MY_BOAT", duration, localTime, &alreadySeenBoatNames)
 
 	assert.True(t, reflect.DeepEqual(expected, value))
 }
@@ -67,11 +75,11 @@ func TestMapBoatsMultiBoats(t *testing.T) {
 	crossingTimeBoat2 := localTime.Add(time.Duration(float64(duration) * (float64(2) / float64(3))))
 
 	expected := []domains.Boat{
-		{Name: "MY_BOAT", Maneuver: domains.Entering, ApproximativeCrossingDate: crossingTimeBoat1},
+		{Name: "MY_BOAT", Maneuver: domains.Entering, CrossingDateApproximation: crossingTimeBoat1},
 		{
 			Name:                      "MY_SECOND_BOAT",
 			Maneuver:                  domains.Entering,
-			ApproximativeCrossingDate: crossingTimeBoat2,
+			CrossingDateApproximation: crossingTimeBoat2,
 		},
 	}
 	value := MapBoats(
@@ -80,7 +88,7 @@ func TestMapBoatsMultiBoats(t *testing.T) {
 		duration,
 		localTime,
 		&alreadySeenBoatNames,
-		"BOAT_ID")
+	)
 
 	assert.True(t, reflect.DeepEqual(expected, value))
 }
@@ -94,27 +102,21 @@ func TestMapBoatsExistingBoats(t *testing.T) {
 	crossingTime := localTime.Add(duration / 2)
 
 	expected := []domains.Boat{
-		{Name: "MY_BOAT", Maneuver: domains.Leaving, ApproximativeCrossingDate: crossingTime},
+		{Name: "MY_BOAT", Maneuver: domains.Leaving, CrossingDateApproximation: crossingTime},
 	}
-	value := MapBoats(
-		domains.BoatReason,
-		"MY_BOAT",
-		duration,
-		localTime,
-		&alreadySeenBoatNames,
-		"BOAT_ID")
+	value := MapBoats(domains.BoatReason, "MY_BOAT", duration, localTime, &alreadySeenBoatNames)
 
 	assert.True(t, reflect.DeepEqual(expected, value))
 }
 
-func TestComputeApproximativeCrossingDateOneBoat(t *testing.T) {
+func TestComputeCrossingDateApproximationBoat(t *testing.T) {
 	var closingDuration time.Duration
 	localTime := time.Now()
 	closingDuration = 10000000000
 
 	expected := localTime.Add(closingDuration / 2)
 
-	value := computeApproximativeCrossingDate(
+	value := computeCrossingDateApproximation(
 		localTime,
 		closingDuration,
 		1, 0)
@@ -122,14 +124,14 @@ func TestComputeApproximativeCrossingDateOneBoat(t *testing.T) {
 	assert.True(t, reflect.DeepEqual(expected, value))
 }
 
-func TestComputeApproximativeCrossingDateTwoBoat_First(t *testing.T) {
+func TestComputeCrossingDateApproximationTwoBoat_First(t *testing.T) {
 	var closingDuration time.Duration
 	localTime := time.Now()
 	closingDuration = 10000000000
 
 	expected := localTime.Add(closingDuration / 3)
 
-	value := computeApproximativeCrossingDate(
+	value := computeCrossingDateApproximation(
 		localTime,
 		closingDuration,
 		2, 0)
@@ -137,14 +139,14 @@ func TestComputeApproximativeCrossingDateTwoBoat_First(t *testing.T) {
 	assert.True(t, reflect.DeepEqual(expected, value))
 }
 
-func TestComputeApproximativeCrossingDateTwoBoat_Second(t *testing.T) {
+func TestComputeCrossingDateApproximationTwoBoat_Second(t *testing.T) {
 	var closingDuration time.Duration
 	localTime := time.Now()
 	closingDuration = 10000000000
 
 	expected := localTime.Add(time.Duration(float64(closingDuration) * (float64(2) / float64(3))))
 
-	value := computeApproximativeCrossingDate(
+	value := computeCrossingDateApproximation(
 		localTime,
 		closingDuration,
 		2, 1)

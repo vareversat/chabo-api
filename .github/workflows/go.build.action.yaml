@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v4.1.0
+        uses: actions/checkout@v4.1.7
         with:
           fetch-depth: 0
       - name: Set up Docker Buildx
@@ -19,13 +19,13 @@ jobs:
           echo "BUILD_NUMBER=$BUILD_NUMBER" >> $GITHUB_ENV
           echo "This build is tagged as $BUILD_NUMBER on $GITHUB_REF"
       - name: Build and export
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           tags: chabo-api:${{ github.sha }}
           outputs: type=docker,dest=/tmp/chabo-api-image.tar
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: chabo-api-image
           path: /tmp/chabo-api-image.tar

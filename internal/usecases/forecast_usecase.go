@@ -2,64 +2,104 @@ package usecases
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"strconv"
 	"time"
 
 	"github.com/sirupsen/logrus"
 	"github.com/vareversat/chabo-api/internal/domains"
+	"github.com/vareversat/chabo-api/internal/errors"
 	"github.com/vareversat/chabo-api/internal/utils"
 )
 
-type forecastUsecase struct {
+type forecastUseCase struct {
 	forecastRepository domains.ForecastRepository
 	syncRepository     domains.SyncRepository
 	contextTimeout     time.Duration
 }
 
-func NewForecastUsecase(
+func NewForecastUseCase(
 	forecastRepository domains.ForecastRepository,
 	syncRepository domains.SyncRepository,
 	timeout time.Duration,
-) domains.ForecastUsecase {
-	return &forecastUsecase{
+) domains.ForecastUseCase {
+	return &forecastUseCase{
 		forecastRepository: forecastRepository,
 		syncRepository:     syncRepository,
 		contextTimeout:     timeout,
 	}
 }
 
-func (fU *forecastUsecase) GetByID(
+func (fU *forecastUseCase) GetByID(
 	ctx context.Context,
 	id string,
 	forecast *domains.Forecast,
 	location *time.Location,
-) error {
+) errors.CustomError {
 	ctx, cancel := context.WithTimeout(ctx, fU.contextTimeout)
 	defer cancel()
 
 	// Do a sync attempt in case of the data are too old
-	fU.SyncAll(ctx)
+	fU.TryToSyncAll(ctx)
 
 	err := fU.forecastRepository.GetByID(ctx, id, forecast)
 	if err != nil {
-		return err
+		return errors.NewNotFoundError("Forecast not found in the database")
 	}
 
 	forecast.ChangeLocation(location)
 	return nil
 }
 
-func (fU *forecastUsecase) GetTodayForecasts(
+func (fU *forecastUseCase) GetCurrentForecast(ctx context.Context, forecast *domains.Forecast,
+	location *time.Location) errors.CustomError {
+	ctx, cancel := context.WithTimeout(ctx, fU.contextTimeout)
+	defer cancel()
+
+	// Do a sync attempt in case of the data are too old
+	fU.TryToSyncAll(ctx)
+
+	err := fU.forecastRepository.GetCurrentForecast(ctx, forecast)
+	if err != nil {
+		return errors.NewNotFoundError(
+			"No current forecast. The Chaban-Delmas bridge is currently open",
+		)
+	}
+
+	forecast.ChangeLocation(location)
+	return nil
+}
+
+func (fU *forecastUseCase) GetNextForecast(ctx context.Context, forecast *domains.Forecast,
+	location *time.Location) errors.CustomError {
+	ctx, cancel := context.WithTimeout(ctx, fU.contextTimeout)
+	defer cancel()
+
+	// Get the current time
+	now := time.Now()
+	// Convert the local time into the requested TZ
+	localNow := now.In(location)
+
+	// Do a sync attempt in case of the data are too old
+	fU.TryToSyncAll(ctx)
+
+	err := fU.forecastRepository.GetNextForecast(ctx, forecast, localNow)
+	if err != nil {
+		return errors.NewNotFoundError("No next forecast. Schedules will be available soon")
+	}
+
+	forecast.ChangeLocation(location)
+	return nil
+}
+
+func (fU *forecastUseCase) GetTodayForecasts(
 	ctx context.Context,
 	forecasts *domains.Forecasts,
 	offset int,
 	limit int,
 	location *time.Location,
 	totalItemCount *int,
-) error {
-	ctx, cancel := context.WithTimeout(ctx, fU.contextTimeout)
+) errors.CustomError {
 	// Get the current time
 	from := time.Now()
 	// Convert the local time into the requested TZ
@@ -79,10 +119,9 @@ func (fU *forecastUsecase) GetTodayForecasts(
 	to := fromRounded.AddDate(0, 0, 1).In(location)
 	// Get the first second of the next day
 	toRounded := time.Date(to.Year(), to.Month(), to.Day(), 0, 0, 0, 0, location)
-	defer cancel()
 
 	// Do a sync attempt in case of the data are too old
-	fU.SyncAll(ctx)
+	fU.TryToSyncAll(ctx)
 
 	err := fU.forecastRepository.GetAllBetweenTwoDates(
 		ctx,
@@ -94,14 +133,18 @@ func (fU *forecastUsecase) GetTodayForecasts(
 		totalItemCount,
 	)
 	if err != nil {
-		return err
+		return errors.NewInternalServerError(err.Error())
+	}
+
+	if len(*forecasts) == 0 {
+		return errors.NewNotFoundError("No closing scheduled for today")
 	}
 
 	forecasts.ChangeLocations(location)
 	return nil
 }
 
-func (fU *forecastUsecase) GetAllFiltered(
+func (fU *forecastUseCase) GetAllFiltered(
 	ctx context.Context,
 	location *time.Location,
 	offset int,
@@ -112,12 +155,12 @@ func (fU *forecastUsecase) GetAllFiltered(
 	boat string,
 	forecasts *domains.Forecasts,
 	totalItemCount *int,
-) error {
+) errors.CustomError {
 	ctx, cancel := context.WithTimeout(ctx, fU.contextTimeout)
 	defer cancel()
 
 	// Do a sync attempt in case of the data are too old
-	fU.SyncAll(ctx)
+	fU.TryToSyncAll(ctx)
 
 	err := fU.forecastRepository.GetAllFiltered(
 		ctx,
@@ -131,14 +174,18 @@ func (fU *forecastUsecase) GetAllFiltered(
 		totalItemCount,
 	)
 	if err != nil {
-		return err
+		return errors.NewInternalServerError(err.Error())
+	}
+
+	if len(*forecasts) == 0 {
+		return errors.NewNotFoundError("Forecasts not found in the database")
 	}
 
 	forecasts.ChangeLocations(location)
 	return nil
 }
 
-func (fU *forecastUsecase) SyncAll(ctx context.Context) (domains.Sync, error) {
+func (fU *forecastUseCase) TryToSyncAll(ctx context.Context) (domains.Sync, errors.CustomError) {
 	ctx, cancel := context.WithTimeout(ctx, fU.contextTimeout)
 	defer cancel()
 
@@ -151,46 +198,46 @@ func (fU *forecastUsecase) SyncAll(ctx context.Context) (domains.Sync, error) {
 		// Fetch the fresh data
 		errGet := utils.GetOpenAPIData(&openDataForecasts)
 		if errGet != nil {
-			return domains.Sync{}, fmt.Errorf(errGet.Error())
+			return domains.Sync{}, errors.NewInternalServerError(errGet.Error())
 		}
 		// Compute all forecasts
-		err := fU.ComputeBordeauxAPIResponse(&forecasts, openDataForecasts)
-		if err != nil {
-			return domains.Sync{}, err
+		customError := fU.ComputeBordeauxAPIResponse(&forecasts, openDataForecasts)
+		if customError != nil {
+			return domains.Sync{}, customError
 		}
 		// Delete all forecasts
-		_, err = fU.forecastRepository.DeleteAll(ctx)
+		_, err := fU.forecastRepository.DeleteAll(ctx)
 		if err != nil {
-			return domains.Sync{}, err
+			return domains.Sync{}, errors.NewInternalServerError(err.Error())
 		}
 		// Insert all forecasts
 		insertCount, err := fU.forecastRepository.InsertAll(ctx, forecasts)
 		if err != nil {
-			return domains.Sync{}, err
+			return domains.Sync{}, errors.NewInternalServerError(err.Error())
 		}
 		// STOP the timer
 		elapsed := time.Since(start)
 		// Insert a sync proof
 		sync := domains.Sync{
 			ItemCount: insertCount,
-			Duration:  elapsed,
+			Duration:  time.Duration(elapsed.Milliseconds()),
 			Timestamp: start,
 		}
 		err = fU.syncRepository.InsertOne(ctx, sync)
 		if err != nil {
-			return domains.Sync{}, err
+			return domains.Sync{}, errors.NewInternalServerError(err.Error())
 		}
 		return sync, nil
 
 	}
 
-	return domains.Sync{}, fmt.Errorf("data does not need to be refresh (aborting the refresh)")
+	return domains.Sync{}, errors.NewSyncAttemptTooEarlyError()
 }
 
-func (fU *forecastUsecase) ComputeBordeauxAPIResponse(
+func (fU *forecastUseCase) ComputeBordeauxAPIResponse(
 	forecasts *domains.Forecasts,
 	boredeauxAPIResponse domains.BordeauxAPIResponse,
-) error {
+) errors.CustomError {
 	// alreadySeenBoatNames is used to compute the maneuver of each boats
 	var alreadySeenBoatNames []string
 
@@ -205,7 +252,7 @@ func (fU *forecastUsecase) ComputeBordeauxAPIResponse(
 		)
 		if errClosingDate != nil {
 			logrus.Fatalf(errClosingDate.Error())
-			return errClosingDate
+			return errors.NewInternalServerError(errClosingDate.Error())
 		}
 		circulationReopeningDate, errReopeningDate := utils.FormatDataTime(
 			openAPIForecast.Fields.OpeningTime,
@@ -215,7 +262,7 @@ func (fU *forecastUsecase) ComputeBordeauxAPIResponse(
 		)
 		if errReopeningDate != nil {
 			logrus.Fatalf(errReopeningDate.Error())
-			return errReopeningDate
+			return errors.NewInternalServerError(errReopeningDate.Error())
 		}
 
 		// Check if the forecast is during 2 days
@@ -225,8 +272,10 @@ func (fU *forecastUsecase) ComputeBordeauxAPIResponse(
 		}
 		closingDuration := circulationReopeningDate.Sub(circulationClosingDate)
 		*forecasts = append(*forecasts, domains.Forecast{
-			ID:                       openAPIForecast.RecordID,
-			ClosingDuration:          closingDuration,
+			ID: openAPIForecast.RecordID,
+			ClosingDuration: time.Duration(
+				closingDuration.Minutes(),
+			), // Convert into minutes
 			CirculationClosingDate:   circulationClosingDate,
 			CirculationReopeningDate: circulationReopeningDate,
 			ClosingType:              utils.MapClosingType(openAPIForecast.Fields.TotalClosing),
@@ -237,20 +286,19 @@ func (fU *forecastUsecase) ComputeBordeauxAPIResponse(
 				closingDuration,
 				circulationClosingDate,
 				&alreadySeenBoatNames,
-				openAPIForecast.RecordID,
 			),
 			Link: domains.APIResponseSelfLink{
 				Self: domains.APIResponseLink{Link: "/v1/forecasts/" + openAPIForecast.RecordID},
 			},
+			SpecialEventName: utils.GetSpecialEventName(closingReason, openAPIForecast.Fields.Boat),
 		})
 	}
-	logrus.Infof("all %d forecasts computed with success", len(*forecasts))
 	return nil
 
 }
 
-// Check if it's possible to perform a data sync
-func (fU *forecastUsecase) SyncIsNeeded(ctx context.Context) bool {
+// SyncIsNeeded Check if it's possible to perform a data sync
+func (fU *forecastUseCase) SyncIsNeeded(ctx context.Context) bool {
 
 	var lastSync domains.Sync
 
@@ -264,9 +312,9 @@ func (fU *forecastUsecase) SyncIsNeeded(ctx context.Context) bool {
 		currentTime := time.Now()
 		diff := currentTime.Sub(lastSync.Timestamp)
 
-		cooldown, _ := strconv.Atoi(os.Getenv("SYNC_COOLDOWN_SECONDS"))
+		coolDown, _ := strconv.Atoi(os.Getenv("SYNC_COOL_DOWN_SECONDS"))
 
-		return int(diff.Seconds()) >= cooldown
+		return int(diff.Seconds()) >= coolDown
 	}
 
 }

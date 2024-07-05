@@ -1,10 +1,10 @@
 ![](banner.png)
 
-<p align="center">
-  <a href="https://go.dev"><img src="https://img.shields.io/badge/go-white?logo=go&style=for-the-badge"></a> 
-  <a href="https://github.com/vareversat/chabo-api/actions"><img src="https://img.shields.io/github/actions/workflow/status/vareversat/chabo-api/main.yaml?logo=github&style=for-the-badge"></a>
-  <a href="https://github.com/vareversat/chabo-api/releases"><img src="https://img.shields.io/github/v/tag/vareversat/chabo-api?label=version&logo=git&logoColor=white&style=for-the-badge"></a>
-  <a href="https://codecov.io/gh/vareversat/chabo-api/"><img src="https://img.shields.io/codecov/c/github/vareversat/chabo-api?logo=codecov&style=for-the-badge&token=97YDVRS0X4"></a>
+<p style="text-align: center;">
+  <a href="https://go.dev"><img src="https://img.shields.io/badge/go-white?logo=go&style=for-the-badge" alt="Go badge for chabo-api Github project"></a> 
+  <a href="https://github.com/vareversat/chabo-api/actions"><img src="https://img.shields.io/github/actions/workflow/status/vareversat/chabo-api/main.yaml?logo=github&style=for-the-badge" alt="Build badge for chabo-api Github project"></a>
+  <a href="https://github.com/vareversat/chabo-api/releases"><img src="https://img.shields.io/github/v/tag/vareversat/chabo-api?label=version&logo=git&logoColor=white&style=for-the-badge" alt="Last release badge for chabo-api Github project"></a>
+  <a href="https://codecov.io/gh/vareversat/chabo-api/"><img src="https://img.shields.io/codecov/c/github/vareversat/chabo-api?logo=codecov&style=for-the-badge&token=97YDVRS0X4" alt="Code coverage badge for chabo-api Github project"></a>
 </p>
 
 # Chabo API
@@ -18,7 +18,7 @@ This API allows you to get the schedules you want by filtering over the type of 
 
 ## Installation / Run
 
-On you computer, you'll need to download these softwares :
+On you computer, you'll need to download these software programs :
 
 - Docker
 - VS Code (with devcontainer extension)

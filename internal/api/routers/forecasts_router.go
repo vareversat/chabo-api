@@ -17,7 +17,7 @@ func ForecastsRouter(timeout time.Duration, db mongo.Database, group *gin.Router
 	)
 	syncRepository := repositories.NewSyncRepository(db.Collection(domains.SyncCollection))
 	forecastController := &controllers.ForecastController{
-		ForecastUsecase: usecases.NewForecastUsecase(
+		ForecastUseCase: usecases.NewForecastUseCase(
 			forecastRepository,
 			syncRepository,
 			timeout,
@@ -25,8 +25,10 @@ func ForecastsRouter(timeout time.Duration, db mongo.Database, group *gin.Router
 	}
 
 	forecastGroup := group.Group("/forecasts")
-	forecastGroup.GET("", forecastController.GetAllForecats())
+	forecastGroup.GET("", forecastController.GetAllForecasts())
 	forecastGroup.GET(":id", forecastController.GetForecastByID())
 	forecastGroup.GET("/today", forecastController.GetTodayForecasts())
 	forecastGroup.POST("/sync", forecastController.SyncForecasts())
+	forecastGroup.GET("/next", forecastController.GetNextForecast())
+	forecastGroup.GET("/current", forecastController.GetCurrentForecast())
 }

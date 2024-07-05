@@ -9,7 +9,7 @@ import (
 )
 
 type SyncController struct {
-	SyncUsecase domains.SyncUsecase
+	SyncUseCase domains.SyncUseCase
 }
 
 // GetLastSyncAction godoc
@@ -20,21 +20,24 @@ type SyncController struct {
 //	@Produce		json
 //	@Success		200	{object}	domains.Sync{}
 //	@Failure		404	{object}	domains.APIErrorResponse{}	"No previous sync action exists"
-//	@Failure		500	{object}	domains.APIErrorResponse{}	"An error occured on the server side"
+//	@Failure		500	{object}	domains.APIErrorResponse{}	"An error occurred on the server side"
 //	@Router			/syncs/last [get]
-func (mC *SyncController) GetLastSync() gin.HandlerFunc {
+func (mC *SyncController) GetLastSyncAction() gin.HandlerFunc {
 	fn := func(c *gin.Context) {
 
 		if hub := sentrygin.GetHubFromContext(c); hub != nil {
-			hub.Scope().SetTag("controller", "getLastsyncAction")
+			hub.Scope().SetTag("controller", "getLastSyncAction")
 		}
 
 		var sync domains.Sync
 
-		err := mC.SyncUsecase.GetLast(c, &sync)
+		customError := mC.SyncUseCase.GetLast(c, &sync)
 
-		if err != nil {
-			c.JSON(http.StatusNotFound, domains.APIErrorResponse{Error: err.Error()})
+		if customError != nil {
+			c.JSON(
+				customError.GetStatusCode(),
+				domains.APIErrorResponse{Error: customError.GetErrorMessage()},
+			)
 			return
 		}
 

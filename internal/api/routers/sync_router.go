@@ -13,13 +13,13 @@ import (
 
 func SyncRouter(timeout time.Duration, db mongo.Database, group *gin.RouterGroup) {
 	syncRepository := repositories.NewSyncRepository(db.Collection(domains.SyncCollection))
-	syncContoller := &controllers.SyncController{
-		SyncUsecase: usecases.NewSyncUsecase(
+	syncController := &controllers.SyncController{
+		SyncUseCase: usecases.NewSyncUseCase(
 			syncRepository,
 			timeout,
 		),
 	}
 
 	syncGroup := group.Group("/syncs")
-	syncGroup.GET("/last", syncContoller.GetLastSync())
+	syncGroup.GET("/last", syncController.GetLastSyncAction())
 }

@@ -29,10 +29,57 @@ func (fR *forecastRepository) GetByID(
 	opts := options.FindOne()
 	filter := bson.D{{Key: "_id", Value: id}}
 
-	cursor := fR.collection.FindOne(context.TODO(), filter, opts)
+	cursor := fR.collection.FindOne(ctx, filter, opts)
 
 	return cursor.Decode(&forecast)
+}
 
+func (fR *forecastRepository) GetNextForecast(
+	ctx context.Context,
+	forecast *domains.Forecast,
+	now time.Time,
+) error {
+	opts := options.FindOne()
+	filter := bson.D{
+		{
+			Key:   "circulation_closing_date",
+			Value: bson.D{{Key: "$gte", Value: now}},
+		},
+	}
+
+	cursor := fR.collection.FindOne(ctx, filter, opts)
+
+	return cursor.Decode(&forecast)
+}
+
+func (fR *forecastRepository) GetCurrentForecast(
+	ctx context.Context,
+	forecast *domains.Forecast,
+) error {
+	mongoFilter := bson.D{}
+
+	mongoFilter = append(
+		mongoFilter,
+		bson.E{
+			Key:   "circulation_closing_date",
+			Value: bson.D{{Key: "$lte", Value: time.Now()}},
+		},
+	)
+
+	mongoFilter = append(
+		mongoFilter,
+		bson.E{
+			Key:   "circulation_opening_date",
+			Value: bson.D{{Key: "$gte", Value: time.Now()}},
+		},
+	)
+
+	cursor, err := computeMongoCursor(ctx, mongoFilter, fR.collection, 1, 0)
+	if err != nil {
+		return err
+	}
+
+	return cursor.Decode(&forecast)
 }
 
 func (fR *forecastRepository) GetAllBetweenTwoDates(
@@ -73,6 +120,14 @@ func (fR *forecastRepository) GetAllBetweenTwoDates(
 			logrus.Info(err.Error())
 			return err
 		}
+	}
+
+	// Test if the cursor.Next succeeded to populate the pointer
+	if len(mongoResponse.Results) == 0 {
+		*forecasts = domains.Forecasts{}
+		*totalItemCount = 0
+
+		return nil
 	}
 
 	*forecasts = mongoResponse.Results
@@ -130,6 +185,14 @@ func (fR *forecastRepository) GetAllFiltered(
 		}
 	}
 
+	// Test if the cursor.Next succeeded to populate the pointer
+	if len(mongoResponse.Results) == 0 {
+		*forecasts = domains.Forecasts{}
+		*totalItemCount = 0
+
+		return nil
+	}
+
 	*forecasts = mongoResponse.Results
 	*totalItemCount = mongoResponse.Count[0].ItemCount
 
@@ -139,10 +202,12 @@ func (fR *forecastRepository) GetAllFiltered(
 func (fR *forecastRepository) DeleteAll(
 	ctx context.Context,
 ) (int64, error) {
-	deleteResult, err := fR.collection.DeleteMany(context.TODO(), bson.D{})
+	deleteResult, err := fR.collection.DeleteMany(ctx, bson.D{})
 
-	return deleteResult.DeletedCount, err
-
+	if deleteResult != nil {
+		return deleteResult.DeletedCount, nil
+	}
+	return 0, err
 }
 
 func (fR *forecastRepository) InsertAll(
@@ -153,10 +218,12 @@ func (fR *forecastRepository) InsertAll(
 	for i := range forecasts {
 		interfaceRecords[i] = forecasts[i]
 	}
-	insertResult, err := fR.collection.InsertMany(context.TODO(), interfaceRecords)
+	insertResult, err := fR.collection.InsertMany(ctx, interfaceRecords)
 
-	return len(insertResult.InsertedIDs), err
-
+	if insertResult != nil {
+		return len(insertResult.InsertedIDs), nil
+	}
+	return 0, err
 }
 
 func computeMongoCursor(
