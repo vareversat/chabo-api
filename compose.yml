@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   app:
     container_name: chabo-api
@@ -9,7 +7,7 @@ services:
       args:
         - VERSION=v0.0.0+dev
     volumes:
-        - persistent-app-volume:/app
+      - persistent-app-volume:/app
     ports:
       - "8080:8080"
       - "6060:6060"
