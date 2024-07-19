@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"bytes"
 	"fmt"
 	"net/http"
 	"time"
@@ -16,6 +17,11 @@ type ForecastController struct {
 	ForecastUseCase domains.ForecastUseCase
 }
 
+const (
+	jsonFormat   = "json"
+	webcalFormat = "webcal"
+)
+
 // GetAllForecasts godoc
 //
 //	@Summary		Get all forecasts
@@ -27,8 +33,9 @@ type ForecastController struct {
 //	@Failure		400			{object}	domains.APIErrorResponse{}	"Some params are missing and/or not properly formatted from the requests"
 //	@Failure		500			{object}	domains.APIErrorResponse{}	"An error occurred on the server side"
 //	@Param			from		query		string						false	"The date to filter from (RFC3339)"		Format(date-time)
-//	@Param			limit		query		int							true	"Set the limit of the queried results"	Format(int)	default(10)
-//	@Param			offset		query		int							true	"Set the offset of the queried results"	Format(int)	default(0)
+//	@Param			limit		query		int							true	"Set the limit of the queried results"	Format(int)			default(10)
+//	@Param			offset		query		int							true	"Set the offset of the queried results"	Format(int)			default(0)
+//	@Param			format		query		string						true	"json or webcal output"					Enums(json, webcal)	default(json)
 //	@Param			reason		query		string						false	"The closing reason"					Enums(boat, maintenance, wine_festival_boats, special_event)
 //	@Param			boat		query		string						false	"The boat name of the event"
 //	@Param			maneuver	query		string						false	"The boat maneuver of the event"								Enums(leaving_bordeaux, entering_in_bordeaux)
@@ -47,12 +54,14 @@ func (fC *ForecastController) GetAllForecasts() gin.HandlerFunc {
 		location, locationErr := utils.GetTimezoneFromHeader(c)
 		limit, limitErr := utils.GetIntParams(c, "limit")
 		offset, offsetErr := utils.GetIntParams(c, "offset")
-		reason := utils.GetStringParams(c, "reason")
-		boat := utils.GetStringParams(c, "boat")
-		maneuver := utils.GetStringParams(c, "maneuver")
-		parsedTime, timeErr := time.Parse(time.RFC3339, utils.GetStringParams(c, "from"))
+		from, _ := utils.GetStringParams(c, "from", false)
+		reason, _ := utils.GetStringParams(c, "reason", false)
+		boat, _ := utils.GetStringParams(c, "boat", false)
+		maneuver, _ := utils.GetStringParams(c, "maneuver", false)
+		parsedTime, timeErr := time.Parse(time.RFC3339, from)
+		outputFormat := c.DefaultQuery("format", jsonFormat)
 
-		if timeErr != nil && utils.GetStringParams(c, "from") != "" {
+		if timeErr != nil && from != "" {
 			c.JSON(
 				http.StatusBadRequest,
 				domains.APIErrorResponse{
@@ -126,9 +135,34 @@ func (fC *ForecastController) GetAllForecasts() gin.HandlerFunc {
 			Timezone:  location.String(),
 		}
 
-		c.JSON(http.StatusOK, response)
+		switch outputFormat {
+		case jsonFormat:
+			c.JSON(http.StatusOK, response)
+		case webcalFormat:
+			cal, err := utils.ComputeCalendar(forecasts, location.String())
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, domains.APIErrorResponse{Error: err.Error()})
+				sentry.CaptureException(err)
+				return
+			} else {
+				output := bytes.Buffer{}
+				cal.SerializeToICSFormat(&output)
+				c.String(http.StatusOK, output.String())
+			}
+		default:
+			c.JSON(
+				http.StatusBadRequest,
+				domains.APIErrorResponse{
+					Error: fmt.Sprintf(
+						"You must use '%s' or '%s' values for format param",
+						jsonFormat,
+						webcalFormat,
+					),
+				},
+			)
+			sentry.CaptureException(locationErr)
+		}
 	}
-
 	return gin.HandlerFunc(fn)
 }
 

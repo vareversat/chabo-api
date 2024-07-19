@@ -1,7 +1,9 @@
 package domains
 
 import (
+	"bytes"
 	"context"
+	"fmt"
 	"os"
 	"reflect"
 	"time"
@@ -87,6 +89,36 @@ func (forecasts *Forecasts) AreEqual(other Forecasts) bool {
 	}
 
 	return true
+}
+
+func (f *Forecast) GetSummary() string {
+	switch f.ClosingReason {
+	case BoatReason:
+		var summary bytes.Buffer
+		summary.WriteString(`Le pont Chaban sera fermé en raison des manoeuvres suivantes :\n`)
+		for _, boat := range f.Boats {
+			if boat.Maneuver == Leaving {
+				summary.WriteString(fmt.Sprintf(`\n	• %s`, "Départ du "))
+			} else {
+				summary.WriteString(fmt.Sprintf(`\n	• %s`, "Arrivée du "))
+			}
+			summary.WriteString(fmt.Sprintf(`%s`, boat.Name))
+			summary.WriteString(
+				fmt.Sprintf(
+					` (passage approx. prévu aux alentours de %s)`,
+					boat.CrossingDateApproximation.Format("15:04:05"),
+				),
+			)
+		}
+		return summary.String()
+	case Maintenance:
+		return fmt.Sprintf("Le pont Chanban sera fermé pour maintenance")
+	case WineFestivalBoats:
+		return fmt.Sprintf(
+			"Le pont Chanban sera fermé pour l'arrivée des bateaux de la fête du vin",
+		)
+	}
+	return ""
 }
 
 func (f *Forecast) ChangeLocation(location *time.Location) {

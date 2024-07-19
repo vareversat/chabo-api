@@ -29,11 +29,15 @@ func GetIntParams(c *gin.Context, paramName string) (int, error) {
 
 // GetStringParams Get the string param paramName passed into the request.
 // Return empty string if not specified or empty, the value either
-func GetStringParams(c *gin.Context, paramName string) string {
+func GetStringParams(c *gin.Context, paramName string, mandatory bool) (string, error) {
 
-	paramValue, _ := c.GetQuery(paramName)
+	paramValue, exists := c.GetQuery(paramName)
 
-	return paramValue
+	if !exists && mandatory {
+		return "", fmt.Errorf("you have to specify the %s in requests params", paramName)
+	}
+
+	return paramValue, nil
 
 }
 
