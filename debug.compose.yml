@@ -3,13 +3,14 @@ services:
     container_name: chabo-api
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: debug.Dockerfile
       args:
         - VERSION=v0.0.0+dev
     volumes:
       - persistent-app-volume:/app
     ports:
       - "8080:8080"
+      - "4000:4000"
     env_file:
       - .env.dev
 
