@@ -1,0 +1,15 @@
+{
+	"recommendations": [
+		"golang.go",
+		"streetsidesoftware.code-spell-checker",
+		"github.vscode-github-actions",
+		"davidAnson.vscode-markdownlint",
+		"ms-vscode.makefile-tools",
+		"k--kato.intellij-idea-keybindings",
+		"vscode.json-language-features",
+		"github.vscode-github-actions",
+		"PKief.material-icon-theme",
+		"redhat.vscode-yaml",
+		"ms-azuretools.vscode-docker"
+	]
+}

@@ -1,0 +1,10 @@
+# syntax=docker/dockerfile:1
+
+FROM golang:1.24.2 as build
+ARG VERSION
+WORKDIR /app
+COPY go.mod go.sum ./
+RUN go mod download 
+RUN go install github.com/swaggo/swag/cmd/swag@latest
+COPY . .
+RUN swag init -d ./internal/api/routers,./ -g main_router.go

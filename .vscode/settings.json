@@ -1,0 +1,20 @@
+{
+    "makefile.configureOnOpen": false,
+    "go.toolsManagement.autoUpdate": true,
+    "go.useLanguageServer": true,
+    "go.lintTool": "golangci-lint",
+    "git.autofetch": true,
+    "git.confirmSync": false,
+    "git.allowForcePush": true,
+    "git.confirmForcePush": false,
+    "git.rebaseWhenSync": true,
+    "git.enableCommitSigning": true,
+    "[github-actions-workflow]": {
+        "editor.defaultFormatter": "redhat.vscode-yaml"
+    },
+    "window.autoDetectColorScheme": true,
+    "workbench.preferredLightColorTheme": "Default Light Modern",
+    "workbench.preferredDarkColorTheme": "Default Dark Modern",
+    "workbench.iconTheme": "vs-seti",
+    "files.autoSave": "onFocusChange",
+}

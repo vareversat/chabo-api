@@ -24,8 +24,5 @@ go.work
 .env*
 !.env.dev
 
-# VSCode
-.vscode
-
 # IntelliJ
 .idea/
