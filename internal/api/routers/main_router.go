@@ -8,6 +8,7 @@ import (
 
 	sentrygin "github.com/getsentry/sentry-go/gin"
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5/pgxpool"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/vareversat/chabo-api/docs"
@@ -29,7 +30,7 @@ var version = "undefined"
 //	@License.name				MIT
 //	@License.url				https://github.com/vareversat/chabo-api/blob/main/LICENSE.md
 
-func MainRouter(mongoDatabase mongo.Database) {
+func MainRouter(mongoDatabase *mongo.Database, postgresClient *pgxpool.Pool) {
 
 	// Configure Gin web server
 	router := gin.New()
@@ -54,8 +55,10 @@ func MainRouter(mongoDatabase mongo.Database) {
 	rootRouterGroup := router.Group(docs.SwaggerInfo.BasePath)
 
 	timeout := time.Duration(30) * time.Second
-	ForecastsRouter(timeout, mongoDatabase, rootRouterGroup)
-	SyncRouter(timeout, mongoDatabase, rootRouterGroup)
+	//ForecastsRouter(timeout, mongoDatabase, rootRouterGroup)
+	PostgresForecastsRouter(timeout, postgresClient, rootRouterGroup)
+	//SyncRouter(timeout, mongoDatabase, rootRouterGroup)
+	PostgresSyncRouter(timeout, postgresClient, rootRouterGroup)
 	SystemRouter(timeout, mongoDatabase.Client(), rootRouterGroup)
 
 	// Compute the app address

@@ -13,32 +13,32 @@ func TestForecastIsEqualOK(t *testing.T) {
 	circulationReopeningDate, _ := time.Parse(time.RFC3339, "2023-02-26T23:00:00Z")
 	forecast := Forecast{
 		ID:                       "recordId",
-		ClosingType:              TwoWay,
+		IsTrafficFullyClosed:     true,
 		ClosingDuration:          7200000000000,
 		CirculationClosingDate:   circulationClosingDate,
 		CirculationReopeningDate: circulationReopeningDate,
-		ClosingReason:            BoatReason,
+		ClosingReason:            BoatPassage,
 		Boats: []Boat{
 			{
 				Name:                      "MY_BOAT",
-				Maneuver:                  Entering,
-				CrossingDateApproximation: crossingDateApproximation,
+				IsLeavingDock:             false,
+				ApproximativeCrossingDate: crossingDateApproximation,
 			},
 		},
 		Link: APIResponseSelfLink{Self: APIResponseLink{Link: "/v1/forecasts/recordId"}},
 	}
 	otherForecast := Forecast{
 		ID:                       "recordId",
-		ClosingType:              TwoWay,
+		IsTrafficFullyClosed:     true,
 		ClosingDuration:          7200000000000,
 		CirculationClosingDate:   circulationClosingDate,
 		CirculationReopeningDate: circulationReopeningDate,
-		ClosingReason:            BoatReason,
+		ClosingReason:            BoatPassage,
 		Boats: []Boat{
 			{
 				Name:                      "MY_BOAT",
-				Maneuver:                  Entering,
-				CrossingDateApproximation: crossingDateApproximation,
+				IsLeavingDock:             false,
+				ApproximativeCrossingDate: crossingDateApproximation,
 			},
 		},
 		Link: APIResponseSelfLink{Self: APIResponseLink{Link: "/v1/forecasts/recordId"}},
@@ -54,32 +54,32 @@ func TestForecastIsEqualNOK(t *testing.T) {
 	circulationReopeningDate, _ := time.Parse(time.RFC3339, "2023-02-26T23:00:00Z")
 	forecast := Forecast{
 		ID:                       "recordId",
-		ClosingType:              TwoWay,
+		IsTrafficFullyClosed:     true,
 		ClosingDuration:          7200000000000,
 		CirculationClosingDate:   circulationClosingDate,
 		CirculationReopeningDate: circulationReopeningDate,
-		ClosingReason:            BoatReason,
+		ClosingReason:            BoatPassage,
 		Boats: []Boat{
 			{
 				Name:                      "MY_BOAT2",
-				Maneuver:                  Entering,
-				CrossingDateApproximation: crossingDateApproximation,
+				IsLeavingDock:             false,
+				ApproximativeCrossingDate: crossingDateApproximation,
 			},
 		},
 		Link: APIResponseSelfLink{Self: APIResponseLink{Link: "/v1/forecasts/recordId"}},
 	}
 	otherForecast := Forecast{
 		ID:                       "recordId",
-		ClosingType:              TwoWay,
+		IsTrafficFullyClosed:     true,
 		ClosingDuration:          7200000000000,
 		CirculationClosingDate:   circulationClosingDate,
 		CirculationReopeningDate: circulationReopeningDate,
-		ClosingReason:            BoatReason,
+		ClosingReason:            BoatPassage,
 		Boats: []Boat{
 			{
 				Name:                      "MY_BOAT",
-				Maneuver:                  Entering,
-				CrossingDateApproximation: crossingDateApproximation,
+				IsLeavingDock:             false,
+				ApproximativeCrossingDate: crossingDateApproximation,
 			},
 		},
 		Link: APIResponseSelfLink{Self: APIResponseLink{Link: "/v1/forecasts/recordId"}},
@@ -95,32 +95,32 @@ func TestForecastsAreEqualOK(t *testing.T) {
 	circulationReopeningDate, _ := time.Parse(time.RFC3339, "2023-02-26T23:00:00Z")
 	forecasts := Forecasts{Forecast{
 		ID:                       "recordId",
-		ClosingType:              TwoWay,
+		IsTrafficFullyClosed:     true,
 		ClosingDuration:          7200000000000,
 		CirculationClosingDate:   circulationClosingDate,
 		CirculationReopeningDate: circulationReopeningDate,
-		ClosingReason:            BoatReason,
+		ClosingReason:            BoatPassage,
 		Boats: []Boat{
 			{
 				Name:                      "MY_BOAT",
-				Maneuver:                  Entering,
-				CrossingDateApproximation: crossingDateApproximation,
+				IsLeavingDock:             false,
+				ApproximativeCrossingDate: crossingDateApproximation,
 			},
 		},
 		Link: APIResponseSelfLink{Self: APIResponseLink{Link: "/v1/forecasts/recordId"}},
 	}}
 	otherForecasts := Forecasts{Forecast{
 		ID:                       "recordId",
-		ClosingType:              TwoWay,
+		IsTrafficFullyClosed:     true,
 		ClosingDuration:          7200000000000,
 		CirculationClosingDate:   circulationClosingDate,
 		CirculationReopeningDate: circulationReopeningDate,
-		ClosingReason:            BoatReason,
+		ClosingReason:            BoatPassage,
 		Boats: []Boat{
 			{
 				Name:                      "MY_BOAT",
-				Maneuver:                  Entering,
-				CrossingDateApproximation: crossingDateApproximation,
+				IsLeavingDock:             false,
+				ApproximativeCrossingDate: crossingDateApproximation,
 			},
 		},
 		Link: APIResponseSelfLink{Self: APIResponseLink{Link: "/v1/forecasts/recordId"}},
@@ -136,32 +136,32 @@ func TestForecastsAreEqualNOK(t *testing.T) {
 	circulationReopeningDate, _ := time.Parse(time.RFC3339, "2023-02-26T23:00:00Z")
 	forecasts := Forecasts{Forecast{
 		ID:                       "recordId",
-		ClosingType:              TwoWay,
+		IsTrafficFullyClosed:     true,
 		ClosingDuration:          7200000000000,
 		CirculationClosingDate:   circulationClosingDate,
 		CirculationReopeningDate: circulationReopeningDate,
-		ClosingReason:            BoatReason,
+		ClosingReason:            BoatPassage,
 		Boats: []Boat{
 			{
 				Name:                      "MY_BOAT2",
-				Maneuver:                  Entering,
-				CrossingDateApproximation: crossingDateApproximation,
+				IsLeavingDock:             false,
+				ApproximativeCrossingDate: crossingDateApproximation,
 			},
 		},
 		Link: APIResponseSelfLink{Self: APIResponseLink{Link: "/v1/forecasts/recordId"}},
 	}}
 	otherForecasts := Forecasts{Forecast{
 		ID:                       "recordId2",
-		ClosingType:              TwoWay,
+		IsTrafficFullyClosed:     true,
 		ClosingDuration:          7200000000000,
 		CirculationClosingDate:   circulationClosingDate,
 		CirculationReopeningDate: circulationReopeningDate,
-		ClosingReason:            BoatReason,
+		ClosingReason:            BoatPassage,
 		Boats: []Boat{
 			{
 				Name:                      "MY_BOAT2",
-				Maneuver:                  Entering,
-				CrossingDateApproximation: crossingDateApproximation,
+				IsLeavingDock:             false,
+				ApproximativeCrossingDate: crossingDateApproximation,
 			},
 		},
 		Link: APIResponseSelfLink{Self: APIResponseLink{Link: "/v1/forecasts/recordId"}},

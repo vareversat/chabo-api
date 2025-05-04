@@ -13,16 +13,10 @@ var (
 	ForecastCollection = os.Getenv("MONGO_FORECASTS_COLLECTION_NAME")
 )
 
-type ClosingType string
 type ClosingReason string
 
 const (
-	TwoWay ClosingType = "two_way"
-	OneWay ClosingType = "one_way"
-)
-
-const (
-	BoatReason        ClosingReason = "boat"
+	BoatPassage       ClosingReason = "boat_passage"
 	Maintenance       ClosingReason = "maintenance"
 	WineFestivalBoats ClosingReason = "wine_festival_boats"
 	SpecialEvent      ClosingReason = "special_event"
@@ -32,7 +26,7 @@ type Forecasts []Forecast
 
 type Forecast struct {
 	ID                       string              `json:"id"                         bson:"_id"                          example:"63a6430fc07ff1d895c9555ef2ef6e41c1e3b1f5"`
-	ClosingType              ClosingType         `json:"closing_type"               bson:"closing_type"`
+	IsTrafficFullyClosed     bool                `json:"is_traffic_fully_closed"    bson:"is_traffic_fully_closed"`
 	ClosingDuration          time.Duration       `json:"closing_duration_min"       bson:"closing_duration_min"         example:"83"                                       swaggertype:"primitive,integer"`
 	CirculationClosingDate   time.Time           `json:"circulation_closing_date"   bson:"circulation_closing_date"     example:"2021-05-25T00:53:16.535668Z"                                              format:"date-time"`
 	CirculationReopeningDate time.Time           `json:"circulation_reopening_date" bson:"circulation_reopening_date"   example:"2021-05-25T00:53:16.535668Z"                                              format:"date-time"`
@@ -67,7 +61,7 @@ type ForecastMongoCountResponse struct {
 
 func (f *Forecast) IsEqual(other Forecast) bool {
 	return f.ID == other.ID &&
-		f.ClosingType == other.ClosingType &&
+		f.IsTrafficFullyClosed == other.IsTrafficFullyClosed &&
 		f.ClosingDuration == other.ClosingDuration &&
 		f.CirculationClosingDate.Equal(other.CirculationClosingDate) &&
 		f.CirculationReopeningDate.Equal(other.CirculationReopeningDate) &&
@@ -93,7 +87,7 @@ func (f *Forecast) ChangeLocation(location *time.Location) {
 	f.CirculationClosingDate = f.CirculationClosingDate.In(location)
 	f.CirculationReopeningDate = f.CirculationReopeningDate.In(location)
 	for index, boat := range f.Boats {
-		f.Boats[index].CrossingDateApproximation = boat.CrossingDateApproximation.In(
+		f.Boats[index].ApproximativeCrossingDate = boat.ApproximativeCrossingDate.In(
 			location,
 		)
 	}

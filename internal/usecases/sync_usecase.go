@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/vareversat/chabo-api/internal/domains"
@@ -40,7 +41,7 @@ func (rU *syncUseCase) GetLast(ctx context.Context, sync *domains.Sync) errors.C
 	err := rU.syncRepository.GetLast(ctx, sync)
 
 	if err != nil {
-		return errors.NewNotFoundError("No sync status exists in database")
+		return errors.NewNotFoundError(fmt.Sprintf("No sync status exists in database: %s", err.Error()))
 	}
 	return nil
 }

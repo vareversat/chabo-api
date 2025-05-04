@@ -7,15 +7,6 @@ import (
 	"github.com/vareversat/chabo-api/internal/domains"
 )
 
-// MapClosingType Return the corresponding domains.ClosingType according to the string value
-func MapClosingType(stringClosingType string) domains.ClosingType {
-	if stringClosingType == "oui" {
-		return domains.TwoWay
-	} else {
-		return domains.OneWay
-	}
-}
-
 // MapClosingReason Return the corresponding domains.ClosingReason according to the string value
 func MapClosingReason(stringClosingReason string) domains.ClosingReason {
 	switch {
@@ -27,7 +18,7 @@ func MapClosingReason(stringClosingReason string) domains.ClosingReason {
 	case stringClosingReason == "MAINTENANCE":
 		return domains.Maintenance
 	default:
-		return domains.BoatReason
+		return domains.BoatPassage
 	}
 }
 
@@ -57,25 +48,25 @@ func MapBoats(
 	alreadySeenBoatNames *[]string,
 ) []domains.Boat {
 	var boats []domains.Boat
-	if closingReason == domains.BoatReason {
+	if closingReason == domains.BoatPassage {
 		// The string may contain multiple boat name separated by a "/"
 		boatNamesSlice := strings.Split(boatNames, "/")
 		for index, boat := range boatNamesSlice {
 			boatName := strings.TrimSpace(boat)
-			var action domains.BoatManeuver
+			var isLeavingDock bool
 			if contains(*alreadySeenBoatNames, boatName) {
 				// If the boat is already in the list, that means that it is docked in Bordeaux
 				*alreadySeenBoatNames = remove(*alreadySeenBoatNames, boatName)
-				action = domains.Leaving
+				isLeavingDock = true
 			} else {
 				// If not, that means that it is entering in Bordeaux
-				action = domains.Entering
+				isLeavingDock = false
 				*alreadySeenBoatNames = append(*alreadySeenBoatNames, boatName)
 			}
 			boats = append(boats, domains.Boat{
-				Name:     boatName,
-				Maneuver: action,
-				CrossingDateApproximation: computeCrossingDateApproximation(
+				Name:          boatName,
+				IsLeavingDock: isLeavingDock,
+				ApproximativeCrossingDate: computeCrossingDateApproximation(
 					circulationClosingDate,
 					closingDuration,
 					len(boatNamesSlice),

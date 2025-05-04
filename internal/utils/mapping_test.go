@@ -9,20 +9,6 @@ import (
 	"github.com/vareversat/chabo-api/internal/domains"
 )
 
-func TestMapClosingType_OUI(t *testing.T) {
-	expected := domains.TwoWay
-	value := MapClosingType("oui")
-
-	assert.Equal(t, expected, value)
-}
-
-func TestMapClosingType_NON(t *testing.T) {
-	expected := domains.OneWay
-	value := MapClosingType("non")
-
-	assert.Equal(t, expected, value)
-}
-
 func TestMapClosingReason_MAINTENANCE(t *testing.T) {
 	expected := domains.Maintenance
 	value := MapClosingReason("MAINTENANCE")
@@ -31,7 +17,7 @@ func TestMapClosingReason_MAINTENANCE(t *testing.T) {
 }
 
 func TestMapClosingReason_BOAT(t *testing.T) {
-	expected := domains.BoatReason
+	expected := domains.BoatPassage
 	value := MapClosingReason("SILVER DAWN")
 
 	assert.Equal(t, expected, value)
@@ -59,9 +45,9 @@ func TestMapBoats(t *testing.T) {
 	crossingTime := localTime.Add(duration / 2)
 
 	expected := []domains.Boat{
-		{Name: "MY_BOAT", Maneuver: domains.Entering, CrossingDateApproximation: crossingTime},
+		{Name: "MY_BOAT", IsLeavingDock: false, ApproximativeCrossingDate: crossingTime},
 	}
-	value := MapBoats(domains.BoatReason, "MY_BOAT", duration, localTime, &alreadySeenBoatNames)
+	value := MapBoats(domains.BoatPassage, "MY_BOAT", duration, localTime, &alreadySeenBoatNames)
 
 	assert.True(t, reflect.DeepEqual(expected, value))
 }
@@ -75,15 +61,15 @@ func TestMapBoatsMultiBoats(t *testing.T) {
 	crossingTimeBoat2 := localTime.Add(time.Duration(float64(duration) * (float64(2) / float64(3))))
 
 	expected := []domains.Boat{
-		{Name: "MY_BOAT", Maneuver: domains.Entering, CrossingDateApproximation: crossingTimeBoat1},
+		{Name: "MY_BOAT", IsLeavingDock: false, ApproximativeCrossingDate: crossingTimeBoat1},
 		{
 			Name:                      "MY_SECOND_BOAT",
-			Maneuver:                  domains.Entering,
-			CrossingDateApproximation: crossingTimeBoat2,
+			IsLeavingDock:             false,
+			ApproximativeCrossingDate: crossingTimeBoat2,
 		},
 	}
 	value := MapBoats(
-		domains.BoatReason,
+		domains.BoatPassage,
 		"MY_BOAT /MY_SECOND_BOAT",
 		duration,
 		localTime,
@@ -102,9 +88,9 @@ func TestMapBoatsExistingBoats(t *testing.T) {
 	crossingTime := localTime.Add(duration / 2)
 
 	expected := []domains.Boat{
-		{Name: "MY_BOAT", Maneuver: domains.Leaving, CrossingDateApproximation: crossingTime},
+		{Name: "MY_BOAT", IsLeavingDock: true, ApproximativeCrossingDate: crossingTime},
 	}
-	value := MapBoats(domains.BoatReason, "MY_BOAT", duration, localTime, &alreadySeenBoatNames)
+	value := MapBoats(domains.BoatPassage, "MY_BOAT", duration, localTime, &alreadySeenBoatNames)
 
 	assert.True(t, reflect.DeepEqual(expected, value))
 }
