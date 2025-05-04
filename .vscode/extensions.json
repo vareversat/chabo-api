@@ -10,6 +10,7 @@
 		"github.vscode-github-actions",
 		"PKief.material-icon-theme",
 		"redhat.vscode-yaml",
-		"ms-azuretools.vscode-docker"
+		"ms-azuretools.vscode-docker",
+		"inferrinizzard.prettier-sql-vscode"
 	]
 }

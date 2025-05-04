@@ -17,4 +17,13 @@
     "workbench.preferredDarkColorTheme": "Default Dark Modern",
     "workbench.iconTheme": "vs-seti",
     "files.autoSave": "onFocusChange",
+    "cSpell.words": [
+        "Approximative",
+        "chabo",
+        "healthcheck",
+        "logrus",
+        "OPENDATA",
+        "usecases",
+        "vareversat"
+    ],
 }

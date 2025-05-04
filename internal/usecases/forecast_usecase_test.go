@@ -45,16 +45,16 @@ func TestComputeForecasts(t *testing.T) {
 	expectedForecasts := domains.Forecasts{
 		{
 			ID:                       "recordid",
-			ClosingType:              domains.TwoWay,
+			IsTrafficFullyClosed:     true,
 			ClosingDuration:          120,
 			CirculationClosingDate:   circulationClosingDate,
 			CirculationReopeningDate: circulationReopeningDate,
-			ClosingReason:            domains.BoatReason,
+			ClosingReason:            domains.BoatPassage,
 			Boats: []domains.Boat{
 				{
 					Name:                      "MY_BOAT",
-					Maneuver:                  domains.Entering,
-					CrossingDateApproximation: approximativeCrossingDate,
+					IsLeavingDock:             false,
+					ApproximativeCrossingDate: approximativeCrossingDate,
 				},
 			},
 			Link: domains.APIResponseSelfLink{

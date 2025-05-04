@@ -26,3 +26,7 @@ go.work
 
 # IntelliJ
 .idea/
+
+# Docker compose, ignore all data directories (except .gitkeep)
+dev/**/data/*
+!dev/**/data/.gitkeep

@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/vareversat/chabo-api/internal/errors"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 var (
@@ -14,10 +13,10 @@ var (
 )
 
 type Sync struct {
-	ID        primitive.ObjectID `json:"-"           bson:"_id,omitempty"`
-	ItemCount int                `json:"item_count"  bson:"item_count"    example:"10"`
-	Duration  time.Duration      `json:"duration_ms" bson:"duration_ms"   example:"130"                         swaggertype:"primitive,integer"`
-	Timestamp time.Time          `json:"timestamp"   bson:"timestamp"     example:"2021-05-25T00:53:16.535668Z"                                 format:"date-time"`
+	ID        string        `json:"-"           bson:"_id,omitempty"`
+	ItemCount int           `json:"item_count"  bson:"item_count"    example:"10"`
+	Duration  time.Duration `json:"duration_ms" bson:"duration_ms"   example:"130"                         swaggertype:"primitive,integer"`
+	CreatedAt time.Time     `json:"created_at"  bson:"created_at"     example:"2021-05-25T00:53:16.535668Z"                                 format:"date-time"`
 }
 
 type SyncRepository interface {

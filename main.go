@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"github.com/getsentry/sentry-go"
+	"github.com/jackc/pgx/v5/pgxpool"
 	log "github.com/sirupsen/logrus"
 	"github.com/vareversat/chabo-api/internal/api/routers"
 	"github.com/vareversat/chabo-api/internal/repositories"
@@ -16,7 +17,8 @@ var (
 	Env               = os.Getenv("ENV")
 	GinMode           = os.Getenv("GIN_MODE")
 	mongoDatabaseName = os.Getenv("MONGO_DATABASE_NAME")
-	mongoDatabase     mongo.Database
+	mongoDatabase     *mongo.Database
+	postgresPool      *pgxpool.Pool
 )
 
 func init() {
@@ -28,7 +30,9 @@ func init() {
 	})
 	utils.InitOpenApi(openApiLogger)
 	// Init Mongo
-	mongoDatabase = *repositories.NewMongoClient().Database(mongoDatabaseName)
+	mongoDatabase = repositories.NewMongoClient().Database(mongoDatabaseName)
+	// Init Postgres
+	postgresPool = repositories.NewPostgresClient()
 }
 
 func main() {
@@ -50,5 +54,5 @@ func main() {
 		"Welcome to Chabo API ! Starting the project in " + Env + " mode (Gin " + GinMode + ")",
 	)
 
-	routers.MainRouter(mongoDatabase)
+	routers.MainRouter(mongoDatabase, postgresPool)
 }

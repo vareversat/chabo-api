@@ -221,7 +221,7 @@ func (fU *forecastUseCase) TryToSyncAll(ctx context.Context) (domains.Sync, erro
 		sync := domains.Sync{
 			ItemCount: insertCount,
 			Duration:  time.Duration(elapsed.Milliseconds()),
-			Timestamp: start,
+			CreatedAt: start,
 		}
 		err = fU.syncRepository.InsertOne(ctx, sync)
 		if err != nil {
@@ -236,12 +236,12 @@ func (fU *forecastUseCase) TryToSyncAll(ctx context.Context) (domains.Sync, erro
 
 func (fU *forecastUseCase) ComputeBordeauxAPIResponse(
 	forecasts *domains.Forecasts,
-	boredeauxAPIResponse domains.BordeauxAPIResponse,
+	bordeauxAPIResponse domains.BordeauxAPIResponse,
 ) errors.CustomError {
 	// alreadySeenBoatNames is used to compute the maneuver of each boats
 	var alreadySeenBoatNames []string
 
-	for _, openAPIForecast := range boredeauxAPIResponse.Records {
+	for _, openAPIForecast := range bordeauxAPIResponse.Records {
 		_, offset := openAPIForecast.RecordTimestamp.Zone()
 		closingReason := utils.MapClosingReason(openAPIForecast.Fields.Boat)
 		circulationClosingDate, errClosingDate := utils.FormatDataTime(
@@ -278,7 +278,7 @@ func (fU *forecastUseCase) ComputeBordeauxAPIResponse(
 			), // Convert into minutes
 			CirculationClosingDate:   circulationClosingDate,
 			CirculationReopeningDate: circulationReopeningDate,
-			ClosingType:              utils.MapClosingType(openAPIForecast.Fields.TotalClosing),
+			IsTrafficFullyClosed:     openAPIForecast.Fields.TotalClosing == "oui",
 			ClosingReason:            closingReason,
 			Boats: utils.MapBoats(
 				closingReason,
@@ -310,7 +310,7 @@ func (fU *forecastUseCase) SyncIsNeeded(ctx context.Context) bool {
 		return true
 	} else {
 		currentTime := time.Now()
-		diff := currentTime.Sub(lastSync.Timestamp)
+		diff := currentTime.Sub(lastSync.CreatedAt)
 
 		coolDown, _ := strconv.Atoi(os.Getenv("SYNC_COOL_DOWN_SECONDS"))
 
