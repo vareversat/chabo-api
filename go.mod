@@ -2,7 +2,7 @@ module github.com/vareversat/chabo-api
 
 go 1.22
 
-toolchain go1.24.4
+toolchain go1.24.5
 
 require (
 	github.com/getsentry/sentry-go v0.34.1
