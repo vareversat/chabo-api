@@ -6,7 +6,7 @@ toolchain go1.24.4
 
 require (
 	github.com/getsentry/sentry-go v0.34.1
-	github.com/getsentry/sentry-go/gin v0.34.0
+	github.com/getsentry/sentry-go/gin v0.34.1
 	github.com/gin-gonic/gin v1.10.1
 	github.com/stretchr/testify v1.10.0
 	github.com/swaggo/files v1.0.1
