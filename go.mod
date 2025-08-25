@@ -8,7 +8,7 @@ require (
 	github.com/getsentry/sentry-go v0.35.1
 	github.com/getsentry/sentry-go/gin v0.35.1
 	github.com/gin-gonic/gin v1.10.1
-	github.com/stretchr/testify v1.10.0
+	github.com/stretchr/testify v1.11.0
 	github.com/swaggo/files v1.0.1
 	go.mongodb.org/mongo-driver v1.17.4
 )
