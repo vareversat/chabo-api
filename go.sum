@@ -45,6 +45,8 @@ github.com/getsentry/sentry-go/gin v0.35.0 h1:olxgZOu0C348+kER+lBwH+IZZokBllYhtH
 github.com/getsentry/sentry-go/gin v0.35.0/go.mod h1:/0vfJwEyLuXsaKwIULe3hVhK6jsqWmDzf81BfFUhDCE=
 github.com/getsentry/sentry-go/gin v0.35.1 h1:Y5smwwJyiIbXfNOVkAlgFs25KLC9PIDeY+l10krmQEM=
 github.com/getsentry/sentry-go/gin v0.35.1/go.mod h1:QTQGJir9F3je+gwqek1GP43K8QcgW8OW5MtDLDD1GvQ=
+github.com/getsentry/sentry-go/gin v0.35.2 h1:ITyEhzNuY+gS4EbKIRbN3G5edu9uQXM1KIiSBn7V9wc=
+github.com/getsentry/sentry-go/gin v0.35.2/go.mod h1:e9EUJX5m6EKkULBryk4CoMTP9PoE0CPJCAPBGMT/NzY=
 github.com/gin-contrib/gzip v0.0.6 h1:NjcunTcGAj5CO1gn4N8jHOSIeRFHIbn51z6K+xaN4d4=
 github.com/gin-contrib/gzip v0.0.6/go.mod h1:QOJlmV2xmayAjkNS2Y8NQsMneuRShOU/kjovCXNuzzk=
 github.com/gin-contrib/sse v0.1.0 h1:Y/yl/+YNO8GZSjAhjMsSuLt29uWRFHdHYUb5lYOV9qE=
