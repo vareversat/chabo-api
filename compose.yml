@@ -22,6 +22,6 @@ services:
 
   postgresql:
     container_name: postgresql
-    image: postgres:17.8
+    image: postgres:18.2
     environment:
       POSTGRES_PASSWORD: my_password
